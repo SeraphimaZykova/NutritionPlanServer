@@ -4,7 +4,7 @@ const
   , router = express.Router()
   ;
 
-const dbURI = 'mongodb://nutritionReader:nutritionreader@localhost:27017/NutritionPlan?authSource=admin'
+const dbURI = 'mongodb://nutritionUser:nutritionuser@localhost:27017/NutritionPlan?authSource=NutritionPlan'
 mongoose.connect(dbURI);
 
 mongoose.connection.on('connected', function () {  
