@@ -55,15 +55,31 @@ let UserData = mongoose.model('UserData', UserDataSchema);
 Food.find(function (err, foods) {
   if (err) return console.error(err);
   console.log(foods);
-
-  console.log(foods[0].name);
 });
 
-UserData.find(function(err, data) {
-  if (err)
-    return console.error(err);
+let query = UserData.findById("5a4aafeae02a03d8ebf35361");
+query.then(function(res) {
+  console.log(`res = ${res}`);
 
-  console.log(data[0].pantry);
+  let pantry = res.pantry;
+  let foodArray = [];
+  for (let i = 0; i < pantry.length; i++) {
+    console.log(`\n\n pantry ${i} foodId = ${pantry[i].foodId}`);
+
+    let foodQuery = Food.findById(pantry[i].foodId);
+    foodQuery.exec()
+    .then(res => {
+      let food = res._doc;
+
+      food.available = pantry[i].available;
+      food.delta = pantry[i].delta;
+
+      foodArray.push(food);
+    })
+    .catch(err => {
+      console.error(err);
+    });    
+  }
 });
 
 const GAG = [
