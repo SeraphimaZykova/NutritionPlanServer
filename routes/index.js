@@ -27,6 +27,45 @@ process.on('SIGINT', function() {
   }); 
 }); 
 
+const FoodSchema = mongoose.Schema(
+  {
+    name: String,
+    glycemicIndex: Number,
+    nutrition: Object
+  }
+);
+
+const PantrySchema = mongoose.Schema( 
+  {
+    foodId: mongoose.Schema.Types.ObjectId,
+    delta: Number,
+    available: Number
+  } 
+);
+
+const UserDataSchema = mongoose.Schema(
+  {
+    pantry: [PantrySchema]
+  }
+);
+
+let Food = mongoose.model('Food', FoodSchema);
+let UserData = mongoose.model('UserData', UserDataSchema);
+
+Food.find(function (err, foods) {
+  if (err) return console.error(err);
+  console.log(foods);
+
+  console.log(foods[0].name);
+});
+
+UserData.find(function(err, data) {
+  if (err)
+    return console.error(err);
+
+  console.log(data[0].pantry);
+});
+
 const GAG = [
   {
     'name': 'Avocado',
