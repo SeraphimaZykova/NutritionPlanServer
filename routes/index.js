@@ -86,10 +86,35 @@ function dbInit() {
   }); 
 }
 
+async function makeDbRequest(response) {
+  let query = UserData.findById("5a4aafeae02a03d8ebf35361");
 
 
+  query.then((res) => {
+    let fullUserfoodArray = []
+      ;
 
+    Promise.all(res.pantry.map((fObj) => {
+      return Food.findById(fObj.foodId).then(
+        rslv => {
+          return new Promise((resolve, reject) => {
+            let nFdObj = {}
+              ;
+            nFdObj.mInfo = rslv;
+            nFdObj.uInfo = fObj;
 
+            resolve(nFdObj);
+          });
+        }
+      );
+    })).then(
+      rslv => {
+        response.send(rslv);
+      }
+    )
+  });
+  
+}
 
 dbInit();
 
@@ -104,7 +129,8 @@ router.get('/test', (req, res, next) => {
 
 
 router.get('/foods', function(req, res, next) {
-  res.send(getFoodsList());
+  makeDbRequest(res);
+  //res.send(getFoodsList());
 });
 
 module.exports = router;
