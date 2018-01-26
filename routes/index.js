@@ -136,4 +136,33 @@ router.get('/foods', function(req, res, next) {
   //res.send(getFoodsList());
 });
 
+let test = () => {
+  UserData.findById(HARDCODED_USER_ID, function(err, res) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    res.pantry.forEach(element => {
+      if (element.foodId == '5a4aacb4e02a03d8ebf35359') {
+        element.set({
+          delta: 666,
+          available: 555,
+          daily: { min: 1, max: 10000 }
+        });
+
+        res.save(function(err, updatedRes) {
+          if (err) {
+            console.error(err);
+            return;
+          }
+        });
+
+        return;
+      }
+    });
+  });
+};
+
+test();
 module.exports = router;
