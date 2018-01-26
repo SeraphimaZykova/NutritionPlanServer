@@ -12,7 +12,11 @@ const
     {
       foodId: mongoose.Schema.Types.ObjectId,
       delta: Number,
-      available: Number
+      available: Number,
+      daily: {
+        min: Number,
+        max: Number
+      }
     })
   , UserDataSchema = mongoose.Schema(
     {
