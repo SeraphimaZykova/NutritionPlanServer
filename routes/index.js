@@ -165,4 +165,28 @@ let test = () => {
 };
 
 test();
+
+router.post('/updateUserInfo', (req, res) => {
+  let REC_DATA = req.body
+    ;
+  
+  REC_DATA.uInfo.delta = 5555;
+
+  UserData.update({ 
+    'id_': HARDCODED_USER_ID, 
+    'pantry.foodId': REC_DATA.uInfo.foodId 
+  }, {
+    $set: {
+      'pantry.$.delta': REC_DATA.uInfo.delta,
+      'pantry.$.available': REC_DATA.uInfo.available,
+      'pantry.$.daily': REC_DATA.uInfo.daily
+    }
+  }, function(err) {
+    console.error('Error updating pantry: ', err);
+  }); 
+  
+  console.log('send status');
+  res.sendStatus(400);
+});
+
 module.exports = router;
