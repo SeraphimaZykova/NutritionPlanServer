@@ -24,7 +24,8 @@ const
     })
   , Food = mongoose.model('Food', FoodSchema)
   , UserData = mongoose.model('UserData', UserDataSchema)
-  ,GAG = [
+  , HARDCODED_USER_ID = "5a4aafeae02a03d8ebf35361"
+  , GAG = [
     {
       'name': 'Avocado',
       'delta': 10,
@@ -91,8 +92,7 @@ function dbInit() {
 }
 
 async function makeDbRequest(response) {
-  let query = UserData.findById("5a4aafeae02a03d8ebf35361");
-
+  let query = UserData.findById(HARDCODED_USER_ID);
 
   query.then((res) => {
     let fullUserfoodArray = []
@@ -117,7 +117,6 @@ async function makeDbRequest(response) {
       }
     )
   });
-  
 }
 
 dbInit();
