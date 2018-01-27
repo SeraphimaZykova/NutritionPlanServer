@@ -65,7 +65,6 @@ const
     ];
   ;
 
-
 function dbInit() {
   const dbURI = 'mongodb://nutritionUser:nutritionuser@localhost:27017/NutritionPlan?authSource=NutritionPlan'
   mongoose.connect(dbURI);
@@ -140,57 +139,39 @@ router.get('/foods', function(req, res, next) {
   //res.send(getFoodsList());
 });
 
-let test = () => {
-  UserData.findById(HARDCODED_USER_ID, function(err, res) {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    res.pantry.forEach(element => {
-      if (element.foodId == '5a4aacb4e02a03d8ebf35359') {
-        element.set({
-          delta: 666,
-          available: 555,
-          daily: { min: 1, max: 10000 }
-        });
-
-        res.save(function(err, updatedRes) {
-          if (err) {
-            console.error(err);
-            return;
-          }
-        });
-
-        return;
-      }
-    });
-  });
-};
-
-test();
-
 router.post('/updateUserInfo', (req, res) => {
   let REC_DATA = req.body
     ;
-  
-  REC_DATA.uInfo.delta = 5555;
 
-  UserData.update({ 
-    'id_': HARDCODED_USER_ID, 
-    'pantry.foodId': REC_DATA.uInfo.foodId 
-  }, {
-    $set: {
-      'pantry.$.delta': REC_DATA.uInfo.delta,
-      'pantry.$.available': REC_DATA.uInfo.available,
-      'pantry.$.daily': REC_DATA.uInfo.daily
+  UserData.findById(HARDCODED_USER_ID, function(err, doc) {
+    if (err) {
+      handleError(res, 200);
+      return;
     }
-  }, function(err) {
-    console.error('Error updating pantry: ', err);
-  }); 
-  
-  console.log('send status');
-  res.sendStatus(400);
+
+    doc.pantry.some(element => {
+      if (element.foodId == REC_DATA.uInfo.foodId) {
+        element.set({
+          delta: REC_DATA.uInfo.delta,
+          available: REC_DATA.uInfo.available,
+          daily: REC_DATA.uInfo.daily
+        });
+
+        doc.save(function(err, updatedRes) {
+          if (err) {
+            handleError(res, 200);
+            return;
+          }
+
+          res.sendStatus(400);
+        });
+
+        return true;
+      }
+
+      return false;
+    });
+  });
 });
 
 module.exports = router;
