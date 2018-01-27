@@ -2,11 +2,25 @@ const
     express = require('express')
   , mongoose = require('mongoose') 
   , router = express.Router()
+  , NutritionSchema = mongoose.Schema(
+    {
+      calories: Number,
+      proteins: Number,
+      carbs: Number,
+      fats: Number
+    })
   , FoodSchema = mongoose.Schema(
     {
-      name: String,
-      glycemicIndex: Number,
-      nutrition: Object
+      name: {
+        type: String,
+        index: true,
+        unique: true
+      },
+      glycemicIndex: {
+        type: Number,
+        index: true
+      },
+      nutrition: NutritionSchema
     })
   , PantrySchema = mongoose.Schema( 
     {
