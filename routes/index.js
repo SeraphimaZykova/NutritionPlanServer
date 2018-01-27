@@ -159,7 +159,7 @@ router.post('/updateUserInfo', (req, res) => {
 
   UserData.findById(HARDCODED_USER_ID, function(err, doc) {
     if (err) {
-      handleError(res, 200);
+      handleError(res, 200, {});
       return;
     }
 
@@ -173,7 +173,7 @@ router.post('/updateUserInfo', (req, res) => {
 
         doc.save(function(err, updatedRes) {
           if (err) {
-            handleError(res, 200);
+            handleError(res, 200, {});
             return;
           }
 
