@@ -121,6 +121,10 @@ async function makeDbRequest(response) {
 
 dbInit();
 
+let handleError = (routerRes, code, info) => {
+  console.error('Error: ' + code + ' -> ' + info);
+  routerRes.send(code);
+}
 
 function getFoodsList() {
   return GAG;
