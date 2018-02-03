@@ -33,13 +33,17 @@ process.on('SIGINT', function() {
 });
 
 //TODO: check collecitions initialized
+
+/* Food */
+exports.getFood = (id) => {
+  return new Promise((rslv, rjct) => {
+    foodCollection.findOne(mongodb.ObjectId(id), function(err, doc) {
       if (err) {
-        console.error(err);
+        rjct(err);
         return;
       }
 
-      console.log('closed');
-      process.exit(0);
-    }); 
-  }); 
-});
+      rslv(doc);
+    })
+  });
+}
