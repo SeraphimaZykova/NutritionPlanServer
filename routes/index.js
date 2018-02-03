@@ -81,88 +81,44 @@ async function updatePantry(responce, userId, pantryObj) {
   });
 }
 
+async function addNewFood(responce, userId, data) {
+  let foodstuff = {
+    name: data.name,
+    glycemicIndex: data.glycemicIndex,
+    nutrition: data.nutrition
+  };
+
+  mongo.insertFood(foodstuff)
+  .then(insertedOId => {
+    let pantryObj = {
+      foodId: insertedOId,
+      delta: data.delta,
+      available: data.available,
+      daily: data.daily
+    }
+
+    mongo.pushToPantry(userId, pantryObj)
+    .then(res => {
+      responce.sendStatus(400);
+    })
+    .catch(err => {
+      console.log(err);
+      handleError(responce, 200, err);
+    })
+  })
+  .catch(err => {
+    console.log(err);
+    handleError(responce, 200, err);
+  });
+}
+
 router.get('/foods', function(req, res, next) {
   requestPantry(res);
 });
 
-let test = () => {
-  const REC_DATA = {
-    'name': 'Grape',
-    'glycemicIndex': 45,
-    'delta': 30,
-    'available': 0,
-    'daily': {
-      'min': 0,
-      'max': 300
-    },
-    'nutrition': {
-      'calories': 65,
-      'proteins': 0.6,
-      'carbs': 16.8,
-      'fats': 0.2,
-    },
-    'food_icon': 'content_item_grape'
-  }
-
-  // let foodstuff = new Food({
-  //   name: REC_DATA.name,
-  //   glycemicIndex: REC_DATA.glycemicIndex,
-  //   nutrition: REC_DATA.nutrition
-  // });
-
-  // foodstuff.save(function (err, savedFoodstuff) {
-  //   if (err) {
-  //     //handleError(res, 200, {});
-  //     console.error(err);
-  //     return;
-  //   }
-
-  //   UserData.findById(HARDCODED_USER_ID, function(err, res) {
-  //     res.pantry.push({
-  //       foodId: savedFoodstuff.id_,
-  //       delta: REC_DATA.delta,
-  //       available: REC_DATA.available,
-  //       daily: REC_DATA.daily
-  //     });
-
-  //     res.save(function(err, updatedRes) {
-  //       if (err) {
-  //         //handleError(res, 200, {});
-  //         console.error(err);
-  //         return;
-  //       }
-
-  //       console.log('success');
-  //       console.log(updatedRes);
-  //       //res.sendStatus(400);
-  //     });
-  //   });
-  // });
-}
-
-//test();
-
 router.post('/newFood', (req, res) => {
-  const REC_DATA = req.body
-    ;
-  
-  // let foodstuff = new Food({
-  //   name: REC_DATA.name,
-  //   glycemicIndex: REC_DATA.glycemicIndex,
-  //   nutrition: REC_DATA.nutrition
-  // });
-
-  // foodstuff.save(function (err, savedFoodstuff) {
-  //   if (err) {
-  //     handleError(res, 200, {});
-  //     return;
-  //   }
-
-  //   //UserData.findById()
-  // });
-
-  console.log(REC_DATA);
-  res.sendStatus(400);
+  const REC_DATA = req.body;
+  addNewFood(res, HARDCODED_USER_ID, REC_DATA);
 });
 
 router.post('/updateUserInfo', (req, res) => {
