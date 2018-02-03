@@ -10,6 +10,10 @@ async function makeDbRequest(response) {
   // query.then((res) => {
   //   let fullUserfoodArray = []
   //     ;
+let handleError = (routerRes, code, info) => {
+  console.error('Error: ' + code + ' -> ' + info);
+  routerRes.send(code);
+}
 
   //   Promise.all(res.pantry.map((fObj) => {
   //     return Food.findById(fObj.foodId).then(
