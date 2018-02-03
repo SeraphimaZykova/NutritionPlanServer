@@ -108,4 +108,28 @@ exports.updatePantry = (id, pantryObj) => {
   });
 }
 
+exports.pushToPantry = (userId, pantryObj) => {
+  return new Promise((rslv, rjct) => {
+    userDataCollection.findOneAndUpdate({
+      "_id": mongodb.ObjectId(userId)
+    }, {
+      $push: {
+        "pantry": pantryObj
+      }
+    }, function(err, res) {
+      if (err) {
+        rjct(err);
+        return;
+      }
+
+      if (res.lastErrorObject.updatedExisting == false) {
+        rjct('Object not found to push into pantry');
+        return;
+      }
+
+      rslv('success');
+    })
+  });
+}
+
 /* UserData */
