@@ -47,3 +47,18 @@ exports.getFood = (id) => {
     })
   });
 }
+
+/* Pantry */
+exports.getPantry = (id) => {
+  return new Promise((rslv, rjct) => {
+    userDataCollection.findOne(mongodb.ObjectId(id), function(err, doc) {
+      if (err) {
+        rjct(err);
+        return;
+      }
+
+      rslv(doc.pantry);
+    });
+  });
+}
+
