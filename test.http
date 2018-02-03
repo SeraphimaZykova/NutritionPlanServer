@@ -1,0 +1,11 @@
+GET http://localhost:3001/test
+
+####
+
+POST https://api.nutritionix.com/v1_1/search
+
+{
+    "appId": "1a00fe85",
+    "appKey": "41b4d94379febc9ba23d79820d03d4a7",
+    "query": "Apple"
+}

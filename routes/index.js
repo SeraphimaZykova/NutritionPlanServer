@@ -48,13 +48,6 @@ let removeUndef = (array) => {
   return array;
 }
 
-let test1 = () => {
-  console.log('test1');
-  
-}
-
-setTimeout(test1, 1000);
-
 async function requestPantry(response) {
   mongo.getPantry(HARDCODED_USER_ID)
   .then(pantry => {
@@ -125,6 +118,18 @@ router.post('/newFood', (req, res) => {
 router.post('/updateUserInfo', (req, res) => {
   let REC_DATA = req.body;
   updatePantry(res, REC_DATA.userInfo.userId, REC_DATA.pantryInfo);
+});
+
+router.get('/test', (req, res) => {
+  nutritionix.requestData("apple").then(
+    data => {
+      console.log(`data!!!  ${data}`);
+      res.send(data);
+    }, err => {
+      console.log(`error!!!  ${err}`);
+      res.send(err);
+    }
+  )
 });
 
 module.exports = router;
