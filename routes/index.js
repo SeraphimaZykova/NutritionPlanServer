@@ -3,6 +3,7 @@ const
   , mongo = require('./../database/mongoManager')
   , router = express.Router()
   , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
+  , nutritionix = require('../api/nutritionix')
   ;
 
 let handleError = (routerRes, code, info) => {
