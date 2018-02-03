@@ -1,23 +1,38 @@
 const 
-    MongoClient = require('mongodb').MongoClient
-  , co = require('co')
+    mongodb = require('mongodb')
+    mongo = mongodb.MongoClient
   , url = 'mongodb://nutritionUser:nutritionuser@localhost:27017/NutritionPlan?authSource=NutritionPlan'
   ;
 
-let db;
+let
+    client
+  , db
+  , foodCollection
+  , userDataCollection
+  ;
 
-MongoClient.connect(url, function(err, res) {
+mongo.connect(url, function(err, connectedClient) {
   if (err) {
     console.error(err);
+    process.exit(0);
     return;
   }
 
-  console.log('Database connected successful');
-  db = res;
+  client = connectedClient;
+  db = client.db('NutritionPlan');
+  foodCollection = db.collection('Food');
+  userDataCollection = db.collection('UserData');
 
-  process.on('SIGINT', () => { 
-    console.log('\nclosing');
-    db.close(function(err, res) {
+  console.log('success');
+});
+
+process.on('SIGINT', function() {
+  client.close(() => {
+    process.exit(0);
+  });
+});
+
+//TODO: check collecitions initialized
       if (err) {
         console.error(err);
         return;
