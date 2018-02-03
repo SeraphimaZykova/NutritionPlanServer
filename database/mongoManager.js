@@ -62,3 +62,32 @@ exports.getPantry = (id) => {
   });
 }
 
+exports.updatePantry = (id, pantryObj) => {
+  return new Promise((rslv, rjct) => {
+    let foodId = new mongodb.ObjectId(pantryObj.foodId);
+    pantryObj.foodId = foodId;
+    
+    userDataCollection.findOneAndUpdate({
+      "_id": mongodb.ObjectId(id),
+      "pantry.foodId": pantryObj.foodId
+    }, {
+      $set: {
+        "pantry.$": pantryObj
+      }
+    }, function(err, res) {
+      if (err) {
+        rjct(err);
+        return;
+      }
+
+      if (res.lastErrorObject.updatedExisting == false) {
+        rjct('Object not found');
+        return;
+      }
+
+      rslv('success');
+    })
+  });
+}
+
+/* UserData */
