@@ -48,6 +48,24 @@ exports.getFood = (id) => {
   });
 }
 
+exports.insertFood = (foodstuff) => {
+  return new Promise((rslv, rjct) => {
+    foodCollection.insert(foodstuff, function(err, res) {
+      if (err) {
+        rjct(err.message);
+        return;
+      }
+
+      if (res.insertedCount != 1) {
+        rjct('not inserted');
+        return;
+      }
+
+      rslv(mongodb.ObjectId(res.insertedIds[0]));
+    })
+  });
+}
+
 /* Pantry */
 exports.getPantry = (id) => {
   return new Promise((rslv, rjct) => {
