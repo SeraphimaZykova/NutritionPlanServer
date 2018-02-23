@@ -32,6 +32,26 @@ process.on('SIGINT', function() {
   });
 });
 
+const updateOne = (collection, query, update) => {
+  return new Promise((rslv, rjct) => {
+    collection.findOneAndUpdate(query, update, function(err, res) {
+      if (err) {
+        rjct(err);
+        return;
+      }
+
+      if (res.lastErrorObject.updatedExisting == false) {
+        rjct('Object not found');
+        return;
+      }
+
+      rslv('success');
+    });
+  }).catch(err => {
+    console.log(`update collection ${collection} error: ${err}`);
+  });
+}
+
 //TODO: check collecitions initialized
 
 /* Food */
@@ -81,33 +101,23 @@ exports.getPantry = (id) => {
 }
 
 exports.updatePantry = (userId, updOid, field, val) => {
-  return new Promise((rslv, rjct) => {
-    let foodId = new mongodb.ObjectId(updOid);
+  const foodId = new mongodb.ObjectId(updOid);
     
-    let updObj = {};
-    updObj['pantry.$.' + field] = val;
+  let updObj = {};
+  updObj['pantry.$.' + field] = val;
+  
+  const query = {
+    "_id": mongodb.ObjectId(userId),
+    "pantry.foodId": foodId
+  };
 
-    userDataCollection.findOneAndUpdate({
-      "_id": mongodb.ObjectId(userId),
-      "pantry.foodId": foodId
-    }, {
-      $set: updObj
-    }, function(err, res) {
-      if (err) {
-        rjct(err);
-        return;
-      }
+  const update = {
+    $set: updObj
+  };
 
-      if (res.lastErrorObject.updatedExisting == false) {
-        rjct('Object not found');
-        return;
-      }
+  return updateOne(userDataCollection, query, update);
+}
 
-      rslv('success');
-    })
-  }).catch(err => {
-    console.log(`update pantry error: ${err}`);
-  });
 }
 
 exports.pushToPantry = (userId, pantryObj) => {
