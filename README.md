@@ -1,6 +1,7 @@
 # NutritionPlanServer
 
 food data format:
+```
 {
   foodInfo: {
     _id: oid,
@@ -25,3 +26,4 @@ food data format:
     userId: oid
   }
 }
+```
