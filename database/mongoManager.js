@@ -105,6 +105,8 @@ exports.updatePantry = (id, pantryObj) => {
 
       rslv('success');
     })
+  }).catch(err => {
+    console.log(`update pantry error: ${err}`);
   });
 }
 
