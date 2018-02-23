@@ -7,6 +7,8 @@ food data format:
     _id: oid,
     name: string,
     glycemicIndex: int,
+    gramsPerPiece: int,
+    piecesPerPack: int,
     nutrition: {
       calories: float,
       proteins: float,
