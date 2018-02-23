@@ -27,3 +27,12 @@ food data format:
   }
 }
 ```
+upd:
+```
+{
+  userId: oid,
+  updOid: oid,
+  field: string,
+  value: auto
+}
+```
