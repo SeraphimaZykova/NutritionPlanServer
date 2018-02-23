@@ -80,18 +80,18 @@ exports.getPantry = (id) => {
   });
 }
 
-exports.updatePantry = (id, pantryObj) => {
+exports.updatePantry = (userId, updOid, field, val) => {
   return new Promise((rslv, rjct) => {
-    let foodId = new mongodb.ObjectId(pantryObj.foodId);
-    pantryObj.foodId = foodId;
+    let foodId = new mongodb.ObjectId(updOid);
     
+    let updObj = {};
+    updObj['pantry.$.' + field] = val;
+
     userDataCollection.findOneAndUpdate({
-      "_id": mongodb.ObjectId(id),
-      "pantry.foodId": pantryObj.foodId
+      "_id": mongodb.ObjectId(userId),
+      "pantry.foodId": foodId
     }, {
-      $set: {
-        "pantry.$": pantryObj
-      }
+      $set: updObj
     }, function(err, res) {
       if (err) {
         rjct(err);
