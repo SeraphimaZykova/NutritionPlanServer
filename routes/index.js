@@ -8,7 +8,10 @@ const
 
 let handleError = (routerRes, code, info) => {
   console.error('Error: ' + code + ' -> ' + info);
-  routerRes.send(code);
+  routerRes.sendStatus({
+    status: 'fail'
+    , message: 'Error: ' + code + ' -> ' + info
+  });
 }
 
 let createClientPatryData = (foodObj, pantryObj, reqUserId) => {
@@ -48,7 +51,7 @@ let removeUndef = (array) => {
   return array;
 }
 
-async function requestPantry(response) {
+function requestPantry(response) {
   mongo.getPantry(HARDCODED_USER_ID)
   .then(pantry => {
     Promise.all(pantry.map((fObj) => {
@@ -64,9 +67,13 @@ async function requestPantry(response) {
   });
 }
 
-async function updatePantry(responce, userId, pantryObj) {
+function updatePantry(responce, userId, pantryObj) {
+  console.log(`user id: ${userId}`);
+  console.log(`pantryObj id: ${JSON.stringify(pantryObj)}`);
+
   mongo.updatePantry(userId, pantryObj)
   .then(result => {
+    console.log(result);
     responce.send(result);
   })
   .catch(err => {
@@ -115,9 +122,9 @@ router.post('/newFood', (req, res) => {
   addNewFood(res, HARDCODED_USER_ID, REC_DATA);
 });
 
-router.post('/updateUserInfo', (req, res) => {
-  let REC_DATA = req.body;
-  updatePantry(res, REC_DATA.userInfo.userId, REC_DATA.pantryInfo);
+router.post('/updatePantryInfo', (req, res) => {
+  const REC_DATA = req.body;
+  updatePantry(res, REC_DATA.userId, REC_DATA.pantryInfo);
 });
 
 router.get('/test', (req, res) => {
