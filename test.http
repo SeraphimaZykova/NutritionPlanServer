@@ -1,7 +1,23 @@
-GET http://localhost:3001/test
+GET http://localhost:3001/updatePantryInfo
 
 ####
+POST http://localhost:3001/updatePantryInfo
+Content-Type: application/json
 
+{
+    "userId": 12,
+    "pantryInfo": {
+        "foodId": "5a6ccab519b70038ec83b891",
+        "delta": 80,
+        "available": 140,
+        "daily": {
+            "min": 140,
+            "max": 40
+        }
+    }
+}
+
+#####
 POST https://api.nutritionix.com/v1_1/search
 
 {
