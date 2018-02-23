@@ -68,10 +68,19 @@ function requestPantry(response) {
 }
 
 function updatePantry(responce, userId, updOid, field, val) {
-  console.log(`user id: ${userId}`);
-  console.log(`pantryObj id: ${JSON.stringify(updOid)}`);
-
   mongo.updatePantry(userId, updOid, field, val)
+  .then(result => {
+    console.log(result);
+    responce.send(result);
+  })
+  .catch(err => {
+    console.log(err);
+    handleError(responce, 200, err);
+  });
+}
+
+function updateFood(responce, updOid, field, val) {
+  mongo.updateFood(updOid, field, val)
   .then(result => {
     console.log(result);
     responce.send(result);
@@ -125,6 +134,11 @@ router.post('/newFood', (req, res) => {
 router.post('/updatePantryInfo', (req, res) => {
   const data = req.body;
   updatePantry(res, data.userId, data.updOid, data.field, data.value);
+});
+
+router.post('/updateFoodInfo', (req, res) => {
+  const data = req.body;
+  updateFood(res, data.updOid, data.field, data.value);
 });
 
 router.get('/test', (req, res) => {

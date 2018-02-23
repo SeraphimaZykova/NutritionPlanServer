@@ -118,6 +118,21 @@ exports.updatePantry = (userId, updOid, field, val) => {
   return updateOne(userDataCollection, query, update);
 }
 
+exports.updateFood = (updOid, field, val) => {
+  const foodId = new mongodb.ObjectId(updOid);
+    
+  let updObj = {};
+  updObj[field] = val;
+  
+  const query = {
+    "_id": mongodb.ObjectId(foodId)
+  };
+
+  const update = {
+    $set: updObj
+  };
+
+  return updateOne(foodCollection, query, update);
 }
 
 exports.pushToPantry = (userId, pantryObj) => {
