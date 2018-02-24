@@ -10,10 +10,30 @@ food data format:
     gramsPerPiece: int,
     piecesPerPack: int,
     nutrition: {
-      calories: float,
+      calories: {
+        total: float,
+        fromFat: float
+      }
       proteins: float,
-      carbs: float,
-      fats: float
+      carbs: {
+        total: float,
+        dietaryFiber: float,
+        sugars: float
+      }
+      fats: {
+        total: float,
+        saturated: float,
+        trans: float,
+        polyunsanurated: float,
+        monounsaturated: float
+      },
+      cholesterol: int,
+      sodium: int,
+      potassium: int,
+      vitaminA: int,
+      vitaminC: int,
+      calcium: int,
+      iron: int
     }
   },
   pantryInfo: {
