@@ -27,13 +27,13 @@ food data format:
         polyunsanurated: float,
         monounsaturated: float
       },
-      cholesterol: int,
-      sodium: int,
-      potassium: int,
-      vitaminA: int,
-      vitaminC: int,
-      calcium: int,
-      iron: int
+      cholesterol: float,
+      sodium: float,
+      potassium: float,
+      vitaminA: float,
+      vitaminC: float,
+      calcium: float,
+      iron: float
     }
   },
   pantryInfo: {
