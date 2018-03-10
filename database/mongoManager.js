@@ -161,3 +161,15 @@ exports.pushToPantry = (userId, pantryObj) => {
 }
 
 /* UserData */
+exports.getIdealNutrition = (userId) => {
+  return new Promise((rslv, rjct) => {
+    userDataCollection.findOne(mongodb.ObjectId(userId), { nutrition: 1 }, function(err, doc) {
+      if (err) {
+        rjct(err);
+        return;
+      }
+
+      rslv(doc.nutrition);
+    });
+  });
+}
