@@ -32,6 +32,23 @@ let createClientPatryData = (foodObj, pantryObj, reqUserId) => {
   });
 }
 
+let createRationPantryData = (foodObj, pantryObj) => {
+  return new Promise((resolve, reject) => {
+    if (foodObj) {
+      let foodstuff = {};
+      foodstuff.food = foodObj;
+      foodstuff.available = pantryObj.available;
+      foodstuff.delta = pantryObj.delta;
+      foodstuff.daily = pantryObj.daily;
+      
+      resolve(foodstuff);
+    }
+    else {
+      reject(`Unknown food id`);
+    }
+  });
+}
+
 let modifyPantryObj = (pantryObj, userId) => {
   return mongo.getFood(pantryObj.foodId)
   .then(food => {
@@ -39,6 +56,18 @@ let modifyPantryObj = (pantryObj, userId) => {
   })
   .catch(err => {
     console.error(err);
+    return null;
+  });
+}
+
+let modifyPantryForRation = (pantryObj) => {
+  return mongo.getFood(pantryObj.foodId, { 'nutrition': 1, 'glycemicIndex': 1 })
+  .then(food => {
+    return createRationPantryData(food, pantryObj);
+  })
+  .catch(err => {
+    console.error(err);
+    return null;
   });
 }
 
@@ -59,11 +88,48 @@ function requestPantry(response) {
     })).then(rslv => {
       rslv = removeUndef(rslv);
       response.send(rslv);
+    })
+    .catch(err => {
+      console.log(`error: ${err}`);
+      handleError(response, 200, err);
     });
   }) 
   .catch(err => {
     console.log(`error: ${err}`);
-    handleError(responce, 200, err);
+    handleError(response, 200, err);
+  });
+}
+
+function requestRation(response) {
+  mongo.getIdealNutrition(HARDCODED_USER_ID)
+  .then(nutrition => {
+    nutrition.proteins = nutrition.calories * nutrition.proteins;
+    nutrition.fats = nutrition.calories * nutrition.fats;
+    nutrition.carbs = nutrition.calories * nutrition.carbs;
+
+    mongo.getPantry(HARDCODED_USER_ID)
+    .then(pantry => {
+      Promise.all(pantry.map((fObj) => {
+        return modifyPantryForRation(fObj, HARDCODED_USER_ID);
+      })).then(rslv => {
+        rslv = removeUndef(rslv);
+
+        console.dir(rslv);
+        response.send(rslv);
+      })
+      .catch(err => {
+        console.log(`error: ${err}`);
+        handleError(response, 200, err);
+      });
+    }) 
+    .catch(err => {
+      console.log(`error: ${err}`);
+      handleError(response, 200, err);
+    });
+  }) 
+  .catch(err => {
+    console.log(`error: ${err}`);
+    handleError(response, 200, err);
   });
 }
 
@@ -124,6 +190,10 @@ async function addNewFood(responce, userId, data) {
 
 router.get('/foods', function(req, res, next) {
   requestPantry(res);
+});
+
+router.get('/ration', function(req, res, next) {
+  requestRation(res);
 });
 
 router.post('/newFood', (req, res) => {

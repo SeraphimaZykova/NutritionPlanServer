@@ -1,4 +1,7 @@
-GET http://localhost:3001/updatePantryInfo
+GET http://localhost:3001/ration
+
+####
+GET http://localhost:3001/foods
 
 ####
 POST http://localhost:3001/updatePantryInfo
