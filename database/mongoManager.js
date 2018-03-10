@@ -53,11 +53,12 @@ const updateOne = (collection, query, update) => {
 }
 
 //TODO: check collecitions initialized
+//TODO: projection not working
 
 /* Food */
-exports.getFood = (id) => {
+exports.getFood = (id, projection) => {
   return new Promise((rslv, rjct) => {
-    foodCollection.findOne(mongodb.ObjectId(id), function(err, doc) {
+    foodCollection.findOne(mongodb.ObjectId(id), projection, function(err, doc) {
       if (err) {
         rjct(err);
         return;
