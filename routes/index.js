@@ -8,7 +8,7 @@ const
 
 let handleError = (routerRes, code, info) => {
   console.error('Error: ' + code + ' -> ' + info);
-  routerRes.sendStatus({
+  routerRes.json({
     status: 'fail'
     , message: 'Error: ' + code + ' -> ' + info
   });
