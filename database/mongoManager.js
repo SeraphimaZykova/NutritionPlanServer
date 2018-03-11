@@ -69,6 +69,20 @@ exports.getFood = (id, projection) => {
   });
 }
 
+exports.getRationFood = (id) => {
+  return new Promise((rslv, rjct) => {
+    foodCollection.findOne(mongodb.ObjectId(id), { nutrition: 1, glycemicIndex: 1 }, function(err, doc) {
+      if (err) {
+        rjct(err);
+        return;
+      }
+
+      doc._id = mongodb.ObjectId(doc._id).toString();
+      rslv(doc);
+    })
+  });
+}
+
 exports.insertFood = (foodstuff) => {
   return new Promise((rslv, rjct) => {
     foodCollection.insert(foodstuff, function(err, res) {
