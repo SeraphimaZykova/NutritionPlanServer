@@ -103,10 +103,21 @@ function requestPantry(response) {
 
 function requestRation(response) {
   mongo.getIdealNutrition(HARDCODED_USER_ID)
-  .then(idealNutrition => {
-    idealNutrition.proteins = idealNutrition.calories * idealNutrition.proteins;
-    idealNutrition.fats = idealNutrition.calories * idealNutrition.fats;
-    idealNutrition.carbs = idealNutrition.calories * idealNutrition.carbs;
+  .then(nutrition => {
+    const idealNutrition = {
+      calories: {
+        total: nutrition.calories
+      },
+      proteins: nutrition.calories * nutrition.proteins,
+      carbs: {
+        total: nutrition.calories * nutrition.carbs
+      },
+      fats: {
+        total: nutrition.calories * nutrition.fats
+      }
+    };
+
+    console.log(idealNutrition);
 
     mongo.getPantry(HARDCODED_USER_ID)
     .then(pantry => {
