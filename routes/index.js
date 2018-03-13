@@ -116,39 +116,30 @@ function requestRation(response) {
         total: nutrition.calories * nutrition.fats
       }
     };
-
-    console.log(idealNutrition);
-
+    
     mongo.getPantry(HARDCODED_USER_ID)
-    .then(pantry => {
-      Promise.all(pantry.map((fObj) => {
-        return modifyPantryForRation(fObj, HARDCODED_USER_ID);
-      })).then(rationFoods => {
+      .then(pantry => {
+        return Promise.all(pantry.map((fObj) => {
+          return modifyPantryForRation(fObj, HARDCODED_USER_ID);
+        }))
+      })
+      .then(rationFoods => {
         rationFoods = removeUndef(rationFoods);
-        
-        console.dir(rationFoods);
-
-        ration.calculateRation(idealNutrition, rationFoods)
-        .then(res => {
-          console.log(`result: ${res}`);
-          response.send(res);
+        return ration.calculateRation(idealNutrition, rationFoods);
+      })
+      .then(rationRes => {
+        return Promise.all(rationRes.ration.map((rationObj) => {
+          return mongo.getFood(rationObj.food)
+        }))
+        .then(foodDescs => {
+          rationRes.ration = foodDescs
+          response.send(rationRes);
         })
-        .catch(err => {
-          console.log(`calculate ration error: ${err}`);
-          handleError(response, 200, err);
-        });
       })
       .catch(err => {
-        console.log(`pantry array ration modification error: ${err}`);
+        console.log(err);
         handleError(response, 200, err);
-        return;
-      });
-    }) 
-    .catch(err => {
-      console.log(`get pantry error: ${err}`);
-      handleError(response, 200, err);
-      return;
-    });
+      })
   })
   .catch(err => {
     console.error(`get ideal nutrition error: ${err}`);
