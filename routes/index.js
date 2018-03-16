@@ -66,51 +66,66 @@ function requestPantry(response) {
     handleError(response, 200, err);
   });
 }
+  
+let updPantry = (pantry) => {
+  return Promise.all(pantry.map((pantryObj) => {
+    return modifyPantryForRation(pantryObj, HARDCODED_USER_ID);
+  }));
+}
+
+let getPantryObj = (pantry, id) => {
+  for (let i = 0; i < pantry.length; i++) {
+    if (pantry[i].food._id == id) {
+      return pantry[i];
+    }
+  }
+}
 
 function requestRation(response) {
-  mongo.getIdealNutrition(HARDCODED_USER_ID)
-  .then(nutrition => {
+  let projection = { nutrition: 1 };
+  mongo.getUserInfo(HARDCODED_USER_ID, projection)
+  .then(res => {
     const idealNutrition = {
       calories: {
-        total: nutrition.calories
+        total: res.nutrition.calories
       },
-      proteins: nutrition.calories * nutrition.proteins,
+      proteins: res.nutrition.calories * res.nutrition.proteins,
       carbs: {
-        total: nutrition.calories * nutrition.carbs
+        total: res.nutrition.calories * res.nutrition.carbs
       },
       fats: {
-        total: nutrition.calories * nutrition.fats
+        total: res.nutrition.calories * res.nutrition.fats
       }
     };
-    
-    mongo.getPantry(HARDCODED_USER_ID)
-      .then(pantry => {
-        return Promise.all(pantry.map((fObj) => {
-          return modifyPantryForRation(fObj, HARDCODED_USER_ID);
-        }))
-      })
-      .then(rationFoods => {
-        rationFoods = removeUndef(rationFoods);
-        return ration.calculateRation(idealNutrition, rationFoods);
-      })
-      .then(rationRes => {
-        return Promise.all(rationRes.ration.map((rationObj) => {
-          return mongo.getFood(rationObj.food)
-        }))
-        .then(foodDescs => {
-          rationRes.ration = foodDescs
-          response.send(rationRes);
-        })
+
+    updPantry(res.pantry)
+    .then(modifiedPantry => {
+      ration.calculateRation(idealNutrition, modifiedPantry)
+      .then(rationResult => {
+        rationResult.ration.forEach(element => {
+          let pObj = getPantryObj(modifiedPantry, element.food);
+          
+          element.food = pObj.food;
+          element.available = pObj.available;
+          element.delta = pObj.delta;
+          element.daily = pObj.daily;
+        });
+
+        response.send(rationResult);
       })
       .catch(err => {
-        console.log(err);
         handleError(response, 200, err);
+        console.error(err);
       })
+    })
+    .catch(err => {
+      handleError(response, 200, err);
+      console.error(err);
+    })
   })
   .catch(err => {
-    console.error(`get ideal nutrition error: ${err}`);
     handleError(response, 200, err);
-    return;
+    console.error(err);
   });
 }
 
