@@ -1,7 +1,8 @@
+require('dotenv').config();
+
 const 
     mongodb = require('mongodb')
     mongo = mongodb.MongoClient
-  , url = 'mongodb://nutritionUser:nutritionuser@localhost:27017/NutritionPlan?authSource=NutritionPlan'
   ;
 
 let
@@ -11,7 +12,7 @@ let
   , userDataCollection
   ;
 
-mongo.connect(url, function(err, connectedClient) {
+mongo.connect(process.env.DATABASE, function(err, connectedClient) {
   if (err) {
     console.error(err);
     process.exit(0);
