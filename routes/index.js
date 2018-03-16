@@ -4,7 +4,8 @@ const
   , router = express.Router()
   , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
   , nutritionix = require('../api/nutritionix')
-  , ration = require('ration_calculator');
+  , ration = require('ration_calculator')
+  , converter = require('./documentConverter')
   ;
 
 let handleError = (routerRes, code, info) => {
@@ -15,45 +16,10 @@ let handleError = (routerRes, code, info) => {
   });
 }
 
-let createClientPatryData = (foodObj, pantryObj, reqUserId) => {
-  return new Promise((resolve, reject) => {
-    if (foodObj) {
-      let foodstuff = {};
-      foodstuff.foodInfo = foodObj;
-      foodstuff.pantryInfo = pantryObj;
-      foodstuff.userInfo = {
-        userId: reqUserId
-      }
-
-      resolve(foodstuff);
-    }
-    else {
-      reject(`Unknown food id`);
-    }
-  });
-}
-
-let createRationPantryData = (foodObj, pantryObj) => {
-  return new Promise((resolve, reject) => {
-    if (foodObj) {
-      let foodstuff = {};
-      foodstuff.food = foodObj;
-      foodstuff.available = pantryObj.available;
-      foodstuff.delta = pantryObj.delta;
-      foodstuff.daily = pantryObj.daily;
-      
-      resolve(foodstuff);
-    }
-    else {
-      reject(`Unknown food id`);
-    }
-  });
-}
-
 let modifyPantryObj = (pantryObj, userId) => {
   return mongo.getFood(pantryObj.foodId)
   .then(food => {
-    return createClientPatryData(food, pantryObj, userId);
+    return converter.clientPantry(food, pantryObj, userId);
   })
   .catch(err => {
     console.error(err);
@@ -64,7 +30,7 @@ let modifyPantryObj = (pantryObj, userId) => {
 let modifyPantryForRation = (pantryObj) => {
   return mongo.getRationFood(pantryObj.foodId)
   .then(food => {
-    return createRationPantryData(food, pantryObj);
+    return converter.rationPantry(food, pantryObj);
   })
   .catch(err => {
     console.error(err);
