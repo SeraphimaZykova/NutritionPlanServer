@@ -188,3 +188,16 @@ exports.getIdealNutrition = (userId) => {
     });
   });
 }
+
+exports.getUserInfo = (id, projection) => {
+  return new Promise((rslv, rjct) => {
+    userDataCollection.findOne(mongodb.ObjectId(id), projection, function(err, doc) {
+      if (err) {
+        rjct(err);
+        return;
+      }
+
+      rslv(doc);
+    });
+  });
+}
