@@ -107,7 +107,6 @@ function requestRation(response) {
           
           element.food = pObj.food;
           element.available = pObj.available;
-          element.delta = pObj.delta;
           element.daily = pObj.daily;
         });
 
