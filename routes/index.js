@@ -141,6 +141,7 @@ function requestRation(response) {
           element.daily = pObj.daily;
         });
 
+        rationResult.idealNutrition = idealNutrition;
         response.send(rationResult);
       })
       .catch(err => {
