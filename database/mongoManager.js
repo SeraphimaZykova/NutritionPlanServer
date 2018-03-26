@@ -212,6 +212,32 @@ exports.setIdealNutrition = (userId, newNutrition) => {
   })
 }
 
+exports.setRation = (userId, rationObj) => {
+  return new Promise((rslv, rjct) => {
+    try {
+      userDataCollection.updateOne(
+        {
+          '_id': mongodb.ObjectId(userId)
+        }, {
+          $set: {
+            ration: rationObj
+          }
+        }, function(err, res) {
+          if (err) {
+            rjct(err);
+            return;
+          }
+  
+          rslv(res);
+        }
+      );
+    }
+    catch(err) {
+      rjct(err);
+    }
+  });
+}
+
 exports.getUserInfo = (id, projection) => {
   return new Promise((rslv, rjct) => {
     userDataCollection.findOne(mongodb.ObjectId(id), projection, function(err, doc) {

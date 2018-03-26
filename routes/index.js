@@ -17,7 +17,8 @@ const
   * 
   * 3. взаимодействие в nutritionix api
   * 
-  * 4. сохранение сгенерированного рациона в бд. 
+  * 4. 
+  *   -- сохранение сгенерированного рациона в бд. 
   *   при запросе с клиента сначала проверять бд, 
   *   если ничего нет или были изменения списка продуктов / настроек - запускать генерацию.
   *   в запросе с клиента должна присутсвовать дата 
@@ -139,6 +140,12 @@ function requestRation(response) {
           element.food = pObj.food;
           element.available = pObj.available;
           element.daily = pObj.daily;
+        });
+
+        mongo.setRation(HARDCODED_USER_ID, rationResult)
+        .catch(err => {
+          console.log('Failed to update ration');
+          console.error(err);
         });
 
         rationResult.idealNutrition = idealNutrition;
