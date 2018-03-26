@@ -185,19 +185,21 @@ function updateFood(responce, updOid, field, val) {
 }
 
 async function addNewFood(responce, userId, data) {
+  
   let foodstuff = {
-    name: data.name,
-    glycemicIndex: data.glycemicIndex,
-    nutrition: data.nutrition
+    name: data.foodInfo.name,
+    glycemicIndex: data.foodInfo.glycemicIndex,
+    nutrition: data.foodInfo.nutrition
   };
-
+  
   mongo.insertFood(foodstuff)
   .then(insertedOId => {
+
     let pantryObj = {
       foodId: insertedOId,
-      delta: data.delta,
-      available: data.available,
-      daily: data.daily
+      delta: data.pantryInfo.delta,
+      available: data.pantryInfo.available,
+      daily: data.pantryInfo.daily
     }
 
     mongo.pushToPantry(userId, pantryObj)
