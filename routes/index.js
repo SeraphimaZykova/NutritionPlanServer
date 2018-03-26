@@ -205,12 +205,12 @@ async function addNewFood(responce, userId, data) {
       responce.sendStatus(400);
     })
     .catch(err => {
-      console.log(err);
+      console.error(err);
       handleError(responce, 200, err);
     })
   })
   .catch(err => {
-    console.log(err);
+    console.error(err);
     handleError(responce, 200, err);
   });
 }
