@@ -160,6 +160,29 @@ function requestRation(response) {
   });
 }
 
+function requestIdealNutrition(response) {
+  let projection = { nutrition: 1 };
+  mongo.getUserInfo(HARDCODED_USER_ID, projection)
+  .then(res => {
+    response.send(res.nutrition);
+  })
+  .catch(err => {
+    handleError(response, 200, err);
+    console.error(err);
+  });
+}
+
+function updateIdealNutrition(response, nutrition) {
+  mongo.setIdealNutrition(HARDCODED_USER_ID, nutrition)
+  .then(res => {
+    response.sendStatus(400);
+  })
+  .catch(err => {
+    handleError(response, 200, err);
+    console.error(err);
+  });
+}
+
 function updatePantry(responce, userId, updOid, field, val) {
   mongo.updatePantry(userId, updOid, field, val)
   .then(result => {
@@ -225,6 +248,10 @@ router.get('/ration', function(req, res, next) {
   requestRation(res);
 });
 
+router.get('/idealNutrition', function(req, res, next) {
+  requestIdealNutrition(res);
+});
+
 router.post('/newFood', (req, res) => {
   const REC_DATA = req.body;
   addNewFood(res, HARDCODED_USER_ID, REC_DATA);
@@ -238,6 +265,11 @@ router.post('/updatePantryInfo', (req, res) => {
 router.post('/updateFoodInfo', (req, res) => {
   const data = req.body;
   updateFood(res, data.updOid, data.field, data.value);
+});
+
+router.post('/updateIdealNutrition', (req, res) => {
+  const data = req.body;
+  updateIdealNutrition(res, data);
 });
 
 router.get('/test', (req, res) => {
