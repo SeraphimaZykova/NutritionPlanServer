@@ -69,8 +69,8 @@ let modifyPantryForRation = (pantryObj) => {
   });
 }
 
-let modifyRationForClient = (rationObj, pantry, idealNutrition) => {
-  rationObj.ration.forEach(element => {
+let modifyRationForClient = (ration, pantry, idealNutrition) => {
+  ration.forEach(element => {
     let pObj = getPantryObj(pantry, element.food);
     
     element.food = pObj.food;
@@ -78,7 +78,10 @@ let modifyRationForClient = (rationObj, pantry, idealNutrition) => {
     element.daily = pObj.daily;
   });
 
-  rationObj.idealNutrition = idealNutrition;
+  return {
+    idealNutrition: idealNutrition,
+    ration: ration
+  }
 }
 
 let removeUndef = (array) => {
@@ -145,22 +148,23 @@ function requestRation(response) {
     .then(modifiedPantry => {
 
       if (res.ration) {
-        modifyRationForClient(res.ration, modifiedPantry, idealNutrition);
-        response.send(res.ration);
+        let clientData = modifyRationForClient(res.ration, modifiedPantry, idealNutrition);
+        console.log(clientData);
+        response.send(clientData);
         return;
       }
 
       ration.calculateRation(idealNutrition, modifiedPantry)
       .then(rationResult => {
         
-        mongo.setRation(HARDCODED_USER_ID, rationResult)
+        mongo.setRation(HARDCODED_USER_ID, rationResult.ration)
         .catch(err => {
           console.log('Failed to update ration');
           console.error(err);
         });
 
-        modifyRationForClient(rationResult, modifiedPantry, idealNutrition);
-        response.send(rationResult);
+        let clientData = modifyRationForClient(rationResult.ration, modifiedPantry, idealNutrition);
+        response.send(clientData);
       })
       .catch(err => {
         handleError(response, 200, err);
