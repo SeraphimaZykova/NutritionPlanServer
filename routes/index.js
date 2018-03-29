@@ -174,7 +174,7 @@ let updPantry = (pantry) => {
 // }
 
 let getPantryObj = (pantry, id) => {
-  return pantry.filter(e => e.food['_id'] === id);
+  return pantry.find(e => e.food['_id'] === id);
 }
 
 // function requestRation(response) {
