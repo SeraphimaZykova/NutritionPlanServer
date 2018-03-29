@@ -138,15 +138,27 @@ exports.updateRation = (userId, foodIdStr, portion) => {
   const query = {
     "_id": mongodb.ObjectId(userId),
     "ration.food": foodIdStr
-  };
-
-  const update = {
+  }
+  , update = {
     $set: {
       'ration.$.portion': portion
     }
   };
 
   return updateOne(userDataCollection, query, update);
+}
+
+exports.addToRation = (userId, rationObj) => {
+  const query = {
+    "_id": mongodb.ObjectId(userId),
+  }
+  , update = {
+    $push: {
+      'ration': rationObj
+    }
+  };
+
+  return updateOne(userDataCollection, query, update); 
 }
 
 exports.updateFood = (updOid, field, val) => {

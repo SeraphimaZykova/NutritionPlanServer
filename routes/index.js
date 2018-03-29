@@ -202,6 +202,17 @@ async function updateRation(response, userId, foodId, portion) {
   });
 }
 
+async function addToRation(response, userId, rationObj) {
+  mongo.addToRation(userId, rationObj)
+  .then(result => {
+    response.sendStatus(400);
+  })
+  .catch(err => {
+    console.error(err);
+    handleError(responce, 200, err);
+  });
+}
+
 function updateFood(responce, updOid, field, val) {
   mongo.updateFood(updOid, field, val)
   .then(result => {
@@ -276,6 +287,11 @@ router.post('/updateIdealNutrition', (req, res) => {
 router.post('/updateRation', (req, res) => {
   const data = req.body;
   updateRation(res, HARDCODED_USER_ID, data.id, data.portion);
+});
+
+router.post('/addToRation', (req, res) => {
+  const data = req.body;
+  addToRation(res, HARDCODED_USER_ID, data);
 });
 
 router.get('/test', (req, res) => {
