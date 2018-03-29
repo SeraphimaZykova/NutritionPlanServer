@@ -120,7 +120,7 @@ let modifyRationForClient = (ration, pantry, idealNutrition) => {
 
 
 let removeUndef = (array) => {
-  return array.filter(e => e !== undefined && !isNaN(e));
+  return array.filter(e => e !== undefined);
 }
 
 // function requestPantry(response) {
