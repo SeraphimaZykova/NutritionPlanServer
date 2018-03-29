@@ -47,28 +47,52 @@ let handleError = (routerRes, code, info) => {
   });
 }
 
-let modifyPantryObj = (pantryObj, userId) => {
-  return mongo.getFood(pantryObj.foodId)
-  .then(food => {
+let srvErrHdl = err => {
+  console.error(err);
+  return null;
+}
+
+// let modifyPantryObj = (pantryObj, userId) => {
+//   return mongo.getFood(pantryObj.foodId)
+//   .then(food => {
+//     return converter.clientPantry(food, pantryObj, userId);
+//   })
+//   .catch(err => {
+//     console.error(err);
+//     return null;
+//   });
+// }
+
+let modifyPantryObj = async (pantryObj, userId) => {
+  try {
+    let food = await mongo.getFood(pantryObj.foodId);
     return converter.clientPantry(food, pantryObj, userId);
-  })
-  .catch(err => {
-    console.error(err);
-    return null;
-  });
+  } catch (err) {
+    return srvErrHdl(err);
+  }
 }
 
-let modifyPantryForRation = (pantryObj) => {
-  return mongo.getRationFood(pantryObj.foodId)
-  .then(food => {
+// let modifyPantryForRation = (pantryObj) => {
+//   return mongo.getRationFood(pantryObj.foodId)
+//   .then(food => {
+//     return converter.rationPantry(food, pantryObj);
+//   })
+//   .catch(err => {
+//     console.error(err);
+//     return null;
+//   });
+// }
+
+let modifyPantryForRation = async (pantryObj) => {
+  try {
+    let food = await mongo.getRationFood(pantryObj.foodId);
     return converter.rationPantry(food, pantryObj);
-  })
-  .catch(err => {
-    console.error(err);
-    return null;
-  });
+  } catch (err) {
+    return srvErrHdl(err);
+  }
 }
 
+// отрефакторить в чистую функцию
 let modifyRationForClient = (ration, pantry, idealNutrition) => {
   ration.forEach(element => {
     let pObj = getPantryObj(pantry, element.food);
@@ -84,33 +108,55 @@ let modifyRationForClient = (ration, pantry, idealNutrition) => {
   }
 }
 
+
+// let removeUndef = (array) => {
+//   let undefIndex = array.indexOf(undefined);
+//   while (undefIndex != -1) {
+//     array.splice(undefIndex, 1);
+//     undefIndex = array.indexOf(undefined);
+//   }
+//   return array;
+// }
+
+
 let removeUndef = (array) => {
-  let undefIndex = array.indexOf(undefined);
-  while (undefIndex != -1) {
-    array.splice(undefIndex, 1);
-    undefIndex = array.indexOf(undefined);
-  }
-  return array;
+  return array.filter(e => e !== undefined && !isNaN(e));
 }
 
-function requestPantry(response) {
-  mongo.getPantry(HARDCODED_USER_ID)
-  .then(pantry => {
+// function requestPantry(response) {
+//   mongo.getPantry(HARDCODED_USER_ID)
+//   .then(pantry => {
+//     Promise.all(pantry.map((fObj) => {
+//       return modifyPantryObj(fObj, HARDCODED_USER_ID);
+//     })).then(rslv => {
+//       rslv = removeUndef(rslv);
+//       response.send(rslv);
+//     })
+//     .catch(err => {
+//       console.log(`error: ${err}`);
+//       handleError(response, 200, err);
+//     });
+//   }) 
+//   .catch(err => {
+//     console.log(`error: ${err}`);
+//     handleError(response, 200, err);
+//   });
+// }
+
+async function requestPantry(response) {
+  try {
+    let pantry = await mongo.getPantry(HARDCODED_USER_ID);
     Promise.all(pantry.map((fObj) => {
       return modifyPantryObj(fObj, HARDCODED_USER_ID);
-    })).then(rslv => {
+    }))
+    .then(rslv => {
       rslv = removeUndef(rslv);
       response.send(rslv);
     })
-    .catch(err => {
-      console.log(`error: ${err}`);
-      handleError(response, 200, err);
-    });
-  }) 
-  .catch(err => {
+  } catch (err) {
     console.log(`error: ${err}`);
     handleError(response, 200, err);
-  });
+  }
 }
   
 let updPantry = (pantry) => {
@@ -119,66 +165,111 @@ let updPantry = (pantry) => {
   }));
 }
 
+// let getPantryObj = (pantry, id) => {
+//   for (let i = 0; i < pantry.length; i++) {
+//     if (pantry[i].food._id == id) {
+//       return pantry[i];
+//     }
+//   }
+// }
+
 let getPantryObj = (pantry, id) => {
-  for (let i = 0; i < pantry.length; i++) {
-    if (pantry[i].food._id == id) {
-      return pantry[i];
-    }
-  }
+  return pantry.filter(e => e.food['_id'] === id);
 }
 
-function requestRation(response) {
-  let projection = { nutrition: 1, ration: 1 };
-  mongo.getUserInfo(HARDCODED_USER_ID, projection)
-  .then(res => {
-    const idealNutrition = {
-      calories: {
-        total: res.nutrition.calories
-      },
-      proteins: res.nutrition.calories * res.nutrition.proteins,
-      carbs: {
-        total: res.nutrition.calories * res.nutrition.carbs
-      },
-      fats: {
-        total: res.nutrition.calories * res.nutrition.fats
-      }
-    };
+// function requestRation(response) {
+//   let projection = { nutrition: 1, ration: 1 };
+//   mongo.getUserInfo(HARDCODED_USER_ID, projection)
+//   .then(res => {
+//     const idealNutrition = {
+//       calories: {
+//         total: res.nutrition.calories
+//       },
+//       proteins: res.nutrition.calories * res.nutrition.proteins,
+//       carbs: {
+//         total: res.nutrition.calories * res.nutrition.carbs
+//       },
+//       fats: {
+//         total: res.nutrition.calories * res.nutrition.fats
+//       }
+//     };
     
-    updPantry(res.pantry)
-    .then(modifiedPantry => {
+//     updPantry(res.pantry)
+//     .then(modifiedPantry => {
 
-      if (res.ration) {
-        let clientData = modifyRationForClient(res.ration, modifiedPantry, idealNutrition);
-        response.send(clientData);
-        return;
-      }
+//       if (res.ration) {
+//         let clientData = modifyRationForClient(res.ration, modifiedPantry, idealNutrition);
+//         response.send(clientData);
+//         return;
+//       }
 
-      ration.calculateRation(idealNutrition, modifiedPantry)
-      .then(rationResult => {
+//       ration.calculateRation(idealNutrition, modifiedPantry)
+//       .then(rationResult => {
         
-        mongo.setRation(HARDCODED_USER_ID, rationResult.ration)
-        .catch(err => {
-          console.log('Failed to update ration');
-          console.error(err);
-        });
+//         mongo.setRation(HARDCODED_USER_ID, rationResult.ration)
+//         .catch(err => {
+//           console.log('Failed to update ration');
+//           console.error(err);
+//         });
 
-        let clientData = modifyRationForClient(rationResult.ration, modifiedPantry, idealNutrition);
-        response.send(clientData);
-      })
+//         let clientData = modifyRationForClient(rationResult.ration, modifiedPantry, idealNutrition);
+//         response.send(clientData);
+//       })
+//       .catch(err => {
+//         handleError(response, 200, err);
+//         console.error(err);
+//       })
+//     })
+//     .catch(err => {
+//       handleError(response, 200, err);
+//       console.error(err);
+//     })
+//   })
+//   .catch(err => {
+//     handleError(response, 200, err);
+//     console.error(err);
+//   });
+// }
+
+async function requestRation(response) {
+  try {
+    let projection = { nutrition: 1, ration: 1 }
+      , res = await mongo.getUserInfo(HARDCODED_USER_ID, projection)
+      , idealNutrition = {
+          calories: {
+            total: res.nutrition.calories
+          },
+          proteins: res.nutrition.calories * res.nutrition.proteins,
+          carbs: {
+            total: res.nutrition.calories * res.nutrition.carbs
+          },
+          fats: {
+            total: res.nutrition.calories * res.nutrition.fats
+          }
+        }
+      , modifiedPantry = await updPantry(res.pantry);
+      ; 
+    
+    if (res.ration) {
+      let clientData = modifyRationForClient(res.ration, modifiedPantry, idealNutrition);
+      response.send(clientData);
+      return;
+    } else {
+      let rationResult = await ration.calculateRation(idealNutrition, modifiedPantry);
+
+      mongo.setRation(HARDCODED_USER_ID, rationResult.ration)
       .catch(err => {
-        handleError(response, 200, err);
+        console.log('Failed to update ration');
         console.error(err);
-      })
-    })
-    .catch(err => {
-      handleError(response, 200, err);
-      console.error(err);
-    })
-  })
-  .catch(err => {
-    handleError(response, 200, err);
+      });
+
+      let clientData = modifyRationForClient(rationResult.ration, modifiedPantry, idealNutrition);
+      response.send(clientData);
+    }
+  } catch (err) {
     console.error(err);
-  });
+    handleError(response, 200, err);
+  }
 }
 
 function requestIdealNutrition(response) {
@@ -238,8 +329,8 @@ function updateFood(responce, updOid, field, val) {
   });
 }
 
-async function addNewFood(responce, userId, data) {
-  
+
+function addNewFood(responce, userId, data) {
   let foodstuff = {
     name: data.foodInfo.name,
     glycemicIndex: data.foodInfo.glycemicIndex,
@@ -248,22 +339,16 @@ async function addNewFood(responce, userId, data) {
   
   mongo.insertFood(foodstuff)
   .then(insertedOId => {
-
     let pantryObj = {
       foodId: insertedOId,
       delta: data.pantryInfo.delta,
       available: data.pantryInfo.available,
       daily: data.pantryInfo.daily
-    }
-
-    mongo.pushToPantry(userId, pantryObj)
-    .then(res => {
-      responce.sendStatus(400);
-    })
-    .catch(err => {
-      console.error(err);
-      handleError(responce, 200, err);
-    })
+    };
+    return mongo.pushToPantry(userId, pantryObj);
+  })
+  .then(res => {
+    responce.sendStatus(400);
   })
   .catch(err => {
     console.error(err);
