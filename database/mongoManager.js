@@ -102,6 +102,27 @@ exports.insertFood = (foodstuff) => {
   });
 }
 
+exports.searchFood = (search) => {
+  return new Promise((rslv, rjct) => {
+    try {
+      let regexp = new RegExp(search);
+      console.log(`regexp: ${regexp}`);
+      
+      foodCollection.find({ name: { $regex: regexp, $options: 'i' } }).toArray()
+      .then(res => {
+        console.log(res);
+        rslv(res);
+      })
+      .catch(err => {
+        rjct(err);
+      });
+    }
+    catch(err) {
+      rjct(err);
+    }
+  });
+}
+
 /* Pantry */
 exports.getPantry = (id) => {
   return new Promise((rslv, rjct) => {

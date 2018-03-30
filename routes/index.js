@@ -249,12 +249,25 @@ function addNewFood(responce, userId, data) {
   .catch(err => {
     console.error(err);
     handleError(responce, 200, err);
+
+function searchFood(response, arg) {
+  console.log(`search ${arg}`);
+  mongo.searchFood(arg)
+  .then(res => {
+    response.send(res);
+  })
+  .catch(err => {
+    handleError(response, 200, err);
   });
 }
 
 router.get('/foods', function(req, res, next) {
   requestPantry(res);
 });
+
+router.get('/foodSearch', function(req, res, next) {
+  searchFood(res, req.body.query);
+})
 
 router.get('/ration', function(req, res, next) {
   requestRation(res);
