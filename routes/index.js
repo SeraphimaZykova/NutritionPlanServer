@@ -180,14 +180,14 @@ function updateIdealNutrition(response, nutrition) {
   });
 }
 
-function updatePantry(responce, userId, updOid, field, val) {
+function updatePantry(response, userId, updOid, field, val) {
   mongo.updatePantry(userId, updOid, field, val)
   .then(result => {
-    responce.send(result);
+    response.send(result);
   })
   .catch(err => {
     console.log(err);
-    handleError(responce, 200, err);
+    handleError(response, 200, err);
   });
 }
 
@@ -198,7 +198,7 @@ async function updateRation(response, userId, foodId, portion) {
   })
   .catch(err => {
     console.error(err);
-    handleError(responce, 200, err);
+    handleError(response, 200, err);
   });
 }
 
@@ -209,24 +209,24 @@ async function addToRation(response, userId, rationObj) {
   })
   .catch(err => {
     console.error(err);
-    handleError(responce, 200, err);
+    handleError(response, 200, err);
   });
 }
 
-function updateFood(responce, updOid, field, val) {
+function updateFood(response, updOid, field, val) {
   mongo.updateFood(updOid, field, val)
   .then(result => {
     console.log(result);
-    responce.send(result);
+    response.send(result);
   })
   .catch(err => {
     console.log(err);
-    handleError(responce, 200, err);
+    handleError(response, 200, err);
   });
 }
 
 
-function addNewFood(responce, userId, data) {
+function addNewFood(response, userId, data) {
   let foodstuff = {
     name: data.foodInfo.name,
     glycemicIndex: data.foodInfo.glycemicIndex,
@@ -244,11 +244,13 @@ function addNewFood(responce, userId, data) {
     return mongo.pushToPantry(userId, pantryObj);
   })
   .then(res => {
-    responce.sendStatus(400);
+    response.sendStatus(400);
   })
   .catch(err => {
     console.error(err);
-    handleError(responce, 200, err);
+    handleError(response, 200, err);
+  });
+}
 
 function searchFood(response, arg) {
   console.log(`search ${arg}`);
