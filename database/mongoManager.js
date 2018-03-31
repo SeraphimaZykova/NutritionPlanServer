@@ -110,7 +110,6 @@ exports.searchFood = (search) => {
       
       foodCollection.find({ name: { $regex: regexp, $options: 'i' } }).toArray()
       .then(res => {
-        console.log(res);
         rslv(res);
       })
       .catch(err => {
