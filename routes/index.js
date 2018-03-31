@@ -268,7 +268,13 @@ router.get('/foods', function(req, res, next) {
 });
 
 router.get('/foodSearch', function(req, res, next) {
-  searchFood(res, req.body.query);
+  let queryKeys = Object.keys(req.query);
+  if(queryKeys.length > 0) {
+    searchFood(res, queryKeys[0]);
+  }
+  else {
+    handleError(res, 200, 'invalid query');
+  }
 })
 
 router.get('/ration', function(req, res, next) {
