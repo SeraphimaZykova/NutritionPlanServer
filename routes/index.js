@@ -152,7 +152,6 @@ async function requestRation(response) {
       response.send(clientData);
     }
   } catch (err) {
-    console.error(err);
     handleError(response, 200, err);
   }
 }
@@ -165,7 +164,6 @@ function requestIdealNutrition(response) {
   })
   .catch(err => {
     handleError(response, 200, err);
-    console.error(err);
   });
 }
 
@@ -176,7 +174,6 @@ function updateIdealNutrition(response, nutrition) {
   })
   .catch(err => {
     handleError(response, 200, err);
-    console.error(err);
   });
 }
 
@@ -186,7 +183,6 @@ function updatePantry(response, userId, updOid, field, val) {
     response.send(result);
   })
   .catch(err => {
-    console.log(err);
     handleError(response, 200, err);
   });
 }
@@ -197,7 +193,6 @@ async function updateRation(response, userId, foodId, portion) {
     response.sendStatus(400);
   })
   .catch(err => {
-    console.error(err);
     handleError(response, 200, err);
   });
 }
@@ -208,7 +203,6 @@ async function addToRation(response, userId, rationObj) {
     response.sendStatus(400);
   })
   .catch(err => {
-    console.error(err);
     handleError(response, 200, err);
   });
 }
@@ -220,7 +214,6 @@ function updateFood(response, updOid, field, val) {
     response.send(result);
   })
   .catch(err => {
-    console.log(err);
     handleError(response, 200, err);
   });
 }
@@ -247,7 +240,6 @@ function addNewFood(response, userId, data) {
     response.sendStatus(400);
   })
   .catch(err => {
-    console.error(err);
     handleError(response, 200, err);
   });
 }
