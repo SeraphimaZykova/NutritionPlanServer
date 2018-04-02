@@ -28,6 +28,15 @@ Content-Type: application/json
     }
 }
 
+####
+POST http://localhost:3001/removeFromPantry
+Content-Type: application/json
+
+{
+    "userId": "5a4aafeae02a03d8ebf35361",
+    "foodId": "5abe8c87408b36e42f043e52"
+}
+
 #####
 POST https://api.nutritionix.com/v1_1/search
 

@@ -195,6 +195,32 @@ exports.pushToPantry = (userId, pantryObj) => {
   });
 }
 
+exports.removeFromPantry = (userId, foodId) => {
+  return new Promise((rslv, rjct) => {
+    userDataCollection.findOneAndUpdate({
+      '_id': mongodb.ObjectId(userId)
+    }, {
+      $pull: {
+        pantry: {
+          foodId: mongodb.ObjectId(foodId)
+        }
+      }
+    }, function(err, res) {
+      if (err) {
+        rjct(err);
+        return;
+      }
+
+      if (res.lastErrorObject.updatedExisting == false) {
+        rjct('Object not found to pull from pantry');
+        return;
+      }
+
+      rslv('success');
+    })
+  });
+}
+
 /* Ration */
 exports.setRation = (userId, rationObj) => {
   return new Promise((rslv, rjct) => {

@@ -187,6 +187,16 @@ function updatePantry(response, userId, updOid, field, val) {
   });
 }
 
+function removeFromPantry(response, userId, foodId) {
+  mongo.removeFromPantry(userId, foodId)
+  .then(result => {
+    response.sendStatus(400);
+  })
+  .catch(err => {
+    handleError(response, 200, err);
+  });
+}
+
 async function updateRation(response, userId, foodId, portion) {
   mongo.updateRation(userId, foodId, portion)
   .then(result => {
@@ -285,6 +295,11 @@ router.post('/newFood', (req, res) => {
 router.post('/updatePantryInfo', (req, res) => {
   const data = req.body;
   updatePantry(res, data.userId, data.updOid, data.field, data.value);
+});
+
+router.post('/removeFromPantry', (req, res) => {
+  const data = req.body;
+  removeFromPantry(res, data.userId, data.foodId);
 });
 
 router.post('/updateFoodInfo', (req, res) => {
