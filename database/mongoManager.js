@@ -154,33 +154,6 @@ exports.updatePantry = (userId, updOid, field, val) => {
   return updateOne(userDataCollection, query, update);
 }
 
-exports.updateRation = (userId, foodIdStr, portion) => {
-  const query = {
-    "_id": mongodb.ObjectId(userId),
-    "ration.food": foodIdStr
-  }
-  , update = {
-    $set: {
-      'ration.$.portion': portion
-    }
-  };
-
-  return updateOne(userDataCollection, query, update);
-}
-
-exports.addToRation = (userId, rationObj) => {
-  const query = {
-    "_id": mongodb.ObjectId(userId),
-  }
-  , update = {
-    $push: {
-      'ration': rationObj
-    }
-  };
-
-  return updateOne(userDataCollection, query, update); 
-}
-
 exports.updateFood = (updOid, field, val) => {
   const foodId = new mongodb.ObjectId(updOid);
     
@@ -222,6 +195,61 @@ exports.pushToPantry = (userId, pantryObj) => {
   });
 }
 
+/* Ration */
+exports.setRation = (userId, rationObj) => {
+  return new Promise((rslv, rjct) => {
+    try {
+      userDataCollection.updateOne(
+        {
+          '_id': mongodb.ObjectId(userId)
+        }, {
+          $set: {
+            ration: rationObj
+          }
+        }, function(err, res) {
+          if (err) {
+            rjct(err);
+            return;
+          }
+  
+          rslv(res);
+        }
+      );
+    }
+    catch(err) {
+      rjct(err);
+    }
+  });
+}
+
+exports.updateRation = (userId, foodIdStr, portion) => {
+  const query = {
+    "_id": mongodb.ObjectId(userId),
+    "ration.food": foodIdStr
+  }
+  , update = {
+    $set: {
+      'ration.$.portion': portion
+    }
+  };
+
+  return updateOne(userDataCollection, query, update);
+}
+
+exports.addToRation = (userId, rationObj) => {
+  const query = {
+    "_id": mongodb.ObjectId(userId),
+  }
+  , update = {
+    $push: {
+      'ration': rationObj
+    }
+  };
+
+  return updateOne(userDataCollection, query, update); 
+}
+
+
 /* UserData */
 exports.getIdealNutrition = (userId) => {
   return new Promise((rslv, rjct) => {
@@ -257,32 +285,6 @@ exports.setIdealNutrition = (userId, newNutrition) => {
       rjct(err);
     }
   })
-}
-
-exports.setRation = (userId, rationObj) => {
-  return new Promise((rslv, rjct) => {
-    try {
-      userDataCollection.updateOne(
-        {
-          '_id': mongodb.ObjectId(userId)
-        }, {
-          $set: {
-            ration: rationObj
-          }
-        }, function(err, res) {
-          if (err) {
-            rjct(err);
-            return;
-          }
-  
-          rslv(res);
-        }
-      );
-    }
-    catch(err) {
-      rjct(err);
-    }
-  });
 }
 
 exports.getUserInfo = (id, projection) => {
