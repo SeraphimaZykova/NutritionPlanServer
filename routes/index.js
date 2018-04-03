@@ -102,7 +102,7 @@ async function requestPantry(response) {
     })
   } catch (err) {
     console.log(`error: ${err}`);
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   }
 }
   
@@ -152,7 +152,7 @@ async function requestRation(response) {
       response.send(clientData);
     }
   } catch (err) {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   }
 }
 
@@ -163,17 +163,17 @@ function requestIdealNutrition(response) {
     response.send(res.nutrition);
   })
   .catch(err => {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   });
 }
 
 function updateIdealNutrition(response, nutrition) {
   mongo.setIdealNutrition(HARDCODED_USER_ID, nutrition)
   .then(res => {
-    response.sendStatus(400);
+    response.sendStatus(200);
   })
   .catch(err => {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   });
 }
 
@@ -183,37 +183,37 @@ function updatePantry(response, userId, updOid, field, val) {
     response.send(result);
   })
   .catch(err => {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   });
 }
 
 function removeFromPantry(response, userId, foodId) {
   mongo.removeFromPantry(userId, foodId)
   .then(result => {
-    response.sendStatus(400);
+    response.sendStatus(200);
   })
   .catch(err => {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   });
 }
 
 async function updateRation(response, userId, foodId, portion) {
   mongo.updateRation(userId, foodId, portion)
   .then(result => {
-    response.sendStatus(400);
+    response.sendStatus(200);
   })
   .catch(err => {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   });
 }
 
 async function addToRation(response, userId, rationObj) {
   mongo.addToRation(userId, rationObj)
   .then(result => {
-    response.sendStatus(400);
+    response.sendStatus(200);
   })
   .catch(err => {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   });
 }
 
@@ -224,7 +224,7 @@ function updateFood(response, updOid, field, val) {
     response.send(result);
   })
   .catch(err => {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   });
 }
 
@@ -247,10 +247,10 @@ function addNewFood(response, userId, data) {
     return mongo.pushToPantry(userId, pantryObj);
   })
   .then(res => {
-    response.sendStatus(400);
+    response.sendStatus(200);
   })
   .catch(err => {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   });
 }
 
@@ -261,7 +261,7 @@ function searchFood(response, arg) {
     response.send(res);
   })
   .catch(err => {
-    handleError(response, 200, err);
+    handleError(response, 400, err);
   });
 }
 
@@ -275,7 +275,7 @@ router.get('/foodSearch', function(req, res, next) {
     searchFood(res, queryKeys[0]);
   }
   else {
-    handleError(res, 200, 'invalid query');
+    handleError(res, 400, 'invalid query');
   }
 })
 
