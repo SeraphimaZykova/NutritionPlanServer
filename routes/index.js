@@ -258,7 +258,13 @@ function searchFood(response, arg) {
   console.log(`search ${arg}`);
   mongo.searchFood(arg)
   .then(res => {
-    response.send(res);
+    let data = {
+      userInfo: {
+        userId: HARDCODED_USER_ID
+      },
+      foods: res
+    };
+    response.send(data);
   })
   .catch(err => {
     handleError(response, 400, err);
