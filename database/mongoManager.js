@@ -171,7 +171,9 @@ exports.updateFood = (updOid, field, val) => {
   return updateOne(foodCollection, query, update);
 }
 
-exports.pushToPantry = (userId, pantryObj) => {
+exports.addToPantry = (userId, pantryObj) => {
+  pantryObj.foodId = mongodb.ObjectId(pantryObj.foodId);
+  
   return new Promise((rslv, rjct) => {
     userDataCollection.findOneAndUpdate({
       "_id": mongodb.ObjectId(userId)
