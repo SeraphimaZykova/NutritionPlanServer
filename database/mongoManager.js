@@ -176,7 +176,10 @@ exports.addToPantry = (userId, pantryObj) => {
   
   return new Promise((rslv, rjct) => {
     userDataCollection.findOneAndUpdate({
-      "_id": mongodb.ObjectId(userId)
+      "_id": mongodb.ObjectId(userId),
+      "pantry.foodId": {
+        $nin: [ pantryObj.foodId ]
+      }
     }, {
       $push: {
         "pantry": pantryObj
@@ -188,7 +191,7 @@ exports.addToPantry = (userId, pantryObj) => {
       }
 
       if (res.lastErrorObject.updatedExisting == false) {
-        rjct('Object not found to push into pantry');
+        rjct('Object not found to push into pantry or pantry already contains this oid');
         return;
       }
 
