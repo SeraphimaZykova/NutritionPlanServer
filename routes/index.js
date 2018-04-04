@@ -13,10 +13,6 @@ const
   * 1. Login. 
   *   add credentials to User collection. authorization mechanism.
   * 
-  *  -- 2. добавленме нового продукта в бд.
-  * 
-  * 3. взаимодействие в nutritionix api
-  * 
   * 4. 
   *   -- сохранение сгенерированного рациона в бд. 
   *   -- при запросе с клиента сначала проверять бд, 
@@ -28,22 +24,13 @@ const
   *                  последнего изменения pantry
   *                  изменения ideal nutrition
   * 
-  * 5. -- изменение рациона с клиента 
-  *   изменение рациона с текущей/будущей датой.
-  * 
-  * 6. запрос списка сгенерированных дней (даты + сумма калорий за день)
-  * 
-  * 7. запрос на генерацию N дней вперед (начиная с сегодняшнего, даже если они есть)
-  * 
-  * -- 8. изменение настроек:
-  *     - ideal nutrition
   */
 
 let handleError = (routerRes, code, info) => {
   console.error('Error: ' + code + ' -> ' + info);
-  routerRes.json({
-    status: 'fail'
-    , message: 'Error: ' + code + ' -> ' + info
+  routerRes.send({
+    status: code, 
+    message: 'Error: ' + code + ' -> ' + info
   });
 }
 
