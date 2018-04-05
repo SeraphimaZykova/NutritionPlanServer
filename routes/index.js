@@ -61,17 +61,20 @@ let modifyPantryForRation = async (pantryObj) => {
 
 // отрефакторить в чистую функцию
 let modifyRationForClient = (ration, pantry, idealNutrition) => {
-  ration.forEach(element => {
+  let modified = ration.map(element => {
     let pObj = getPantryObj(pantry, element.food);
     
-    element.food = pObj.food;
-    element.available = pObj.available;
-    element.daily = pObj.daily;
+    let newEl = element;
+    newEl.food = pObj.food;
+    newEl.available = pObj.available;
+    newEl.daily = pObj.daily;
+
+    return newEl;
   });
 
   return {
     idealNutrition: idealNutrition,
-    ration: ration
+    ration: modified
   }
 }
 
