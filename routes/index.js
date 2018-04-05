@@ -260,21 +260,42 @@ function addNewFood(response, userId, data) {
   });
 }
 
-function searchFood(response, arg) {
-  console.log(`search ${arg}`);
-  mongo.searchFood(arg)
-  .then(res => {
+async function searchFood(response, arg) {
+  try {
+    console.log(`search ${arg}`);
+    let searchRes = await mongo.searchFood(arg);
+    let pantry = await mongo.getPantry(HARDCODED_USER_ID);
+
+    let searchResFix = searchRes.map(element => {
+
+      function isIdEqual(pElement) {
+        if (pElement.foodId === element.id) {
+          return true;
+        }
+        return false;
+      }
+
+      if (pantry.some(isIdEqual)) {
+        element.contains = true;
+      }
+      else {
+        element.contains = false;
+      }
+
+      return element;
+    });
+
     let data = {
       userInfo: {
         userId: HARDCODED_USER_ID
       },
-      foods: res
+      foods: searchResFix
     };
     response.send(data);
-  })
-  .catch(err => {
+  }
+  catch(err) {
     handleError(response, 400, err);
-  });
+  }
 }
 
 router.get('/foods', function(req, res, next) {
