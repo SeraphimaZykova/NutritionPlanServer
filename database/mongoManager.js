@@ -24,7 +24,7 @@ mongo.connect(process.env.DATABASE, function(err, connectedClient) {
   foodCollection = db.collection('Food');
   userDataCollection = db.collection('UserData');
 
-  console.log('success');
+  console.log('database connection success');
 });
 
 process.on('SIGINT', function() {
@@ -55,77 +55,6 @@ const updateOne = (collection, query, update) => {
 
 //TODO: check collecitions initialized
 //TODO: projection not working
-
-/* Food */
-exports.getFood = (id, projection) => {
-  return new Promise((rslv, rjct) => {
-    foodCollection.findOne(mongodb.ObjectId(id), projection, function(err, doc) {
-      if (err) {
-        rjct(err);
-        return;
-      }
-
-      rslv(doc);
-    })
-  });
-}
-
-exports.getRationFood = (id) => {
-  return new Promise((rslv, rjct) => {
-    foodCollection.findOne(mongodb.ObjectId(id), { nutrition: 1, glycemicIndex: 1 }, function(err, doc) {
-      if (err) {
-        rjct(err);
-        return;
-      }
-
-      doc._id = mongodb.ObjectId(doc._id).toString();
-      rslv(doc);
-    })
-  });
-}
-
-exports.insertFood = (foodstuff) => {
-  return new Promise((rslv, rjct) => {
-    foodCollection.insert(foodstuff, function(err, res) {
-      if (err) {
-        rjct(err.message);
-        return;
-      }
-
-      if (res.insertedCount != 1) {
-        rjct('not inserted');
-        return;
-      }
-
-      rslv(mongodb.ObjectId(res.insertedIds[0]));
-    })
-  });
-}
-
-exports.searchFood = (search) => {
-  return new Promise((rslv, rjct) => {
-    try {
-      let regexp = new RegExp(search);
-      console.log(`regexp: ${regexp}`);
-      
-      foodCollection.find({ name: { $regex: regexp, $options: 'i' } }).toArray()
-      .then(res => {
-        let fix = res.map(obj => {
-          let newObj = obj;
-          newObj.id = obj._id.toString();
-          return newObj;
-        });
-        rslv(fix);
-      })
-      .catch(err => {
-        rjct(err);
-      });
-    }
-    catch(err) {
-      rjct(err);
-    }
-  });
-}
 
 /* Pantry */
 exports.getPantry = (id) => {
@@ -341,3 +270,7 @@ exports.getUserInfo = (id, projection) => {
     });
   });
 }
+
+exports.food = () => {
+  return foodCollection;
+};

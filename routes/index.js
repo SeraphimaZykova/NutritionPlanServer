@@ -1,6 +1,7 @@
 const
     express = require('express')
   , mongo = require('./../database/mongoManager')
+  , foodCollection = require('./../database/food')
   , router = express.Router()
   , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
   , nutritionix = require('../api/nutritionix')
@@ -41,7 +42,7 @@ let srvErrHdl = err => {
 
 let modifyPantryObj = async (pantryObj, userId) => {
   try {
-    let food = await mongo.getFood(pantryObj.foodId);
+    let food = await foodCollection.get(pantryObj.foodId);
     return converter.clientPantry(food, pantryObj, userId);
   } catch (err) {
     return srvErrHdl(err);
@@ -50,7 +51,8 @@ let modifyPantryObj = async (pantryObj, userId) => {
 
 let modifyPantryForRation = async (pantryObj) => {
   try {
-    let food = await mongo.getRationFood(pantryObj.foodId);
+    let projection = { nutrition: 1, glycemicIndex: 1 };
+    let food = await foodCollection.get(pantryObj.foodId, projection);
     return converter.rationPantry(food, pantryObj);
   } catch (err) {
     return srvErrHdl(err);
@@ -242,7 +244,7 @@ function addNewFood(response, userId, data) {
     nutrition: data.foodInfo.nutrition
   };
   
-  mongo.insertFood(foodstuff)
+  foodCollection.insert(foodstuff)
   .then(insertedOId => {
     let pantryObj = {
       foodId: insertedOId,
@@ -263,7 +265,7 @@ function addNewFood(response, userId, data) {
 async function searchFood(response, arg) {
   try {
     console.log(`search ${arg}`);
-    let searchRes = await mongo.searchFood(arg);
+    let searchRes = await foodCollection.search(arg);
     let pantry = await mongo.getPantry(HARDCODED_USER_ID);
 
     let searchResFix = searchRes.map(element => {
