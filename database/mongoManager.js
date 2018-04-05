@@ -110,7 +110,12 @@ exports.searchFood = (search) => {
       
       foodCollection.find({ name: { $regex: regexp, $options: 'i' } }).toArray()
       .then(res => {
-        rslv(res);
+        let fix = res.map(obj => {
+          let newObj = obj;
+          newObj.id = obj._id.toString();
+          return newObj;
+        });
+        rslv(fix);
       })
       .catch(err => {
         rjct(err);
@@ -131,7 +136,13 @@ exports.getPantry = (id) => {
         return;
       }
 
-      rslv(doc.pantry);
+      let pantry = doc.pantry.map(function(obj) {
+        let newObj = obj;
+        newObj.foodId = obj.foodId.toString();
+        return newObj;
+      });
+
+      rslv(pantry);
     });
   });
 }
