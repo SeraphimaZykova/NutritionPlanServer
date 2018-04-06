@@ -58,63 +58,6 @@ const updateOne = (collection, query, update) => {
 //TODO: check collecitions initialized
 //TODO: projection not working
 
-/* Pantry */
-
-exports.addToPantry = (userId, pantryObj) => {
-  pantryObj.foodId = mongodb.ObjectId(pantryObj.foodId);
-  
-  return new Promise((rslv, rjct) => {
-    userDataCollection.findOneAndUpdate({
-      "_id": mongodb.ObjectId(userId),
-      "pantry.foodId": {
-        $nin: [ pantryObj.foodId ]
-      }
-    }, {
-      $push: {
-        "pantry": pantryObj
-      }
-    }, function(err, res) {
-      if (err) {
-        rjct(err);
-        return;
-      }
-
-      if (res.lastErrorObject.updatedExisting == false) {
-        rjct('Object not found to push into pantry or pantry already contains this oid');
-        return;
-      }
-
-      rslv('success');
-    })
-  });
-}
-
-exports.removeFromPantry = (userId, foodId) => {
-  return new Promise((rslv, rjct) => {
-    userDataCollection.findOneAndUpdate({
-      '_id': mongodb.ObjectId(userId)
-    }, {
-      $pull: {
-        pantry: {
-          foodId: mongodb.ObjectId(foodId)
-        }
-      }
-    }, function(err, res) {
-      if (err) {
-        rjct(err);
-        return;
-      }
-
-      if (res.lastErrorObject.updatedExisting == false) {
-        rjct('Object not found to pull from pantry');
-        return;
-      }
-
-      rslv('success');
-    })
-  });
-}
-
 /* Ration */
 exports.setRation = (userId, rationObj) => {
   return new Promise((rslv, rjct) => {

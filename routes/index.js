@@ -181,33 +181,32 @@ async function updatePantry(response, userId, updOid, field, val) {
   }
 }
 
-function addToPantry(response, userId, foodId) {
-  let pantryObj = {
-    foodId: foodId,
-    available: 0,
-    delta: 0,
-    daily: {
-      min: 0
-    }
-  };
+async function addToPantry(response, userId, foodId) {
+  try {
+    let pantryObj = {
+      foodId: foodId,
+      available: 0,
+      delta: 0,
+      daily: {
+        min: 0
+      }
+    };
 
-  mongo.addToPantry(userId, pantryObj)
-  .then(result => {
+    await pantry.insert(userId, pantryObj)
     response.sendStatus(200);
-  })
-  .catch(err => {
-    handleError(response, 400, err);
-  });
+  } catch (error) {
+    handleError(response, 400, error);
+  }
 }
 
-function removeFromPantry(response, userId, foodId) {
-  mongo.removeFromPantry(userId, foodId)
-  .then(result => {
+async function removeFromPantry(response, userId, foodId) {
+  try {
+    await pantry.remove(userId, foodId);
     response.sendStatus(200);
-  })
-  .catch(err => {
+  }
+  catch(err) {
     handleError(response, 400, err);
-  });
+  }
 }
 
 async function updateRation(response, userId, foodId, portion) {
