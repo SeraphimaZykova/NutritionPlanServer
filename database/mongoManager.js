@@ -10,6 +10,7 @@ let
   , db
   , foodCollection
   , userDataCollection
+  , pantryCollection
   ;
 
 mongo.connect(process.env.DATABASE, function(err, connectedClient) {
@@ -23,6 +24,7 @@ mongo.connect(process.env.DATABASE, function(err, connectedClient) {
   db = client.db('NutritionPlan');
   foodCollection = db.collection('Food');
   userDataCollection = db.collection('UserData');
+  pantryCollection = db.collection('Pantry');
 
   console.log('database connection success');
 });
