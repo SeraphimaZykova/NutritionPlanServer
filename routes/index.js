@@ -2,6 +2,7 @@ const
     express = require('express')
   , mongo = require('./../database/mongoManager')
   , foodCollection = require('./../database/food')
+  , userCollection = require('./../database/user')
   , router = express.Router()
   , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
   , nutritionix = require('../api/nutritionix')
@@ -110,8 +111,8 @@ let getPantryObj = (pantry, id) => {
 
 async function requestRation(response) {
   try {
-    let projection = { nutrition: 1, ration: 1 }
-      , res = await mongo.getUserInfo(HARDCODED_USER_ID, projection)
+    let projection = { nutrition: 1, ration: 1, pantry: 1, _upd: 1 }
+      , res = await userCollection.get(HARDCODED_USER_ID, projection)
       , idealNutrition = {
           calories: {
             total: res.nutrition.calories
