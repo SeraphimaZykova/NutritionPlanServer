@@ -70,7 +70,7 @@ let update = async (id, foodId, field, value) => {
     ;
 
   upd['ration.$.' + field] = value;
-  res = await collection.findOneAndUpdate(query, upd);
+  res = await collection.findOneAndUpdate(query, { $set: upd });
   if (res.lastErrorObject.updatedExisting == false) {
     throw new Error('Object not found');
   }
