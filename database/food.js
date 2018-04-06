@@ -15,6 +15,7 @@ let get = (id, projection) => {
         return;
       }
   
+      res['id'] = res['_id'].toString();
       rslv(res);
     };
 
@@ -50,9 +51,10 @@ let search = (query) => {
       .then(res => {
         let fix = res.map(obj => {
           let newObj = obj;
-          newObj.id = obj._id.toString();
+          newObj['id'] = obj['_id'].toString();
           return newObj;
         });
+
         rslv(fix);
       })
       .catch(err => {
