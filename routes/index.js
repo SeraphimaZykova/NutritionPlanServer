@@ -4,6 +4,7 @@ const
   , foodCollection = require('./../database/food')
   , userCollection = require('./../database/user')
   , pantry = require('./../database/pantry')
+  , ration = require('./../database/ration')
   , router = express.Router()
   , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
   , nutritionix = require('../api/nutritionix')
@@ -268,7 +269,12 @@ router.get('/foodSearch', function(req, res, next) {
 })
 
 router.get('/ration', function(req, res, next) {
-  requestRation(res);
+  try {
+    let result = await ration.get(HARDCODED_USER_ID);
+    res.send(result);
+  } catch (err) {
+    handleError(res, 400, err);
+  }
 });
 
 router.get('/idealNutrition', function(req, res, next) {
