@@ -7,7 +7,7 @@ const
   , router = express.Router()
   , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
   , nutritionix = require('../api/nutritionix')
-  , ration = require('ration_calculator')
+  , ration_calc = require('ration_calculator')
   , converter = require('./documentConverter')
   ;
 
@@ -55,8 +55,8 @@ let modifyPantryForRation = async (pantryObj) => {
 }
 
 // отрефакторить в чистую функцию
-let modifyRationForClient = (ration, pantry, idealNutrition) => {
-  let modified = ration.map(element => {
+let modifyRationForClient = (rationArr, pantry, idealNutrition) => {
+  let modified = rationArr.map(element => {
     let pObj = getPantryObj(pantry, element.food);
     
     let newEl = element;
@@ -107,7 +107,7 @@ async function requestRation(response) {
       response.send(clientData);
       return;
     } else {
-      let rationResult = await ration.calculateRation(idealNutrition, modifiedPantry);
+      let rationResult = await ration_calc.calculateRation(idealNutrition, modifiedPantry);
 
       mongo.setRation(HARDCODED_USER_ID, rationResult.ration)
       .catch(err => {
@@ -307,11 +307,10 @@ router.post('/updateFoodInfo', (req, res) => {
   
   foodCollection.update(data.updOid, data.field, data.val)
   .then(result => {
-    console.log(result);
-    response.send(result);
+    res.send(result);
   })
   .catch(err => {
-    handleError(response, 400, err);
+    handleError(res, 400, err);
   });
 });
 
@@ -342,18 +341,6 @@ router.post('/updateRation', (req, res) => {
 router.post('/addToRation', (req, res) => {
   const data = req.body;
   addToRation(res, HARDCODED_USER_ID, data);
-});
-
-router.get('/test', (req, res) => {
-  nutritionix.requestData("apple").then(
-    data => {
-      console.log(`data!!!  ${data}`);
-      res.send(data);
-    }, err => {
-      console.log(`error!!!  ${err}`);
-      res.send(err);
-    }
-  )
 });
 
 module.exports = router;
