@@ -32,7 +32,7 @@ let update = (id, field, value) => {
     , upd = {}
     ;
 
-  upd[field] = val;
+  upd[field] = value;
   return new Promise((rslv, rjct) => {
     let collection = mongo.user();
     let callback = (err, res) => {
@@ -49,3 +49,4 @@ let update = (id, field, value) => {
 
 exports.get = get;
 exports.insert = insert;
+exports.update = update;
