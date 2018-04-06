@@ -3,24 +3,14 @@ const
   , mongo = require('./mongoManager')
   ;
  
-let get = (id, projection) => {
+let get = async (id, projection) => {
   let query = mongodb.ObjectId(id)
-    , opts = { projection: projection };
-  
-  return new Promise((rslv, rjct) => {
-    let collection = mongo.food();
-    let callback = (err, res) => {
-      if (err) {
-        rjct(err);
-        return;
-      }
-  
-      res['id'] = res['_id'].toString();
-      rslv(res);
-    };
+    , opts = { projection: projection }
+    , collection = mongo.food()
+    , res = await collection.findOne(query, opts)
+    ;
 
-    collection.findOne(query, opts, callback);
-  });
+  return res;
 }
 
 let insert = (obj) => {
