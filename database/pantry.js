@@ -2,6 +2,7 @@ const
     mongodb = require('mongodb')
   , mongo = require('./mongoManager')
   , user = require('./user')
+  , food = require('./food')
   ;
  
 async function get(id) {
@@ -11,9 +12,14 @@ async function get(id) {
     , doc = await collection.findOne(pantryId)
     ;
 
-  if (!doc) throw new Error('pantry not found');
+  if (!doc || !doc.foodstuff) throw new Error('pantry not found');
 
-  return doc['foodstuff'];
+  let arr = await Promise.all(doc.foodstuff.map(async (element) => {
+    element['food'] = await food.get(element.foodId);
+    return element;
+  }));
+
+  return arr;
 }
 
 async function insert(id, obj) {

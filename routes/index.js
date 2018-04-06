@@ -42,19 +42,12 @@ let srvErrHdl = err => {
   return null;
 }
 
-let modifyPantryObj = async (pantryObj, userId) => {
-  try {
-    let food = await foodCollection.get(pantryObj.foodId);
-    return converter.clientPantry(food, pantryObj, userId);
-  } catch (err) {
-    return srvErrHdl(err);
-  }
-}
-
 let modifyPantryForRation = async (pantryObj) => {
   try {
     let projection = { nutrition: 1, glycemicIndex: 1 };
     let food = await foodCollection.get(pantryObj.foodId, projection);
+    console.log('FOOD');
+    console.log(food);
     return converter.rationPantry(food, pantryObj);
   } catch (err) {
     return srvErrHdl(err);
@@ -80,26 +73,6 @@ let modifyRationForClient = (ration, pantry, idealNutrition) => {
   }
 }
 
-let removeUndef = (array) => {
-  return array.filter(e => e !== undefined);
-}
-
-async function requestPantry(response) {
-  try {
-    let pantryArray = await pantry.get(HARDCODED_USER_ID);
-    Promise.all(pantryArray.map((fObj) => {
-      return modifyPantryObj(fObj, HARDCODED_USER_ID);
-    }))
-    .then(rslv => {
-      rslv = removeUndef(rslv);
-      response.send(rslv);
-    })
-  } catch (err) {
-    console.log(`error: ${err}`);
-    handleError(response, 400, err);
-  }
-}
-  
 let updPantry = (pantry) => {
   return Promise.all(pantry.map((pantryObj) => {
     return modifyPantryForRation(pantryObj, HARDCODED_USER_ID);
@@ -271,8 +244,17 @@ async function searchFood(response, arg) {
   }
 }
 
-router.get('/foods', function(req, res, next) {
-  requestPantry(res);
+router.get('/foods', async function(req, res, next) {
+  try {
+    let clientData = {
+      userId: HARDCODED_USER_ID,
+      pantry: await pantry.get(HARDCODED_USER_ID)
+    };
+
+    res.send(clientData);
+  } catch (err) {
+    handleError(res, 400, err);
+  }
 });
 
 router.get('/foodSearch', function(req, res, next) {
