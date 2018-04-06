@@ -27,5 +27,25 @@ let insert = (obj) => {
   });
 }
 
+let update = (id, field, value) => {
+  let query = { '_id': mongodb.ObjectId(id) }
+    , upd = {}
+    ;
+
+  upd[field] = val;
+  return new Promise((rslv, rjct) => {
+    let collection = mongo.user();
+    let callback = (err, res) => {
+      if (err) {
+        rjct(err);
+        return;
+      }
+      rslv(res);
+    };
+
+    collection.updateOne(query, { $set: upd }, callback);
+  });
+}
+
 exports.get = get;
 exports.insert = insert;

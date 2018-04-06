@@ -112,57 +112,6 @@ exports.addToRation = (userId, rationObj) => {
   return updateOne(userDataCollection, query, update); 
 }
 
-
-/* UserData */
-exports.getIdealNutrition = (userId) => {
-  return new Promise((rslv, rjct) => {
-    userDataCollection.findOne(mongodb.ObjectId(userId), { nutrition: 1 }, function(err, doc) {
-      if (err) {
-        rjct(err);
-        return;
-      }
-
-      rslv(doc.nutrition);
-    });
-  });
-}
-
-exports.setIdealNutrition = (userId, newNutrition) => {
-  return new Promise((rslv, rjct) => {
-    try {
-      userDataCollection.updateOne({'_id': mongodb.ObjectId(userId)}, {
-          $set: {
-            nutrition: newNutrition
-          }
-        }, function(err, res) {
-          if (err) {
-            rjct(err);
-            return;
-          }
-
-          rslv(res);
-        }
-      );
-    }
-    catch(err) {
-      rjct(err);
-    }
-  })
-}
-
-exports.getUserInfo = (id, projection) => {
-  return new Promise((rslv, rjct) => {
-    userDataCollection.findOne(mongodb.ObjectId(id), projection, function(err, doc) {
-      if (err) {
-        rjct(err);
-        return;
-      }
-
-      rslv(doc);
-    });
-  });
-}
-
 exports.food = () => {
   return foodCollection;
 };

@@ -150,27 +150,6 @@ async function requestRation(response) {
   }
 }
 
-function requestIdealNutrition(response) {
-  let projection = { nutrition: 1 };
-  mongo.getUserInfo(HARDCODED_USER_ID, projection)
-  .then(res => {
-    response.send(res.nutrition);
-  })
-  .catch(err => {
-    handleError(response, 400, err);
-  });
-}
-
-function updateIdealNutrition(response, nutrition) {
-  mongo.setIdealNutrition(HARDCODED_USER_ID, nutrition)
-  .then(res => {
-    response.sendStatus(200);
-  })
-  .catch(err => {
-    handleError(response, 400, err);
-  });
-}
-
 async function updatePantry(response, userId, updOid, field, val) {
   try {
     await pantry.update(userId, updOid, field, val);
@@ -311,7 +290,14 @@ router.get('/ration', function(req, res, next) {
 });
 
 router.get('/idealNutrition', function(req, res, next) {
-  requestIdealNutrition(res);
+  let projection = { nutrition: 1 };
+  userCollection.get(HARDCODED_USER_ID, projection)
+  .then(result => {
+    res.send(result.nutrition);
+  })
+  .catch(err => {
+    handleError(res, 400, err);
+  });
 });
 
 router.post('/newFood', (req, res) => {
@@ -349,7 +335,21 @@ router.post('/updateFoodInfo', (req, res) => {
 
 router.post('/updateIdealNutrition', (req, res) => {
   const data = req.body;
-  updateIdealNutrition(res, data);
+  if (!data.calories 
+      || !data.proteins 
+      || !data.carbs 
+      || !data.fats) {
+    handleError(res, 400, 'invalid nutrition object');
+    return;
+  }
+
+  userCollection.update(HARDCODED_USER_ID, 'nutrition', data)
+  .then(result => {
+    res.sendStatus(200);
+  })
+  .catch(err => {
+    handleError(res, 400, err);
+  });
 });
 
 router.post('/updateRation', (req, res) => {
