@@ -141,7 +141,7 @@ router.get('/foodSearch', function(req, res, next) {
   }
 })
 
-router.get('/ration', function(req, res, next) {
+router.get('/ration', async function(req, res, next) {
   try {
     let result = await ration.get(HARDCODED_USER_ID);
     res.send(result);
@@ -177,7 +177,7 @@ router.post('/updatePantryInfo', async (req, res) => {
   }
 });
 
-router.post('/addToPantry', (req, res) => {
+router.post('/addToPantry', async (req, res) => {
   const data = req.body;
   try {
     let pantryObj = {
@@ -196,7 +196,7 @@ router.post('/addToPantry', (req, res) => {
   }
 });
 
-router.post('/removeFromPantry', (req, res) => {
+router.post('/removeFromPantry', async (req, res) => {
   const data = req.body;
   try {
     await pantry.remove(userId, foodId);

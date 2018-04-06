@@ -3,6 +3,7 @@ const
   , mongo = require('./mongoManager')
   , user = require('./user')
   , pantry = require('./pantry')
+  , rationCalculator = require('ration_calculator')
   ;
  
 let get = async (id) => {
@@ -25,8 +26,9 @@ let get = async (id) => {
     ;
 
   if (!userData.ration) {
-    userData.ration = await rationCalculator.calculateRation(idealNutrition, userPantry);
-    set(id, rationResult.ration);
+    let rationRes = await rationCalculator.calculateRation(idealNutrition, userPantry);
+    userData.ration = rationRes.ration;
+    set(id, rationRes.ration);
   }
 
   let arr = userData.ration.map((element) => {
