@@ -59,32 +59,6 @@ const updateOne = (collection, query, update) => {
 //TODO: projection not working
 
 /* Ration */
-exports.setRation = (userId, rationObj) => {
-  return new Promise((rslv, rjct) => {
-    try {
-      userDataCollection.updateOne(
-        {
-          '_id': mongodb.ObjectId(userId)
-        }, {
-          $set: {
-            ration: rationObj
-          }
-        }, function(err, res) {
-          if (err) {
-            rjct(err);
-            return;
-          }
-  
-          rslv(res);
-        }
-      );
-    }
-    catch(err) {
-      rjct(err);
-    }
-  });
-}
-
 exports.updateRation = (userId, foodIdStr, portion) => {
   const query = {
     "_id": mongodb.ObjectId(userId),

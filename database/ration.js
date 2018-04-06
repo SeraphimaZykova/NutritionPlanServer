@@ -44,8 +44,8 @@ let get = async (id) => {
   return arr;
 }
 
-let set = async () => {
-
+let set = async (id, ration) => {
+  user.update(id, 'ration', ration);
 }
 
 let add = async () => {
