@@ -2,19 +2,23 @@ const
     mongodb = require('mongodb')
   , mongo = require('./mongoManager')
   ;
-
+ 
 let get = (id, projection) => {
+  let query = mongodb.ObjectId(id)
+    , opts = { projection: projection };
+  
   return new Promise((rslv, rjct) => {
     let collection = mongo.food();
-    collection.findOne(mongodb.ObjectId(id), projection, function(err, doc) {
+    let callback = (err, res) => {
       if (err) {
         rjct(err);
         return;
       }
+  
+      rslv(res);
+    };
 
-      doc.id = doc._id.toString();
-      rslv(doc);
-    })
+    collection.findOne(query, opts, callback);
   });
 }
 

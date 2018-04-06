@@ -4,12 +4,7 @@ GET http://localhost:3001/ration
 GET http://localhost:3001/foods
 
 ####
-GET http://localhost:3001/foodSearch
-Content-Type: application/json
-
-{
-    "query": "grape" 
-}
+GET http://localhost:3001/foodSearch?а
 
 ####
 POST http://localhost:3001/updatePantryInfo
