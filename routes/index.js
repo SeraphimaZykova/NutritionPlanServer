@@ -230,18 +230,6 @@ async function addToRation(response, userId, rationObj) {
   });
 }
 
-function updateFood(response, updOid, field, val) {
-  mongo.updateFood(updOid, field, val)
-  .then(result => {
-    console.log(result);
-    response.send(result);
-  })
-  .catch(err => {
-    handleError(response, 400, err);
-  });
-}
-
-
 function addNewFood(response, userId, data) {
   let foodstuff = {
     name: data.foodInfo.name,
@@ -349,7 +337,15 @@ router.post('/removeFromPantry', (req, res) => {
 
 router.post('/updateFoodInfo', (req, res) => {
   const data = req.body;
-  updateFood(res, data.updOid, data.field, data.value);
+  
+  foodCollection.update(data.updOid, data.field, data.val)
+  .then(result => {
+    console.log(result);
+    response.send(result);
+  })
+  .catch(err => {
+    handleError(response, 400, err);
+  });
 });
 
 router.post('/updateIdealNutrition', (req, res) => {

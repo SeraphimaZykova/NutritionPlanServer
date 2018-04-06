@@ -59,22 +59,6 @@ const updateOne = (collection, query, update) => {
 //TODO: projection not working
 
 /* Pantry */
-exports.updateFood = (updOid, field, val) => {
-  const foodId = new mongodb.ObjectId(updOid);
-    
-  let updObj = {};
-  updObj[field] = val;
-  
-  const query = {
-    "_id": mongodb.ObjectId(foodId)
-  };
-
-  const update = {
-    $set: updObj
-  };
-
-  return updateOne(foodCollection, query, update);
-}
 
 exports.addToPantry = (userId, pantryObj) => {
   pantryObj.foodId = mongodb.ObjectId(pantryObj.foodId);

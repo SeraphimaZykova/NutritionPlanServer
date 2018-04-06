@@ -42,6 +42,36 @@ let insert = (obj) => {
   });
 }
 
+let update = (id, field, val) => {
+  let updObj = {};
+  updObj[field] = val;
+  
+  const query = {
+    "_id": mongodb.ObjectId(id)
+  };
+
+  const update = {
+    $set: updObj
+  };
+
+  return new Promise((rslv, rjct) => {
+    let collection = mongo.food();
+    collection.findOneAndUpdate(query, update, function(err, res) {
+      if (err) {
+        rjct(err);
+        return;
+      }
+
+      if (res.lastErrorObject.updatedExisting == false) {
+        rjct('Object not found');
+        return;
+      }
+
+      rslv('success');
+    });
+  });
+}
+
 let search = (query) => {
   return new Promise((rslv, rjct) => {
     try {
@@ -69,4 +99,5 @@ let search = (query) => {
 
 exports.get = get;
 exports.insert = insert;
+exports.update = update;
 exports.search = search;
