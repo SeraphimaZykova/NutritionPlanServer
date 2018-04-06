@@ -3,6 +3,7 @@ const
   , mongo = require('./../database/mongoManager')
   , foodCollection = require('./../database/food')
   , userCollection = require('./../database/user')
+  , pantry = require('./../database/pantry')
   , router = express.Router()
   , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
   , nutritionix = require('../api/nutritionix')
@@ -85,8 +86,8 @@ let removeUndef = (array) => {
 
 async function requestPantry(response) {
   try {
-    let pantry = await mongo.getPantry(HARDCODED_USER_ID);
-    Promise.all(pantry.map((fObj) => {
+    let pantryArray = await pantry.get(HARDCODED_USER_ID);
+    Promise.all(pantryArray.map((fObj) => {
       return modifyPantryObj(fObj, HARDCODED_USER_ID);
     }))
     .then(rslv => {
@@ -170,14 +171,14 @@ function updateIdealNutrition(response, nutrition) {
   });
 }
 
-function updatePantry(response, userId, updOid, field, val) {
-  mongo.updatePantry(userId, updOid, field, val)
-  .then(result => {
-    response.send(result);
-  })
-  .catch(err => {
+async function updatePantry(response, userId, updOid, field, val) {
+  try {
+    await pantry.update(userId, updOid, field, val);
+    response.sendStatus(200);
+  }
+  catch(err) {
     handleError(response, 400, err);
-  });
+  }
 }
 
 function addToPantry(response, userId, foodId) {
@@ -270,7 +271,7 @@ async function searchFood(response, arg) {
   try {
     console.log(`search ${arg}`);
     let searchRes = await foodCollection.search(arg);
-    let pantry = await mongo.getPantry(HARDCODED_USER_ID);
+    let pantryObj = await pantry.get(HARDCODED_USER_ID);
 
     let searchResFix = searchRes.map(element => {
 
@@ -281,7 +282,7 @@ async function searchFood(response, arg) {
         return false;
       }
 
-      if (pantry.some(isIdEqual)) {
+      if (pantryObj.some(isIdEqual)) {
         element.contains = true;
       }
       else {

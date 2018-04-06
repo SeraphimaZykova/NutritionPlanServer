@@ -59,43 +59,6 @@ const updateOne = (collection, query, update) => {
 //TODO: projection not working
 
 /* Pantry */
-exports.getPantry = (id) => {
-  return new Promise((rslv, rjct) => {
-    userDataCollection.findOne(mongodb.ObjectId(id), function(err, doc) {
-      if (err) {
-        rjct(err);
-        return;
-      }
-
-      let pantry = doc.pantry.map(function(obj) {
-        let newObj = obj;
-        newObj.foodId = obj.foodId.toString();
-        return newObj;
-      });
-
-      rslv(pantry);
-    });
-  });
-}
-
-exports.updatePantry = (userId, updOid, field, val) => {
-  const foodId = new mongodb.ObjectId(updOid);
-    
-  let updObj = {};
-  updObj['pantry.$.' + field] = val;
-  
-  const query = {
-    "_id": mongodb.ObjectId(userId),
-    "pantry.foodId": foodId
-  };
-
-  const update = {
-    $set: updObj
-  };
-
-  return updateOne(userDataCollection, query, update);
-}
-
 exports.updateFood = (updOid, field, val) => {
   const foodId = new mongodb.ObjectId(updOid);
     
@@ -276,3 +239,11 @@ exports.getUserInfo = (id, projection) => {
 exports.food = () => {
   return foodCollection;
 };
+
+exports.user = () => {
+  return userDataCollection;
+}
+
+exports.pantry = () => {
+  return pantryCollection;
+}
