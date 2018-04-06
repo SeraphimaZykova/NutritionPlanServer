@@ -35,57 +35,6 @@ process.on('SIGINT', function() {
   });
 });
 
-const updateOne = (collection, query, update) => {
-  return new Promise((rslv, rjct) => {
-    collection.findOneAndUpdate(query, update, function(err, res) {
-      if (err) {
-        rjct(err);
-        return;
-      }
-
-      if (res.lastErrorObject.updatedExisting == false) {
-        rjct('Object not found');
-        return;
-      }
-
-      rslv('success');
-    });
-  }).catch(err => {
-    console.log(`update collection ${collection} error: ${err}`);
-  });
-}
-
-//TODO: check collecitions initialized
-//TODO: projection not working
-
-/* Ration */
-exports.updateRation = (userId, foodIdStr, portion) => {
-  const query = {
-    "_id": mongodb.ObjectId(userId),
-    "ration.food": foodIdStr
-  }
-  , update = {
-    $set: {
-      'ration.$.portion': portion
-    }
-  };
-
-  return updateOne(userDataCollection, query, update);
-}
-
-exports.addToRation = (userId, rationObj) => {
-  const query = {
-    "_id": mongodb.ObjectId(userId),
-  }
-  , update = {
-    $push: {
-      'ration': rationObj
-    }
-  };
-
-  return updateOne(userDataCollection, query, update); 
-}
-
 exports.food = () => {
   return foodCollection;
 };

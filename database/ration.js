@@ -48,12 +48,32 @@ let set = async (id, ration) => {
   user.update(id, 'ration', ration);
 }
 
-let add = async () => {
+let add = async (id, obj) => {
+  let collection = mongo.user()
+    , query = { '_id': mongodb.ObjectId(id) }
+    , upd = { $push: { 'ration': obj } }
+    ;
 
+  res = await collection.findOneAndUpdate(query, upd);
+  if (res.lastErrorObject.updatedExisting == false) {
+    throw new Error('Object not found');
+  }
 }
 
-let update = async () => {
+let update = async (id, foodId, field, value) => {
+  let collection = mongo.user()
+    , query = { 
+        '_id': mongodb.ObjectId(id),
+        'ration.food': foodId
+      }
+    , upd = {}
+    ;
 
+  upd['ration.$.' + field] = value;
+  res = await collection.findOneAndUpdate(query, upd);
+  if (res.lastErrorObject.updatedExisting == false) {
+    throw new Error('Object not found');
+  }
 }
 
 exports.get = get;

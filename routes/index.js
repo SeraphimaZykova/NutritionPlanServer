@@ -35,26 +35,6 @@ let handleError = (routerRes, code, info) => {
   });
 }
 
-async function updateRation(response, userId, foodId, portion) {
-  mongo.updateRation(userId, foodId, portion)
-  .then(result => {
-    response.sendStatus(200);
-  })
-  .catch(err => {
-    handleError(response, 400, err);
-  });
-}
-
-async function addToRation(response, userId, rationObj) {
-  mongo.addToRation(userId, rationObj)
-  .then(result => {
-    response.sendStatus(200);
-  })
-  .catch(err => {
-    handleError(response, 400, err);
-  });
-}
-
 function addNewFood(response, userId, data) {
   let foodstuff = {
     name: data.foodInfo.name,
@@ -238,14 +218,27 @@ router.post('/updateIdealNutrition', (req, res) => {
   });
 });
 
-router.post('/updateRation', (req, res) => {
+router.post('/updateRation', async (req, res) => {
   const data = req.body;
-  updateRation(res, HARDCODED_USER_ID, data.id, data.portion);
+  try {
+    await ration.update(HARDCODED_USER_ID, data.id
+      , 'portion', data.portion);
+    res.sendStatus(200);
+  }
+  catch(err) {
+    handleError(res, 400, err);
+  }
 });
 
-router.post('/addToRation', (req, res) => {
+router.post('/addToRation', async (req, res) => {
   const data = req.body;
-  addToRation(res, HARDCODED_USER_ID, data);
+  try {
+    await ration.add(HARDCODED_USER_ID, data);
+    res.sendStatus(200);
+  }
+  catch(err) {
+    handleError(res, 400, err);
+  }
 });
 
 module.exports = router;
