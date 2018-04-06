@@ -7,9 +7,6 @@ const
   , ration = require('./../database/ration')
   , router = express.Router()
   , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
-  , nutritionix = require('../api/nutritionix')
-  , ration_calc = require('ration_calculator')
-  , converter = require('./documentConverter')
   ;
 
   /* Server Tasks */
@@ -36,130 +33,6 @@ let handleError = (routerRes, code, info) => {
     status: code, 
     message: 'Error: ' + code + ' -> ' + info
   });
-}
-
-let srvErrHdl = err => {
-  console.error(err);
-  return null;
-}
-
-let modifyPantryForRation = async (pantryObj) => {
-  try {
-    let projection = { nutrition: 1, glycemicIndex: 1 };
-    let food = await foodCollection.get(pantryObj.foodId, projection);
-    console.log('FOOD');
-    console.log(food);
-    return converter.rationPantry(food, pantryObj);
-  } catch (err) {
-    return srvErrHdl(err);
-  }
-}
-
-// отрефакторить в чистую функцию
-let modifyRationForClient = (rationArr, pantry, idealNutrition) => {
-  let modified = rationArr.map(element => {
-    let pObj = getPantryObj(pantry, element.food);
-    
-    let newEl = element;
-    newEl.food = pObj.food;
-    newEl.available = pObj.available;
-    newEl.daily = pObj.daily;
-
-    return newEl;
-  });
-
-  return {
-    idealNutrition: idealNutrition,
-    ration: modified
-  }
-}
-
-let updPantry = (pantry) => {
-  return Promise.all(pantry.map((pantryObj) => {
-    return modifyPantryForRation(pantryObj, HARDCODED_USER_ID);
-  }));
-}
-
-let getPantryObj = (pantry, id) => {
-  return pantry.find(e => e.food['_id'] === id);
-}
-
-async function requestRation(response) {
-  try {
-    let projection = { nutrition: 1, ration: 1, pantry: 1, _upd: 1 }
-      , res = await userCollection.get(HARDCODED_USER_ID, projection)
-      , idealNutrition = {
-          calories: {
-            total: res.nutrition.calories
-          },
-          proteins: res.nutrition.calories * res.nutrition.proteins,
-          carbs: {
-            total: res.nutrition.calories * res.nutrition.carbs
-          },
-          fats: {
-            total: res.nutrition.calories * res.nutrition.fats
-          }
-        }
-      , modifiedPantry = await updPantry(res.pantry);
-      ; 
-    
-    if (res.ration) {
-      let clientData = modifyRationForClient(res.ration, modifiedPantry, idealNutrition);
-      response.send(clientData);
-      return;
-    } else {
-      let rationResult = await ration_calc.calculateRation(idealNutrition, modifiedPantry);
-
-      mongo.setRation(HARDCODED_USER_ID, rationResult.ration)
-      .catch(err => {
-        console.log('Failed to update ration');
-        console.error(err);
-      });
-
-      let clientData = modifyRationForClient(rationResult.ration, modifiedPantry, idealNutrition);
-      response.send(clientData);
-    }
-  } catch (err) {
-    handleError(response, 400, err);
-  }
-}
-
-async function updatePantry(response, userId, updOid, field, val) {
-  try {
-    await pantry.update(userId, updOid, field, val);
-    response.sendStatus(200);
-  }
-  catch(err) {
-    handleError(response, 400, err);
-  }
-}
-
-async function addToPantry(response, userId, foodId) {
-  try {
-    let pantryObj = {
-      foodId: foodId,
-      available: 0,
-      delta: 0,
-      daily: {
-        min: 0
-      }
-    };
-
-    await pantry.insert(userId, pantryObj)
-    response.sendStatus(200);
-  } catch (error) {
-    handleError(response, 400, error);
-  }
-}
-
-async function removeFromPantry(response, userId, foodId) {
-  try {
-    await pantry.remove(userId, foodId);
-    response.sendStatus(200);
-  }
-  catch(err) {
-    handleError(response, 400, err);
-  }
 }
 
 async function updateRation(response, userId, foodId, portion) {
@@ -293,19 +166,45 @@ router.post('/newFood', (req, res) => {
   addNewFood(res, HARDCODED_USER_ID, REC_DATA);
 });
 
-router.post('/updatePantryInfo', (req, res) => {
+router.post('/updatePantryInfo', async (req, res) => {
   const data = req.body;
-  updatePantry(res, data.userId, data.updOid, data.field, data.value);
+  try {
+    await pantry.update(data.userId, data.updOid, data.field, data.value);
+    res.sendStatus(200);
+  }
+  catch(err) {
+    handleError(res, 400, err);
+  }
 });
 
 router.post('/addToPantry', (req, res) => {
   const data = req.body;
-  addToPantry(res, data.userId, data.foodId);
+  try {
+    let pantryObj = {
+      foodId: data.foodId,
+      available: 0,
+      delta: 0,
+      daily: {
+        min: 0
+      }
+    };
+
+    await pantry.insert(data.userId, pantryObj)
+    res.sendStatus(200);
+  } catch (error) {
+    handleError(res, 400, error);
+  }
 });
 
 router.post('/removeFromPantry', (req, res) => {
   const data = req.body;
-  removeFromPantry(res, data.userId, data.foodId);
+  try {
+    await pantry.remove(userId, foodId);
+    res.sendStatus(200);
+  }
+  catch(err) {
+    handleError(res, 400, err);
+  }
 });
 
 router.post('/updateFoodInfo', (req, res) => {

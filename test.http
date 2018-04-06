@@ -11,16 +11,10 @@ POST http://localhost:3001/updatePantryInfo
 Content-Type: application/json
 
 {
-    "userId": 12,
-    "pantryInfo": {
-        "foodId": "5a6ccab519b70038ec83b891",
-        "delta": 80,
-        "available": 140,
-        "daily": {
-            "min": 140,
-            "max": 40
-        }
-    }
+    "userId": "5a4aafeae02a03d8ebf35361",
+    "updOid": "5a6e114c1940f73e6d61818f",
+    "field": "delta",
+    "value": 10
 }
 
 ####
@@ -29,7 +23,7 @@ Content-Type: application/json
 
 {
     "userId": "5a4aafeae02a03d8ebf35361",
-    "foodId": "5abe8c87408b36e42f043e52"
+    "foodId": "5a6ccab519b70038ec83b891"
 }
 
 ####
