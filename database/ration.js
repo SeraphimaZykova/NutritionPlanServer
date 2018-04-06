@@ -41,7 +41,12 @@ let get = async (id) => {
     return element;
   });
 
-  return arr;
+  let clientData = {
+    idealNutrition: idealNutrition,
+    ration: arr
+  };
+
+  return clientData;
 }
 
 let set = async (id, ration) => {
