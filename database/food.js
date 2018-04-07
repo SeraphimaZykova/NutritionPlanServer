@@ -3,7 +3,7 @@ const
   , mongo = require('./mongoManager')
   ;
  
-let get = async (id, projection) => {
+async function get(id, projection) {
   let query = mongodb.ObjectId(id)
     , opts = { projection: projection }
     , collection = mongo.food()
@@ -13,26 +13,19 @@ let get = async (id, projection) => {
   return res;
 }
 
-let insert = (obj) => {
-  return new Promise((rslv, rjct) => {
-    let collection = mongo.food();
-    collection.insert(obj, function(err, res) {
-      if (err) {
-        rjct(err);
-        return;
-      }
+async function insert(obj) {
+  let collection = mongo.food()
+    , res = await collection.insert(obj);
+    ;
 
-      if (res.insertedCount != 1) {
-        rjct('not inserted');
-        return;
-      }
-
-      rslv(mongodb.ObjectId(res.insertedIds[0]));
-    })
-  });
+  if (res.insertedCount != 1) {
+    throw new Error('Insertion error');
+  }
+  
+  return mongodb.ObjectId(res.insertedIds[0]);
 }
 
-let update = (id, field, val) => {
+function update (id, field, val) {
   let updObj = {};
   updObj[field] = val;
   
@@ -62,7 +55,7 @@ let update = (id, field, val) => {
   });
 }
 
-let search = (query) => {
+function search (query) {
   return new Promise((rslv, rjct) => {
     try {
       let regexp = new RegExp(query);

@@ -3,7 +3,7 @@ const
   , mongo = require('./mongoManager')
   ;
  
-let get = (id, projection) => {
+function get(id, projection) {
   let query = mongodb.ObjectId(id)
     , opts = { projection: projection };
   
@@ -21,13 +21,13 @@ let get = (id, projection) => {
   });
 }
 
-let insert = (obj) => {
+function insert(obj) {
   return new Promise((rslv, rjct) => {
     rjct('operation rejected');
   });
 }
 
-let update = (id, field, value) => {
+function update(id, field, value) {
   let query = { '_id': mongodb.ObjectId(id) }
     , upd = {}
     ;

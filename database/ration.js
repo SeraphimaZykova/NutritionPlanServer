@@ -6,7 +6,7 @@ const
   , rationCalculator = require('ration_calculator')
   ;
  
-let get = async (id) => {
+async function get (id) {
   let projection = { ration: 1, nutrition: 1, pantry: 1, _upd: 1 }
     , userData = await user.get(id, projection)
     , nutrition = userData['nutrition']
@@ -49,11 +49,11 @@ let get = async (id) => {
   return clientData;
 }
 
-let set = async (id, ration) => {
+async function set(id, ration) {
   user.update(id, 'ration', ration);
 }
 
-let add = async (id, obj) => {
+async function add(id, obj) {
   let collection = mongo.user()
     , query = { '_id': mongodb.ObjectId(id) }
     , upd = { $push: { 'ration': obj } }
@@ -65,7 +65,7 @@ let add = async (id, obj) => {
   }
 }
 
-let update = async (id, foodId, field, value) => {
+async function update(id, foodId, field, value) {
   let collection = mongo.user()
     , query = { 
         '_id': mongodb.ObjectId(id),
