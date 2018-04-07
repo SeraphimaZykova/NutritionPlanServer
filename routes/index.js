@@ -35,31 +35,6 @@ let handleError = (routerRes, code, info) => {
   });
 }
 
-function addNewFood(response, userId, data) {
-  let foodstuff = {
-    name: data.foodInfo.name,
-    glycemicIndex: data.foodInfo.glycemicIndex,
-    nutrition: data.foodInfo.nutrition
-  };
-  
-  foodCollection.insert(foodstuff)
-  .then(insertedOId => {
-    let pantryObj = {
-      foodId: insertedOId,
-      delta: data.pantryInfo.delta,
-      available: data.pantryInfo.available,
-      daily: data.pantryInfo.daily
-    };
-    return mongo.pushToPantry(userId, pantryObj);
-  })
-  .then(res => {
-    response.sendStatus(200);
-  })
-  .catch(err => {
-    handleError(response, 400, err);
-  });
-}
-
 async function searchFood(response, arg) {
   try {
     console.log(`search ${arg}`);
@@ -141,9 +116,22 @@ router.get('/idealNutrition', function(req, res, next) {
   });
 });
 
-router.post('/newFood', (req, res) => {
-  const REC_DATA = req.body;
-  addNewFood(res, HARDCODED_USER_ID, REC_DATA);
+router.post('/newFood', async function(req, res) {
+  const data = req.body;
+  try {
+    let insertedId = await foodCollection.insert(data.food);
+    let pantryObj = {
+      foodId: insertedId,
+      delta: data.delta ? data.delta : 0,
+      available: data.available ? data.available : 0,
+      daily: data.daily ? data.daily : 0
+    };
+    await pantry.insert(HARDCODED_USER_ID, pantryObj);
+    res.sendStatus(200);
+  }
+  catch(error) {
+    handleError(res, 400, error);
+  }
 });
 
 router.post('/updatePantryInfo', async (req, res) => {
