@@ -75,12 +75,12 @@ async function searchFood(response, arg) {
 
 router.get('/foods', async function(req, res, next) {
   try {
-    let clientData = {
-      userId: HARDCODED_USER_ID,
-      pantry: await pantry.get(HARDCODED_USER_ID)
-    };
-
-    res.send(clientData);
+    let queryKeys = Object.keys(req.query)
+      , userId = queryKeys[0]
+      ;
+    
+    console.log(`foods request from user ${userId}`);
+    res.send(await pantry.get(userId));
   } catch (err) {
     handleError(res, 400, err);
   }

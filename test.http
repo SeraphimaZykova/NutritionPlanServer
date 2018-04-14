@@ -1,7 +1,7 @@
 GET http://localhost:3001/ration
 
 ####
-GET http://localhost:3001/foods
+GET http://localhost:3001/foods?1
 
 ####
 POST http://localhost:3001/login
