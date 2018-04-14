@@ -8,7 +8,11 @@ const
 async function get(id) {
   let userData = await user.get(id, { pantry: 1 })
     , pantryId = userData['pantry']
-    , collection = mongo.pantry()
+    ;
+
+  if (!pantryId) throw new Error('pantry is empty');
+
+  let collection = mongo.pantry()
     , doc = await collection.findOne(pantryId)
     ;
 
