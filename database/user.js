@@ -22,11 +22,7 @@ async function insertIfNotExist(clientId) {
   if (result)
     return null;
 
-  let userDoc = {
-    'clientId': clientId,
-    'nutrition': {},
-    'pantry': []
-  };
+  let userDoc = { 'clientId': clientId };
   let insertRes = await collection.insert(userDoc);
   if (insertRes.result.ok == 1) {
     return null;
