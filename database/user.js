@@ -3,22 +3,14 @@ const
   , mongo = require('./mongoManager')
   ;
  
-function get(id, projection) {
-  let query = mongodb.ObjectId(id)
-    , opts = { projection: projection };
+async function get(id, projection) {
+  let collection = mongo.user()
+    , query = { 'clientId' : id }
+    , opts = { projection: projection }
+    ;
   
-  return new Promise((rslv, rjct) => {
-    let collection = mongo.user();
-    let callback = (err, res) => {
-      if (err) {
-        rjct(err);
-        return;
-      }
-      rslv(res);
-    };
-
-    collection.findOne(query, opts, callback);
-  });
+  let res = await collection.findOne(query, opts);
+  return res;
 }
 
 async function insertIfNotExist(clientId) {
