@@ -4,6 +4,14 @@ GET http://localhost:3001/ration
 GET http://localhost:3001/foods
 
 ####
+POST http://localhost:3001/login
+Content-Type: application/json
+
+{
+    "clientId": 2
+}
+
+####
 GET http://localhost:3001/foodSearch?а
 
 ####

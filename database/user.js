@@ -21,10 +21,26 @@ function get(id, projection) {
   });
 }
 
-function insert(obj) {
-  return new Promise((rslv, rjct) => {
-    rjct('operation rejected');
-  });
+async function insertIfNotExist(clientId) {
+  let collection = mongo.user()
+    , query = { 'clientId': clientId }
+    ;
+  
+  let result = await collection.findOne(query);
+  if (result)
+    return null;
+
+  let userDoc = {
+    'clientId': clientId,
+    'nutrition': {},
+    'pantry': []
+  };
+  let insertRes = await collection.insert(userDoc);
+  if (insertRes.result.ok == 1) {
+    return null;
+  }
+
+  return insertRes;
 }
 
 function update(id, field, value) {
@@ -48,5 +64,5 @@ function update(id, field, value) {
 }
 
 exports.get = get;
-exports.insert = insert;
+exports.insertIfNotExist = insertIfNotExist;
 exports.update = update;

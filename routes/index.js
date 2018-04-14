@@ -116,6 +116,21 @@ router.get('/idealNutrition', function(req, res, next) {
   });
 });
 
+router.post('/login', async function(req, res) {
+  try {
+    let err = await userCollection.insertIfNotExist(req.body.clientId);
+    if (!err) {
+      res.sendStatus(200);
+    }
+    else {
+      handleError(res, 400, err);
+    }
+  }
+  catch(error){
+    handleError(res, 400, error);
+  }
+});
+
 router.post('/newFood', async function(req, res) {
   const data = req.body;
   try {
