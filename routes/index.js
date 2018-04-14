@@ -35,11 +35,11 @@ let handleError = (routerRes, code, info) => {
   });
 }
 
-async function searchFood(response, arg) {
+async function searchFood(response, arg, id) {
   try {
-    console.log(`search ${arg}`);
+    console.log(`search ${arg}, id: ${id}`);
     let searchRes = await foodCollection.search(arg);
-    let pantryObj = await pantry.get(HARDCODED_USER_ID);
+    let pantryObj = await pantry.get(id);
 
     let searchResFix = searchRes.map(element => {
 
@@ -75,10 +75,7 @@ async function searchFood(response, arg) {
 
 router.get('/foods', async function(req, res, next) {
   try {
-    let queryKeys = Object.keys(req.query)
-      , userId = queryKeys[0]
-      ;
-    
+    let userId = req.query['id'];
     console.log(`foods request from user ${userId}`);
     res.send(await pantry.get(userId));
   } catch (err) {
@@ -87,12 +84,11 @@ router.get('/foods', async function(req, res, next) {
 });
 
 router.get('/foodSearch', function(req, res, next) {
-  let queryKeys = Object.keys(req.query);
-  if(queryKeys.length > 0) {
-    searchFood(res, queryKeys[0]);
+  try {
+    searchFood(res, req.query['search'], req.query['id']);
   }
-  else {
-    handleError(res, 400, 'invalid query');
+  catch(err) {
+    handleError(res, 400, err);
   }
 })
 
