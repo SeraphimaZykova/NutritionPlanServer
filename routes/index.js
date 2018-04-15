@@ -96,8 +96,11 @@ router.get('/ration', async function(req, res, next) {
 });
 
 router.get('/idealNutrition', function(req, res, next) {
-  let projection = { nutrition: 1 };
-  userCollection.get(HARDCODED_USER_ID, projection)
+  let id = req.query['id']
+    , projection = { nutrition: 1 }
+    ;
+
+  userCollection.get(id, projection)
   .then(result => {
     res.send(result.nutrition);
   })
@@ -194,16 +197,20 @@ router.post('/updateFoodInfo', (req, res) => {
 });
 
 router.post('/updateIdealNutrition', (req, res) => {
-  const data = req.body;
-  if (!data.calories 
-      || !data.proteins 
-      || !data.carbs 
-      || !data.fats) {
+  const data = req.body
+    , nutrition = data['nutrition']
+    , id = data['id']
+    ;
+    
+  if (!nutrition.calories 
+      || !nutrition.proteins 
+      || !nutrition.carbs 
+      || !nutrition.fats) {
     handleError(res, 400, 'invalid nutrition object');
     return;
   }
 
-  userCollection.update(HARDCODED_USER_ID, 'nutrition', data)
+  userCollection.update(id, 'nutrition', nutrition)
   .then(result => {
     res.sendStatus(200);
   })
