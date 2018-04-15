@@ -32,7 +32,11 @@ async function insert(id, obj) {
 
   let userData = await user.get(id, { pantry: 1 })
     , pantryId = userData['pantry']
-    , collection = mongo.pantry()
+    ;
+
+  if (!pantryId) throw new Error('Insert failed: no pantry');
+
+  let collection = mongo.pantry()
     , query = {
         '_id': pantryId,
         'foodstuff.foodId': { $nin: [ obj.foodId ] }

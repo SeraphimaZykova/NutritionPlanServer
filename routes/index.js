@@ -11,9 +11,6 @@ const
 
   /* Server Tasks */
   /*
-  * 1. Login. 
-  *   add credentials to User collection. authorization mechanism.
-  * 
   * 4. 
   *   -- сохранение сгенерированного рациона в бд. 
   *   -- при запросе с клиента сначала проверять бд, 
@@ -134,7 +131,8 @@ router.post('/newFood', async function(req, res) {
       available: data.available ? data.available : 0,
       daily: data.daily ? data.daily : 0
     };
-    await pantry.insert(HARDCODED_USER_ID, pantryObj);
+
+    await pantry.insert(data.userId, pantryObj);
     res.sendStatus(200);
   }
   catch(error) {
