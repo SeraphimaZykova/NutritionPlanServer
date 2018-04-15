@@ -27,6 +27,14 @@ async function get(id) {
   return arr;
 }
 
+async function create() {
+  let collection = mongo.pantry()
+    , obj = { 'foodstuff': [] }
+    , res = await collection.insert(obj)
+    ;
+  return res.insertedIds['0'];
+}
+
 async function insert(id, obj) {
   obj.foodId = mongodb.ObjectId(obj.foodId);
 
@@ -84,6 +92,7 @@ async function update(userId, updId, field, val) {
 }
 
 exports.get = get;
+exports.create = create;
 exports.insert = insert;
 exports.update = update;
 exports.remove = remove;

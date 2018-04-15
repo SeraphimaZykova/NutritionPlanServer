@@ -1,6 +1,7 @@
 const 
     mongodb = require('mongodb')
   , mongo = require('./mongoManager')
+  , pantry = require('./pantry')
   ;
  
 async function get(id, projection) {
@@ -22,7 +23,18 @@ async function insertIfNotExist(clientId) {
   if (result)
     return null;
 
-  let userDoc = { 'clientId': clientId };
+  let pantryId = await pantry.create();
+  let userDoc = { 
+    'clientId': clientId,
+    'pantry': pantryId,
+    'nutrition': {
+      calories: 0,
+      proteins: 0,
+      carbs: 0,
+      fats: 0
+    } 
+  };
+
   let insertRes = await collection.insert(userDoc);
   if (insertRes.result.ok == 1) {
     return null;
