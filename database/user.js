@@ -44,7 +44,7 @@ async function insertIfNotExist(clientId) {
 }
 
 function update(id, field, value) {
-  let query = { '_id': mongodb.ObjectId(id) }
+  let query = { 'clientId': id }
     , upd = {}
     ;
 
