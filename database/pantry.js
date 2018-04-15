@@ -20,6 +20,7 @@ async function get(id) {
 
   let arr = await Promise.all(doc.foodstuff.map(async (element) => {
     element['food'] = await food.get(element.foodId);
+    element['foodId'] = element.foodId.toString();
     return element;
   }));
 
