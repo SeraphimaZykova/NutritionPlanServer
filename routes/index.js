@@ -60,13 +60,7 @@ async function searchFood(response, arg, id) {
       return element;
     });
 
-    let data = {
-      userInfo: {
-        userId: HARDCODED_USER_ID
-      },
-      foods: searchResFix
-    };
-    response.send(data);
+    response.send(searchResFix);
   }
   catch(err) {
     handleError(response, 400, err);
@@ -76,7 +70,6 @@ async function searchFood(response, arg, id) {
 router.get('/foods', async function(req, res, next) {
   try {
     let userId = req.query['id'];
-    console.log(`foods request from user ${userId}`);
     res.send(await pantry.get(userId));
   } catch (err) {
     handleError(res, 400, err);
@@ -85,7 +78,11 @@ router.get('/foods', async function(req, res, next) {
 
 router.get('/foodSearch', function(req, res, next) {
   try {
-    searchFood(res, req.query['search'], req.query['id']);
+    let searchArg = req.query['search']
+      , id = req.query['id']
+      ;
+
+    searchFood(res, searchArg, id);
   }
   catch(err) {
     handleError(res, 400, err);
