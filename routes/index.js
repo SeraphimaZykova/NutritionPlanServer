@@ -64,6 +64,10 @@ async function searchFood(response, arg, id) {
   }
 }
 
+router.get('/test', async function(req, res, next) {
+  res.status(200).send('Hello, world!\n');
+})
+
 router.get('/foods', async function(req, res, next) {
   try {
     let userId = req.query['id'];
