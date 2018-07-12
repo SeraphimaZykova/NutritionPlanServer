@@ -6,8 +6,12 @@ const
   , pantry = require('./../database/pantry')
   , ration = require('./../database/ration')
   , usda = require('./../api/usda')
+  , translate = require('translate')
   , router = express.Router()
   ;
+
+translate.engine = process.env.TRANSLATE_ENGINE;
+translate.key = process.env.TRANSLATE_ENGINE_KEY;
 
 let handleError = (routerRes, code, info) => {
   console.error('Error: ' + code + ' -> ' + info);

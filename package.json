@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "mocha": "^5.2.0",
-    "nutrition-facts": "^0.1.0"
+    "nutrition-facts": "^0.1.0",
+    "translate": "^1.0.2"
   }
 }
