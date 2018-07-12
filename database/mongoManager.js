@@ -21,7 +21,7 @@ mongo.connect(process.env.DATABASE, function(err, connectedClient) {
   }
 
   client = connectedClient;
-  db = client.db('NutritionPlan');
+  db = client.db(process.env.DATABASE_NAME);
   foodCollection = db.collection('Food');
   userDataCollection = db.collection('UserData');
   pantryCollection = db.collection('Pantry');
