@@ -42,14 +42,14 @@ describe('server', function () {
   });
 
   describe('/search', function() {
-    it('fail', function(done) {
+    it('invalid request, return error code 400', function(done) {
       http.get(httpRequest + '/search', function (res) {
-        assert.equal(200, res.statusCode);
+        assert.equal(400, res.statusCode);
         done();
       })
     });
 
-    it('fail', function(done) {
+    it('invalid request, return error message', function(done) {
       http.get(httpRequest + '/search', function (res) {
         var data = '';
   
@@ -58,11 +58,31 @@ describe('server', function () {
         });
   
         res.on('end', function () {
-          assert.equal([
-            { name: 'some' }, 
-            { name: 'predefined' }, 
-            { name: 'results'} 
-          ], data);
+          assert.equal('Error: 400 -> no search args', data);
+          done();
+        });
+      })
+    });
+
+    it('valid request, ec = 200', function(done) {
+      this.timeout(3000);
+      http.get(httpRequest + '/search?args=avocado', function (res) {
+        assert.equal(200, res.statusCode);
+        done();
+      })
+    });
+
+    it('valid request, shold contain avocado', function(done) {
+      this.timeout(3000);
+      http.get(httpRequest + '/search?args=avocado', function (res) {
+        var data = '';
+  
+        res.on('data', function (chunk) {
+          data += chunk;
+        });
+  
+        res.on('end', function () {
+          assert.equal(data.length > 0, true);
           done();
         });
       })
