@@ -5,6 +5,7 @@ const
   , userCollection = require('./../database/user')
   , pantry = require('./../database/pantry')
   , ration = require('./../database/ration')
+  , usda = require('./../api/usda')
   , router = express.Router()
   , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
   ;
