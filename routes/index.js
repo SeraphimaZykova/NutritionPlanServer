@@ -7,23 +7,7 @@ const
   , ration = require('./../database/ration')
   , usda = require('./../api/usda')
   , router = express.Router()
-  , HARDCODED_USER_ID = '5a4aafeae02a03d8ebf35361'
   ;
-
-  /* Server Tasks */
-  /*
-  * 4. 
-  *   -- сохранение сгенерированного рациона в бд. 
-  *   -- при запросе с клиента сначала проверять бд, 
-  *   -- если ничего нет или были изменения списка продуктов / настроек - запускать генерацию.
-  *   в запросе с клиента должна присутсвовать дата 
-  *   (можно генерировать заранее + просмотр предыдущих дней)
-  * 
-  *  => хранить дату генерации / изменения рациона 
-  *                  последнего изменения pantry
-  *                  изменения ideal nutrition
-  * 
-  */
 
 let handleError = (routerRes, code, info) => {
   console.error('Error: ' + code + ' -> ' + info);
@@ -93,7 +77,8 @@ router.get('/foodSearch', function(req, res, next) {
 
 router.get('/ration', async function(req, res, next) {
   try {
-    let result = await ration.get(HARDCODED_USER_ID);
+    let id = req.query['id'];
+    let result = await ration.get(id);
     res.send(result);
   } catch (err) {
     handleError(res, 400, err);
@@ -171,6 +156,7 @@ router.post('/addToPantry', async (req, res) => {
       }
     };
 
+    console.log(`add to pantry: ${data.foodId}, from user ${data.userId}`);
     await pantry.insert(data.userId, pantryObj)
     res.sendStatus(200);
   } catch (error) {
@@ -181,7 +167,9 @@ router.post('/addToPantry', async (req, res) => {
 router.post('/removeFromPantry', async (req, res) => {
   const data = req.body;
   try {
-    await pantry.remove(userId, foodId);
+    console.log(`remove from pantry: ${data.foodId}, from user ${data.userId}`);
+
+    await pantry.remove(data.userId, data.foodId);
     res.sendStatus(200);
   }
   catch(err) {
@@ -206,7 +194,7 @@ router.post('/updateIdealNutrition', (req, res) => {
     , nutrition = data['nutrition']
     , id = data['id']
     ;
-    
+
   if (!nutrition.calories 
       || !nutrition.proteins 
       || !nutrition.carbs 
@@ -227,8 +215,7 @@ router.post('/updateIdealNutrition', (req, res) => {
 router.post('/updateRation', async (req, res) => {
   const data = req.body;
   try {
-    await ration.update(HARDCODED_USER_ID, data.id
-      , 'portion', data.portion);
+    await ration.update(data.userId, data.id, 'portion', data.portion);
     res.sendStatus(200);
   }
   catch(err) {
@@ -239,7 +226,7 @@ router.post('/updateRation', async (req, res) => {
 router.post('/addToRation', async (req, res) => {
   const data = req.body;
   try {
-    await ration.add(HARDCODED_USER_ID, data);
+    await ration.add(data.userId, data.food);
     res.sendStatus(200);
   }
   catch(err) {
