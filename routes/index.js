@@ -11,10 +11,7 @@ const
 
 let handleError = (routerRes, code, info) => {
   console.error('Error: ' + code + ' -> ' + info);
-  routerRes.send({
-    status: code, 
-    message: 'Error: ' + code + ' -> ' + info
-  });
+  routerRes.status(code).send('Error: ' + code + ' -> ' + info);
 }
 
 async function searchFood(response, arg, id) {
