@@ -14,6 +14,11 @@ let handleError = (routerRes, code, info) => {
   routerRes.status(code).send('Error: ' + code + ' -> ' + info);
 }
 
+async function search(arg) {
+  let result = await usda.search(arg);
+  return result;
+}
+
 async function searchFood(response, arg, id) {
   try {
     console.log(`search ${arg}, id: ${id}`);
@@ -48,7 +53,23 @@ async function searchFood(response, arg, id) {
 
 router.get('/test', async function(req, res, next) {
   res.status(200).send('Hello, world!\n');
-})
+});
+
+router.get('/search', async function(req, res, next) {
+  try {
+    let args = req.query['args'];
+    if (!args) {
+      handleError(res, 400, 'no search args');
+      return;
+    }
+
+    let result = await search(args);
+    res.status(200).send(result);
+  }
+  catch(err) {
+    handleError(res, 400, err);
+  }
+});
 
 router.get('/foods', async function(req, res, next) {
   try {
