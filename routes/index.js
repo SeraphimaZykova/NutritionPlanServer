@@ -77,8 +77,25 @@ async function apiToLocalFormat(obj) {
 }
 
 async function search(arg) {
-  let result = await usda.search(arg);
-  return result;
+  let localResult = await foodCollection.search(arg);
+  let apiResult = await usda.search(arg);
+  
+  function searchInArray (element, array) {
+    return array.some(e => e.name.en === element);
+  }
+  
+  let localAddition = await Promise.all(apiResult.map(async (el) => {
+    let containsLocal = searchInArray(el, localResult);
+    console.log('CONTAINS ', containsLocal);
+    if (!containsLocal) {
+      return await apiToLocalFormat(el);
+    }
+    return null;
+  }));
+
+  Array.prototype.push.apply(localResult, localAddition);
+
+  return localResult;
 }
 
 async function searchFood(response, arg, id) {
