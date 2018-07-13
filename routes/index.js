@@ -94,6 +94,11 @@ async function search(arg) {
   }));
 
   Array.prototype.push.apply(localResult, localAddition);
+  localAddition.forEach(element => {
+    if (element) {
+      foodCollection.insert(element);
+    }
+  });
 
   return localResult;
 }
