@@ -18,6 +18,64 @@ let handleError = (routerRes, code, info) => {
   routerRes.status(code).send('Error: ' + code + ' -> ' + info);
 }
 
+async function apiToLocalFormat(obj) {
+  let local = {};
+  local['name'] = {
+    en: obj.name,
+    ru: await translate(obj.name, 'ru')
+  };
+  
+  local['group'] = obj.group;
+  local['nutrition'] = {
+    calories: {
+      total: obj.nutrition['Energy'],
+      fromFat: obj.nutrition['Total lipid (fat)'] * 9
+    },
+    proteins: obj.nutrition.Protein,
+    carbs: {
+      total: obj.nutrition['Carbohydrate, by difference'],
+      dietaryFiber: obj.nutrition['Fiber, total dietary'],
+      sugars: obj.nutrition['Sugars, total']
+    },
+    fats: {
+      total: obj.nutrition['Total lipid (fat)'],
+      saturated: obj.nutrition['Fatty acids, total saturated'],
+      trans: obj.nutrition['Fatty acids, total trans'],
+      polyunsanurated: obj.nutrition['Fatty acids, total polyunsaturated'],
+      monounsaturated: obj.nutrition['Fatty acids, total monounsaturated']
+    },
+    calcium: obj.nutrition['Calcium, Ca'],
+    iron: obj.nutrition['Iron, Fe'],
+    magnesium: obj.nutrition['Magnesium, Mg'],
+    phosphorous: obj.nutrition['Phosphorus, P'],
+    potassium: obj.nutrition['Potassium, K'],
+    sodium: obj.nutrition['Sodium, Na'],
+    zinc: obj.nutrition['Zinc, Zn'],
+    thiamin: obj.nutrition['Thiamin'],
+    riboflavin: obj.nutrition['Riboflavin'],
+    niacin: obj.nutrition['Niacin'],
+    cholesterol: obj.nutrition['Cholesterol'],
+    caffeinne: obj.nutrition['Caffeine'],
+    vitamins: {
+      c: obj.nutrition['Vitamin C, total ascorbic acid'],
+      b6: obj.nutrition['Vitamin B-6'],
+      folate: obj.nutrition['Folate, DFE'],
+      b12: obj.nutrition['Vitamin B-12'],
+      arae: obj.nutrition['Vitamin A, RAE'],
+      aiu: obj.nutrition['Vitamin A, IU'],
+      e: obj.nutrition['Vitamin E (alpha-tocopherol)'],
+      d2d3: obj.nutrition['Vitamin D (D2 + D3)'],
+      d: obj.nutrition['Vitamin D'],
+      k: obj.nutrition['Vitamin K (phylloquinone)'],
+    }
+  };
+
+  local['measures'] = obj.measures;
+  local['lastUsedDate'] = 0;
+
+  return local;
+}
+
 async function search(arg) {
   let result = await usda.search(arg);
   return result;

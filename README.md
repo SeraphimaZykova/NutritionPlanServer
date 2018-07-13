@@ -5,10 +5,12 @@ food data format:
 {
   foodInfo: {
     _id: oid,
-    name: string,
+    name: {
+      en: string
+      ru: string
+    },
     glycemicIndex: int,
-    gramsPerPiece: int,
-    piecesPerPack: int,
+    measures: [{}, {}, ...],
     nutrition: {
       calories: {
         total: float,
@@ -34,7 +36,8 @@ food data format:
       vitaminC: float,
       calcium: float,
       iron: float
-    }
+    },
+    lastUsedDate: int64
   },
   pantryInfo: {
     foodId: oid,
