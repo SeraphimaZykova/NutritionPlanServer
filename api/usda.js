@@ -16,12 +16,15 @@ async function search(key) {
     food['group'] = element.GROUP;
 
     const apiNutrition = await element.getNutrition();
+    
     let nutrition = {};
     apiNutrition.nutrients.forEach(nutrient => {
       nutrition[nutrient.name] = parseFloat(nutrient.value);
     });
 
     food['nutrition'] = nutrition;
+    food['measures'] = apiNutrition.nutrients[0].measures;
+    
     return food;
   }));
 
