@@ -82,7 +82,8 @@ describe('server', function () {
         });
   
         res.on('end', function () {
-          assert.equal(data.length > 0, true);
+          let dataObject = JSON.parse(data);
+          assert.equal(dataObject.length > 0, true);
           done();
         });
       })
