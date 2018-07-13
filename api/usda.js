@@ -18,10 +18,7 @@ async function search(key) {
     const apiNutrition = await element.getNutrition();
     let nutrition = {};
     apiNutrition.nutrients.forEach(nutrient => {
-      nutrition[nutrient.name] = {
-        'value': parseFloat(nutrient.value),
-        'unit': nutrient.unit
-      };
+      nutrition[nutrient.name] = parseFloat(nutrient.value);
     });
 
     food['nutrition'] = nutrition;
