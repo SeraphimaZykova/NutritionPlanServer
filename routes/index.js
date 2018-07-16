@@ -78,28 +78,6 @@ async function apiToLocalFormat(obj) {
 
 async function search(arg) {
   let localResult = await foodCollection.search(arg);
-  let apiResult = await usda.search(arg);
-  
-  function searchInArray (element, array) {
-    return array.some(e => e.name.en === element);
-  }
-  
-  let localAddition = await Promise.all(apiResult.map(async (el) => {
-    let containsLocal = searchInArray(el, localResult);
-    console.log('CONTAINS ', containsLocal);
-    if (!containsLocal) {
-      return await apiToLocalFormat(el);
-    }
-    return null;
-  }));
-
-  Array.prototype.push.apply(localResult, localAddition);
-  localAddition.forEach(element => {
-    if (element) {
-      foodCollection.insert(element);
-    }
-  });
-
   return localResult;
 }
 
@@ -153,6 +131,11 @@ router.get('/search', async function(req, res, next) {
   catch(err) {
     handleError(res, 400, err);
   }
+});
+
+router.get('/searchAPI', async function(req, res, next) {
+  usda.searchName('beef');
+  res.status(200);
 });
 
 router.get('/foods', async function(req, res, next) {
