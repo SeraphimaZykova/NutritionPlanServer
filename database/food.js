@@ -60,7 +60,7 @@ function search (query) {
     try {
       let regexp = new RegExp(query);
       let collection = mongo.food();
-      collection.find({ name: { $regex: regexp, $options: 'i' } }).toArray()
+      collection.find({ 'name.en': { $regex: regexp, $options: 'i' } }).toArray()
       .then(res => {
         let fix = res.map(obj => {
           let newObj = obj;
