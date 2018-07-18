@@ -134,8 +134,19 @@ router.get('/search', async function(req, res, next) {
 });
 
 router.get('/searchAPI', async function(req, res, next) {
-  usda.searchName('beef');
-  res.status(200);
+  try {
+    let args = req.query['args'];
+    if (!args) {
+      handleError(res, 400, 'no search args');
+      return;
+    }
+
+    let result = await usda.search(args);
+    res.status(200).send(result);
+  }
+  catch(err) {
+    handleError(res, 400, err);
+  }
 });
 
 router.get('/foods', async function(req, res, next) {

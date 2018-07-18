@@ -7,10 +7,10 @@
     "test": "./node_modules/mocha/bin/mocha"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "~1.18.2",
-    "co": "^4.6.0",
     "cookie-parser": "^1.4.3",
-    "debug": "~2.6.9",
+    "depcheck": "^0.6.9",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "mongodb": "^3.0.1",
@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "mocha": "^5.2.0",
-    "nutrition-facts": "^0.1.0",
     "translate": "^1.0.2"
   }
 }

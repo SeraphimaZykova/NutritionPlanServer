@@ -1,47 +1,56 @@
-const NutritionFacts = require('nutrition-facts')
-const NF = new NutritionFacts.default(process.env.USDA_NDB_API_KEY);
+const axios = require("axios");
   
 /* https://ndb.nal.usda.gov/ndb/doc/apilist/API-SEARCH.md */
 
-async function apiSearch(key) {
-  return await NF.searchFoods({ q: key, ds: 'Standard Reference' }); 
+async function searchName(key) {
+   const addr = "https://api.nal.usda.gov/ndb/search/?format=json&";
+   let url = addr + "q=" + key + "&ds=Standard%20Reference&max=50&sort=r&offset=0&api_key=" + process.env.USDA_NDB_API_KEY;
+   
+   try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function getNutrition(ndbno){
+  const addr = "https://api.nal.usda.gov/ndb/reports/?";
+  let url = addr + "ndbno=" + ndbno + "&type=b&format=json&api_key=" + process.env.USDA_NDB_API_KEY;
+  
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function search(key) {
-  let results = await apiSearch(key);
+  let results = await searchName(key);
 
   let arr = await Promise.all(results.list.item.map(async (element) => {
     let food = {};
-    food['name'] = element.NAME;
-    food['group'] = element.GROUP;
+    food['name'] = element.name;
+    food['group'] = element.group;
 
-    const apiNutrition = await element.getNutrition();
+    const report = await getNutrition(element.ndbno);
     
     let nutrition = {};
-    apiNutrition.nutrients.forEach(nutrient => {
-      nutrition[nutrient.name] = parseFloat(nutrient.value);
+    report.report.food.nutrients.forEach(nutrient => {
+      nutrition[nutrient.name] = {
+        'value': parseFloat(nutrient.value),
+        'unit': nutrient.unit
+      }
     });
 
     food['nutrition'] = nutrition;
-    food['measures'] = apiNutrition.nutrients[0].measures;
+    food['measures'] = report.report.food.nutrients[0].measures;
     
     return food;
   }));
 
   return arr;
 }
-
-/*
-// Alternatively, if you know the NDBNO off-hand
-// you can call 'getNutrition' from the NF instance.
-
-NF.getNutrition('01001','b')
-.then(nutritionReport => {
-    console.log(nutritionReport)
-})
-.catch(err => {
-    console.log(err)
-})
-*/
 
 exports.search = search;
