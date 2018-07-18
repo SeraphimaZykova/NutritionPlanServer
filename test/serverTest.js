@@ -65,7 +65,6 @@ describe('server', function () {
     });
 
     it('valid request, ec = 200', function(done) {
-      this.timeout(3000);
       http.get(httpRequest + '/search?args=avocado', function (res) {
         assert.equal(200, res.statusCode);
         done();
@@ -73,7 +72,6 @@ describe('server', function () {
     });
 
     it('valid request, shold contain avocado', function(done) {
-      this.timeout(3000);
       http.get(httpRequest + '/search?args=avocado', function (res) {
         var data = '';
   
@@ -89,4 +87,54 @@ describe('server', function () {
       })
     });
   });
+
+  describe('/searchAPI', function() {
+    it('invalid request, return error code 400', function(done) {
+      http.get(httpRequest + '/searchAPI', function (res) {
+        assert.equal(400, res.statusCode);
+        done();
+      })
+    });
+
+    it('invalid request, return error message', function(done) {
+      http.get(httpRequest + '/searchAPI', function (res) {
+        var data = '';
+  
+        res.on('data', function (chunk) {
+          data += chunk;
+        });
+  
+        res.on('end', function () {
+          assert.equal('Error: 400 -> no search args', data);
+          done();
+        });
+      })
+    });
+
+    it('valid request, ec = 200', function(done) {
+      this.timeout(10000);
+      http.get(httpRequest + '/searchAPI?args=avocado', function (res) {
+        assert.equal(200, res.statusCode);
+        done();
+      })
+    });
+
+    it('valid request, shold contain avocado', function(done) {
+      this.timeout(30000);
+      http.get(httpRequest + '/searchAPI?args=avocado', function (res) {
+        var data = '';
+  
+        res.on('data', function (chunk) {
+          data += chunk;
+        });
+  
+        res.on('end', function () {
+          let dataObject = JSON.parse(data);
+          console.log(dataObject);
+          assert.equal(dataObject.length > 0, true);
+          done();
+        });
+      })
+    });
+  })
 });
