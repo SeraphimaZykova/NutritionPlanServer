@@ -65,16 +65,16 @@ describe('server', function () {
     });
   });
 
-  describe('/searchAPI', function() {
+  describe('/usda_api', function() {
     it('invalid request, return error code 400', function(done) {
-      http.get(httpRequest + '/searchAPI', function (res) {
+      http.get(httpRequest + '/usda_api/search', function (res) {
         assert.equal(400, res.statusCode);
         done();
       })
     });
 
     it('invalid request, return error message', function(done) {
-      http.get(httpRequest + '/searchAPI', function (res) {
+      http.get(httpRequest + '/usda_api/search', function (res) {
         var data = '';
   
         res.on('data', function (chunk) {
@@ -90,7 +90,7 @@ describe('server', function () {
 
     it('valid request, ec = 200', function(done) {
       this.timeout(10000);
-      http.get(httpRequest + '/searchAPI?args=avocado', function (res) {
+      http.get(httpRequest + '/usda_api/search?args=avocado', function (res) {
         assert.equal(200, res.statusCode);
         done();
       })
@@ -98,7 +98,7 @@ describe('server', function () {
 
     it('valid request, shold contain avocado', function(done) {
       this.timeout(30000);
-      http.get(httpRequest + '/searchAPI?args=avocado', function (res) {
+      http.get(httpRequest + '/usda_api/search?args=avocado', function (res) {
         var data = '';
   
         res.on('data', function (chunk) {
