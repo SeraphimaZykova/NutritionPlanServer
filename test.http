@@ -51,3 +51,12 @@ POST https://api.nutritionix.com/v1_1/search
     "appKey": "41b4d94379febc9ba23d79820d03d4a7",
     "query": "Apple"
 }
+
+
+###
+GET https://api.nal.usda.gov/ndb/search/?format=json&q=butter&ds=Standard%20Reference&sort=r&max=50&offset=0&api_key=wjeNXWx9E6vBFvFrBWfoWo9US3czZm0xLLiC84yh
+
+###
+GET http://localhost:3001/usda_api/search?args=avocado
+###
+GET http://localhost:3001/
