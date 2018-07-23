@@ -10,7 +10,8 @@ async function searchName(key) {
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
-    console.error(error);
+    console.log('err in seName req')
+    console.error(error.message);
   }
 }
 
@@ -22,20 +23,23 @@ async function getNutrition(ndbno){
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
+    console.log('err in getNutrition req')
     console.error(error);
   }
 }
 
 async function search(key) {
   let results = await searchName(key);
+  if (!results) return new Array();
 
-  let arr = await Promise.all(results.list.item.map(async (element) => {
+  let arr = Promise.all(results.list.item.map(async (element) => {
     let food = {};
     food['name'] = element.name;
     food['group'] = element.group;
 
     const report = await getNutrition(element.ndbno);
-    
+    if (!report) return null;
+
     let nutrition = {};
     report.report.food.nutrients.forEach(nutrient => {
       nutrition[nutrient.name] = {
