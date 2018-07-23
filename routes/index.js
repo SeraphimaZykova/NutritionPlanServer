@@ -1,3 +1,23 @@
+function routerMountPoint(depObj) {
+  if (!validateConnect(depObj)) throw new Error('Argument object must contain router and model props');
+
+  const router = depObj.express.Router();
+
+  router.use('/', require('./root')(depObj.express.Router()));
+  router.use('/usda_api', require('./usda_api')(depObj.express));
+
+  return router;
+};
+
+function validateConnect(dObj) {
+  return dObj.hasOwnProperty('express') ? 1 : 0;
+}
+
+module.exports = routerMountPoint;
+
+/*
+
+
 const
     express = require('express')
   , mongo = require('./../database/mongoManager')
@@ -25,6 +45,9 @@ async function apiToLocalFormat(obj) {
     ru: await translate(obj.name, 'ru')
   };
   
+  //TODO: преобразовать с учетом наличия полей (ставить нулями отсутствующие)
+  //TODO: учитывать размерность (unit)
+
   local['group'] = obj.group;
   local['nutrition'] = {
     calories: {
@@ -331,3 +354,4 @@ router.post('/addToRation', async (req, res) => {
 });
 
 module.exports = router;
+*/
