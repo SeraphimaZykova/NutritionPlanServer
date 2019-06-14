@@ -7,18 +7,18 @@
     "test": "./node_modules/mocha/bin/mocha"
   },
   "dependencies": {
-    "axios": "^0.18.0",
-    "body-parser": "~1.18.2",
-    "cookie-parser": "^1.4.3",
-    "depcheck": "^0.6.9",
+    "axios": "^0.18.1",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
+    "depcheck": "^0.6.11",
     "dotenv": "^5.0.1",
-    "express": "^4.16.3",
-    "mongodb": "^3.0.1",
-    "morgan": "~1.9.0",
-    "pug": "^2.0.0-rc.4"
+    "express": "^4.17.1",
+    "mongodb": "^3.2.7",
+    "morgan": "^1.9.1",
+    "pug": "^2.0.3"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
-    "translate": "^1.0.2"
+    "translate": "^1.1.0"
   }
 }
