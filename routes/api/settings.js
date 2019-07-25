@@ -1,5 +1,5 @@
 module.exports = function (router) {
-  const usda = require('../../usda');
+  const usda = require('../../database/user');
 
   router.use(validateReqBody);
 

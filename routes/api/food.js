@@ -1,12 +1,10 @@
 module.exports = function (router) {
-  const usda = require('../../usda');
+  const foodCollection = require('../../database/food');
 
-  router.use(validateReqBody);
-
-  router.get('/', async (req, res) => {
+  router.get('/search', validateReqBody, async (req, res) => {
     try {
       let args = req.query['args'];
-      let result = await usda.search(args);
+      let result = await foodCollection.search(args);
       res.status(200).send(result);
     }
     catch(err) {
@@ -16,6 +14,10 @@ module.exports = function (router) {
         , data: err.message
       });
     }
+  });
+
+  router.post('/insert', async (req, res) => {
+    res.status(404).send();
   });
 
   function validateReqBody(req, res, next) {

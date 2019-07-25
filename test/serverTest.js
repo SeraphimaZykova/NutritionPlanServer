@@ -17,54 +17,6 @@ describe('server', function () {
     www.stop();
   });
 
-
-  describe('/search', function() {
-    it('invalid request, return error code 400', function(done) {
-      http.get(httpRequest + '/search', function (res) {
-        assert.equal(400, res.statusCode);
-        done();
-      })
-    });
-
-    it('invalid request, return error message', function(done) {
-      http.get(httpRequest + '/search', function (res) {
-        var data = '';
-  
-        res.on('data', function (chunk) {
-          data += chunk;
-        });
-  
-        res.on('end', function () {
-          assert.equal('Error: 400 -> no search args', data);
-          done();
-        });
-      })
-    });
-
-    it('valid request, ec = 200', function(done) {
-      http.get(httpRequest + '/search?args=avocado', function (res) {
-        assert.equal(200, res.statusCode);
-        done();
-      })
-    });
-
-    it('valid request, shold contain avocado', function(done) {
-      http.get(httpRequest + '/search?args=avocado', function (res) {
-        var data = '';
-  
-        res.on('data', function (chunk) {
-          data += chunk;
-        });
-  
-        res.on('end', function () {
-          let dataObject = JSON.parse(data);
-          assert.equal(dataObject.length > 0, true);
-          done();
-        });
-      })
-    });
-  });
-
   describe('/usda_api', function() {
     it('invalid request, return error code 400', function(done) {
       http.get(httpRequest + '/usda_api/search', function (res) {
@@ -114,4 +66,43 @@ describe('server', function () {
       })
     });
   })
+
+  describe('/common_food', function() {
+    it('invalid search request, return error code 400', function(done) {
+      http.get(httpRequest + '/api/common_food/search', function (res) {
+        assert.equal(400, res.statusCode);
+        done();
+      })
+    });
+
+    it('valid search request, ec = 200', function(done) {
+      http.get(httpRequest + '/api/common_food/search?args=avocado', function (res) {
+        assert.equal(200, res.statusCode);
+        done();
+      })
+    });
+
+    it('valid search request, shold contain avocado', function(done) {
+      http.get(httpRequest + '/api/common_food/search?args=avocado', function (res) {
+        var data = '';
+  
+        res.on('data', function (chunk) {
+          data += chunk;
+        });
+  
+        res.on('end', function () {
+          let dataObject = JSON.parse(data);
+          assert.equal(dataObject.length > 0, true);
+          done();
+        });
+      })
+    });
+
+    it('insert, 404', function(done) {
+      http.get(httpRequest + '/api/common_food/insert', function (res) {
+        assert.equal(404, res.statusCode);
+        done();
+      })
+    });
+  });
 });

@@ -4,6 +4,7 @@ function routerMountPoint(depObj) {
   const router = depObj.express.Router();
 
   router.use('/', require('./root')(depObj.express.Router()));
+  router.use('/api', require('./api')(depObj.express));
   router.use('/usda_api', require('./usda_api')(depObj.express));
 
   return router;
@@ -16,8 +17,6 @@ function validateConnect(dObj) {
 module.exports = routerMountPoint;
 
 /*
-
-
 const
     express = require('express')
   , mongo = require('./../database/mongoManager')
@@ -25,7 +24,6 @@ const
   , userCollection = require('./../database/user')
   , pantry = require('./../database/pantry')
   , ration = require('./../database/ration')
-  , usda = require('./../api/usda')
   , translate = require('translate')
   , router = express.Router()
   ;
@@ -99,11 +97,6 @@ async function apiToLocalFormat(obj) {
   return local;
 }
 
-async function search(arg) {
-  let localResult = await foodCollection.search(arg);
-  return localResult;
-}
-
 async function searchFood(response, arg, id) {
   try {
     console.log(`search ${arg}, id: ${id}`);
@@ -135,42 +128,6 @@ async function searchFood(response, arg, id) {
     handleError(response, 400, err);
   }
 }
-
-router.get('/test', async function(req, res, next) {
-  res.status(200).send('Hello, world!\n');
-});
-
-router.get('/search', async function(req, res, next) {
-  try {
-    let args = req.query['args'];
-    if (!args) {
-      handleError(res, 400, 'no search args');
-      return;
-    }
-
-    let result = await search(args);
-    res.status(200).send(result);
-  }
-  catch(err) {
-    handleError(res, 400, err);
-  }
-});
-
-router.get('/searchAPI', async function(req, res, next) {
-  try {
-    let args = req.query['args'];
-    if (!args) {
-      handleError(res, 400, 'no search args');
-      return;
-    }
-
-    let result = await usda.search(args);
-    res.status(200).send(result);
-  }
-  catch(err) {
-    handleError(res, 400, err);
-  }
-});
 
 router.get('/foods', async function(req, res, next) {
   try {
