@@ -30,7 +30,7 @@ async function get(id) {
 async function create() {
   let collection = mongo.pantry()
     , obj = { 'foodstuff': [] }
-    , res = await collection.insertOne(obj)
+    , res = await collection.insert(obj)
     ;
   return res.insertedIds['0'];
 }
