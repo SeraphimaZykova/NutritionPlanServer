@@ -4,6 +4,7 @@ function routerMountPoint(depObj) {
   const router = depObj.express.Router();
 
   router.use('/', require('./root')(depObj.express.Router()));
+  router.use('/auth', require('./auth')(depObj.express));
   router.use('/api', require('./api')(depObj.express));
   router.use('/usda_api', require('./usda_api')(depObj.express));
 
