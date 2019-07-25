@@ -13,7 +13,7 @@ let
   , pantryCollection
   ;
 
-mongo.connect(process.env.DATABASE, function(err, connectedClient) {
+mongo.connect(process.env.DATABASE, { useNewUrlParser: true }, function(err, connectedClient) {
   if (err) {
     console.error(err);
     process.exit(0);
