@@ -59,4 +59,19 @@ GET https://api.nal.usda.gov/ndb/search/?format=json&q=butter&ds=Standard%20Refe
 ###
 GET http://localhost:3001/usda_api/search?args=avocado
 ###
-GET http://localhost:3001/
+GET http://localhost:3001/auth/login
+Content-Type: application/json
+
+{
+    "email":"email@mail.mai",
+    "password":"12345" 
+}
+
+###
+POST http://localhost:3001/auth/register
+Content-Type: application/json
+
+{
+    "email":"email@mail.mail",
+    "password":"12345" 
+}
