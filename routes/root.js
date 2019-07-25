@@ -3,7 +3,7 @@ module.exports = function (router) {
   // router.use(validateReqBody);
 
   router.get('/', (req, res)=> {
-    res.status(200);
+    res.status(200).send({status: 'OK'});
   });
 
   function validateReqBody(req, res, next) {
