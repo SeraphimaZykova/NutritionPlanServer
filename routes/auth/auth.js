@@ -1,7 +1,7 @@
 module.exports = function (router) {
   const usersCollection = require('../../database/user');
 
-  router.post('/register', validateReqBody, async (req, res) => {
+  router.post('/register', validateReqBody('body'), async (req, res) => {
     try {
       let email = req.body.email;
       let password = req.body.password;
@@ -25,11 +25,11 @@ module.exports = function (router) {
     }
   });
 
-  router.get('/login', validateReqBody, async (req, res) => {
+  router.get('/login', validateReqBody('query'), async (req, res) => {
     console.log('LOGIN');
     try {
-      let email = req.body.email;
-      let password = req.body.password;
+      let email = req.query.email;
+      let password = req.query.password;
       
       let result = await usersCollection.login(email, password);
       console.log(result);
@@ -51,13 +51,17 @@ module.exports = function (router) {
     }
   });
 
-  function validateReqBody(req, res, next) {
-    if (req.body.hasOwnProperty('email') && req.body.hasOwnProperty('password')) {
-      next();
-    } else {
-      res.status(400).send('Error: 400 -> no credentials');
+  function validateReqBody(target) {
+    return (req, res, next) => {
+      if (req[target].hasOwnProperty('email') && req[target].hasOwnProperty('password')) {
+        next();
+      } else {
+        res.status(400).send('Error: 400 -> no credentials');
+      }
     }
+    
   }
+
 
   return router;
 }
