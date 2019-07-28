@@ -25,6 +25,9 @@ Content-Type: application/json
     "value": 10
 }
 
+###
+GET http://localhost:3001/api/available?email=ios@xr.test&token=IAYFIaCEhsAUxUO2huZMLUX9y8uGQp2M
+
 ####
 POST http://localhost:3001/removeFromPantry
 Content-Type: application/json
@@ -59,19 +62,16 @@ GET https://api.nal.usda.gov/ndb/search/?format=json&q=butter&ds=Standard%20Refe
 ###
 GET http://localhost:3001/usda_api/search?args=avocado
 ###
-GET http://localhost:3001/auth/login
+GET http://localhost:3001/auth/login?email=email@mail.mai&password=12345
 Content-Type: application/json
-
-{
-    "email":"email@mail.mai",
-    "password":"12345" 
-}
+###
+GET http://localhost:3001/auth/login
 
 ###
 POST http://localhost:3001/auth/register
 Content-Type: application/json
 
 {
-    "email":"email@mail.mail",
+    "email":"email@mail.mailaaa",
     "password":"12345" 
 }

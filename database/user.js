@@ -41,7 +41,8 @@ async function register(email, password) {
   }
 
   return {
-    token: token
+    token: token,
+    email: email
   };
 }
 
@@ -76,7 +77,8 @@ async function login(email, password) {
   }
 
   return {
-    token: token
+    token: token,
+    email: email
   }
 }
 
@@ -89,6 +91,17 @@ async function get(id, projection) {
   let res = await collection.findOne(query, opts);
   return res;
 }
+
+async function get(email, token, projection) {
+  let collection = mongo.user()
+    , query = { 'credentials.email' : email, 'credentials.token': token }
+    , opts = { projection: projection }
+    ;
+  
+  let res = await collection.findOne(query, opts);
+  return res;
+}
+
 
 async function insertIfNotExist(clientId) {
   let collection = mongo.user()

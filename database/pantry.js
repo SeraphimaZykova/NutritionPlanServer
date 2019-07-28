@@ -5,8 +5,8 @@ const
   , food = require('./food')
   ;
  
-async function get(id) {
-  let userData = await user.get(id, { pantry: 1 })
+async function get(userEmail, token) {
+  let userData = await user.get(userEmail, token, { pantry: 1 })
     , pantryId = userData['pantry']
     ;
 
