@@ -15,14 +15,14 @@ async function get(id, projection) {
 
 async function insert(obj) {
   let collection = mongo.food()
-    , res = await collection.insert(obj);
+    , res = await collection.insertOne(obj);
     ;
 
   if (res.insertedCount != 1) {
     throw new Error('Insertion error');
   }
   
-  return mongodb.ObjectId(res.insertedIds[0]);
+  return mongodb.ObjectId(res.insertedId);
 }
 
 function update (id, field, val) {
