@@ -35,10 +35,11 @@ async function create() {
   return res.insertedIds['0'];
 }
 
-async function insert(id, obj) {
+async function insert(userEmail, userToken, obj) {
   obj.foodId = mongodb.ObjectId(obj.foodId);
+  if (!obj.foodId) throw new Error('Insert failed: invalid food id');
 
-  let userData = await user.get(id, { pantry: 1 })
+  let userData = await user.get(userEmail, userToken, { pantry: 1 })
     , pantryId = userData['pantry']
     ;
 
