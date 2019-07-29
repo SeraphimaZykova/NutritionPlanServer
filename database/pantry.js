@@ -57,6 +57,10 @@ async function insert(userEmail, userToken, obj) {
   if (res.lastErrorObject.updatedExisting == false) {
     throw new Error('Object not found');
   }
+
+  obj['food'] = await food.get(obj.foodId);
+  obj['foodId'] = obj.foodId.toString();
+  return obj;
 }
 
 async function remove(userId, foodToRemoveId) {

@@ -39,8 +39,8 @@ module.exports = function (router) {
         ;
 
       console.log(obj)
-      await pantryCollection.insert(userEmail, token, obj);
-      res.status(200).send({});
+      let insertedObj = await pantryCollection.insert(userEmail, token, obj);
+      res.status(200).send(insertedObj);
     }
     catch(err) {
       console.log(`Error: ${err.message}`)
