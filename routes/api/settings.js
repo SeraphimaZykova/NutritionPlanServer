@@ -1,13 +1,14 @@
 module.exports = function (router) {
-  const usda = require('../../database/user');
+  const user = require('../../database/user');
 
-  router.use(validateReqBody);
-
-  router.get('/', async (req, res) => {
+  router.get('/', validateReqQuery, async (req, res) => {
     try {
-      let args = req.query['args'];
-      let result = await usda.search(args);
-      res.status(200).send(result);
+      let email = req.query.email
+        , token = req.query.token;
+
+      let result = await user.get(email, token, {'userData': 1, '_id': 0});
+      console.log('settings request: ', result)
+      res.status(200).send(result.userData);
     }
     catch(err) {
       console.log(`Error: ${err.message}`)
@@ -18,11 +19,43 @@ module.exports = function (router) {
     }
   });
 
-  function validateReqBody(req, res, next) {
-    if (req.query.hasOwnProperty('args')) {
+  router.post('/userData', validatePost, async (req, res) => {
+    try {
+      let email = req.body.email
+        , token = req.body.token
+        , userData = req.body.userData;
+
+      console.log('update settings data: ', userData)
+      let result = await user.update(email, token, 'userData', userData);
+      console.log(result);
+      res.status(200).send({});
+
+    } catch (err) {
+      console.log(`Error: ${err.message}`)
+      res.send({
+        status: false
+        , error: err.message
+      });
+    }
+  });
+
+  function validateReqQuery(req, res, next) {
+    if (req.query.hasOwnProperty('email') && req.query.hasOwnProperty('token')) {
       next();
     } else {
-      res.status(400).send('Error: 400 -> no search args');
+      res.status(400).send({
+        error: 'invalid request: search args missing'
+      });
+    }
+  }
+
+  function validatePost(req, res, next) {
+    if (req.body.hasOwnProperty('userData') && req.body.hasOwnProperty('email') && req.body.hasOwnProperty('token')) {
+      next();
+    } else {
+      res.status(400).send({
+        error: 'invalid request: data missing'
+      });
     }
   }
 

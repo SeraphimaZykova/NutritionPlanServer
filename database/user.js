@@ -102,7 +102,6 @@ async function get(email, token, projection) {
   return res;
 }
 
-
 async function insertIfNotExist(clientId) {
   let collection = mongo.user()
     , query = { 'clientId': clientId }
@@ -132,12 +131,14 @@ async function insertIfNotExist(clientId) {
   return insertRes;
 }
 
-function update(id, field, value) {
-  let query = { 'clientId': id }
+function update(email, token, field, value) {
+  let query = { 'credentials.email': email, 'credentials.token': token }
     , upd = {}
     ;
 
   upd[field] = value;
+
+  console.log('upd', query, ' / with ', upd)
   return new Promise((rslv, rjct) => {
     let collection = mongo.user();
     let callback = (err, res) => {
