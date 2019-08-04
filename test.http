@@ -75,3 +75,22 @@ Content-Type: application/json
     "email":"email@mail.mailaaa",
     "password":"12345" 
 }
+
+###
+GET http://localhost:3001/api/shoppingList?email=iphone@xs.test&token=e8wyIHnKHtAJnIQ0RjsSiSQ34Ts5qcm4
+
+###
+POST http://localhost:3001/api/shoppingList/update
+Content-Type: application/json
+
+{
+    "email":"iphone@xs.test",
+    "token":"e8wyIHnKHtAJnIQ0RjsSiSQ34Ts5qcm4",
+    "shoppingList": [
+        { "item1": false },
+        { "item2": true }
+    ],
+    "recentPurchases": [
+        "item2", "item3", "lalalalalalalalala"
+    ]
+}
