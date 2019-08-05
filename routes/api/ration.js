@@ -17,17 +17,6 @@ module.exports = function (router) {
     }
   });
 
-  // router.post('/updateRation', async (req, res) => {
-  //   const data = req.body;
-  //   try {
-  //     await ration.update(data.userId, data.id, 'portion', data.portion);
-  //     res.sendStatus(200);
-  //   }
-  //   catch(err) {
-  //     handleError(res, 400, err);
-  //   }
-  // });
-
   router.post('/update', validateInsert, async (req, res) => {
     try {
       

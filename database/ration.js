@@ -9,19 +9,6 @@ const
 async function get (email, token) {
   let projection = { ration: 1, userData: 1, pantry: 1, _upd: 1 }
     , userData = await user.get(email, token, projection)
-    , nutrition = userData.userData.nutrition
-    , idealNutrition = {
-        calories: {
-          total: nutrition.calories
-        },
-        proteins: 4.1 * nutrition.proteins,
-        carbs: {
-          total: 4.1 * nutrition.carbs
-        },
-        fats: {
-          total: 9.29 * nutrition.fats
-        }
-      }
     , userPantry = await pantry.get(email, token)
     ;
 
@@ -41,12 +28,7 @@ async function get (email, token) {
     return element;
   });
 
-  let clientData = {
-    idealNutrition: idealNutrition,
-    ration: arr
-  };
-
-  return clientData;
+  return arr;
 }
 
 async function set(email, token, ration) {
