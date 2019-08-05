@@ -1,4 +1,4 @@
-GET http://localhost:3001/ration
+GET http://localhost:3001/api/ration?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
 
 ####
 GET http://localhost:3001/foods?1

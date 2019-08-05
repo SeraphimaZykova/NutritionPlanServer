@@ -6,29 +6,29 @@ const
   , rationCalculator = require('ration_calculator')
   ;
  
-async function get (id) {
-  let projection = { ration: 1, nutrition: 1, pantry: 1, _upd: 1 }
-    , userData = await user.get(id, projection)
-    , nutrition = userData['nutrition']
+async function get (email, token) {
+  let projection = { ration: 1, userData: 1, pantry: 1, _upd: 1 }
+    , userData = await user.get(email, token, projection)
+    , nutrition = userData.userData.nutrition
     , idealNutrition = {
         calories: {
           total: nutrition.calories
         },
-        proteins: nutrition.calories * nutrition.proteins,
+        proteins: 4.1 * nutrition.proteins,
         carbs: {
-          total: nutrition.calories * nutrition.carbs
+          total: 4.1 * nutrition.carbs
         },
         fats: {
-          total: nutrition.calories * nutrition.fats
+          total: 9.29 * nutrition.fats
         }
       }
-    , userPantry = await pantry.get(id)
+    , userPantry = await pantry.get(email, token)
     ;
 
   if (!userData.ration) {
     let rationRes = await rationCalculator.calculateRation(idealNutrition, userPantry);
     userData.ration = rationRes.ration;
-    set(id, rationRes.ration);
+    set(email, token, rationRes.ration);
   }
 
   let arr = userData.ration.map((element) => {
@@ -49,8 +49,8 @@ async function get (id) {
   return clientData;
 }
 
-async function set(id, ration) {
-  user.update(id, 'ration', ration);
+async function set(email, token, ration) {
+  user.update(email, token, 'ration', ration);
 }
 
 async function add(id, obj) {
