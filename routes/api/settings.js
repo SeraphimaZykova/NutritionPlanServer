@@ -25,11 +25,12 @@ module.exports = function (router) {
         , token = req.body.token
         , userData = req.body.userData;
 
-      console.log('update settings data: ', userData)
       let result = await user.update(email, token, 'userData', userData);
-      console.log(result);
-      res.status(200).send({});
-
+      if (result.result.ok == 1) {
+        res.status(200).send({});
+      } else {
+        res.status(500).send({error: 'database error'})
+      }
     } catch (err) {
       console.log(`Error: ${err.message}`)
       res.send({
