@@ -1,17 +1,22 @@
 module.exports = function (router) {
-  const pantryCollection = require('../../database/pantry');
   const userCollection = require('../../database/user');
-
+  const availableCollection = require('../../database/available')
 
   router.get('/', validateAvailable, async (req, res) => {
     try {
       let token = req.query.token
         , userEmail = req.query.email;
 
-      let result = await pantryCollection.get(userEmail, token);
-      console.log(result);
-
-      res.status(200).send(result);
+      let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
+      if (userDoc) {
+        let result = await availableCollection.get(userDoc._id)
+        console.log(result)
+        res.status(200).send(result);
+      } else {
+        res.status(401).send({
+          error: "user not found"
+        })
+      }
     }
     catch(err) {
       console.log(`Error: ${err.message}`)
@@ -39,7 +44,7 @@ module.exports = function (router) {
         ;
 
       console.log(obj)
-      let insertedObj = await pantryCollection.insert(userEmail, token, obj);
+      let insertedObj = await availableCollection.insert(userEmail, token, obj);
       res.status(200).send(insertedObj);
     }
     catch(err) {

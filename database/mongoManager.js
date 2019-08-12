@@ -10,7 +10,7 @@ let
   , db
   , foodCollection
   , userDataCollection
-  , pantryCollection
+  , availableCollection
   ;
 
 mongo.connect(process.env.DATABASE, { useNewUrlParser: true }, function(err, connectedClient) {
@@ -24,7 +24,7 @@ mongo.connect(process.env.DATABASE, { useNewUrlParser: true }, function(err, con
   db = client.db(process.env.DATABASE_NAME);
   foodCollection = db.collection('Food');
   userDataCollection = db.collection('UserData');
-  pantryCollection = db.collection('Pantry');
+  availableCollection = db.collection('Available');
 
   console.log('database connection success');
 });
@@ -43,6 +43,6 @@ exports.user = () => {
   return userDataCollection;
 }
 
-exports.pantry = () => {
-  return pantryCollection;
+exports.available = () => {
+  return availableCollection;
 }

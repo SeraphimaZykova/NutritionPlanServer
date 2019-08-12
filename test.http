@@ -26,7 +26,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3001/api/available?email=ios@xr.test&token=IAYFIaCEhsAUxUO2huZMLUX9y8uGQp2M
+GET http://localhost:3001/api/available?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
 
 ####
 POST http://localhost:3001/removeFromPantry

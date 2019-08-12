@@ -5,35 +5,24 @@ const
   , food = require('./food')
   ;
  
-async function get(userEmail, token) {
-  let userData = await user.get(userEmail, token, { pantry: 1 })
-    , pantryId = userData['pantry']
-    ;
+async function get(userId) {
+  let cursor = await mongo.available().aggregate([
+      { $match: { userId: userId } },
+      { $lookup: {
+          from: "Food",
+          localField: "foodId",
+          foreignField: "_id",
+          as: "food"
+          } 
+      },
+      { $addFields: { food: { $arrayElemAt: [ "$food", 0] } } },
+      { $project: { "_id": 0, "foodId": 0, "food._id": 0, "userId": 0 } }
+    ]);
 
-  if (!pantryId) throw new Error('pantry is empty');
-
-  let collection = mongo.pantry()
-    , doc = await collection.findOne(pantryId)
-    ;
-
-  if (!doc || !doc.foodstuff) throw new Error('pantry not found');
-
-  let arr = await Promise.all(doc.foodstuff.map(async (element) => {
-    element['food'] = await food.get(element.foodId);
-    element['foodId'] = element.foodId.toString();
-    return element;
-  }));
-
-  return arr;
+  let doc = await cursor.toArray();
+  return doc;
 }
 
-async function create() {
-  let collection = mongo.pantry()
-    , obj = { 'foodstuff': [] }
-    , res = await collection.insert(obj)
-    ;
-  return res.insertedIds['0'];
-}
 
 async function insert(userEmail, userToken, obj) {
   obj.foodId = mongodb.ObjectId(obj.foodId);
@@ -45,7 +34,7 @@ async function insert(userEmail, userToken, obj) {
 
   if (!pantryId) throw new Error('Insert failed: no pantry');
 
-  let collection = mongo.pantry()
+  let collection = mongo.available()
     , query = {
         '_id': pantryId,
         'foodstuff.foodId': { $nin: [ obj.foodId ] }
@@ -66,7 +55,7 @@ async function insert(userEmail, userToken, obj) {
 async function remove(userId, foodToRemoveId) {
   let userData = await user.get(userId, { pantry: 1 })
     , pantryId = userData['pantry']
-    , collection = mongo.pantry()
+    , collection = mongo.available()
     , query = { '_id': pantryId }
     , upd = { $pull: { 'foodstuff': { 'foodId': mongodb.ObjectId(foodToRemoveId) } } }
     ;
@@ -80,7 +69,7 @@ async function remove(userId, foodToRemoveId) {
 async function update(userId, updId, field, val) {
   let userData = await user.get(userId, { 'pantry': 1 })
     , pantryId = userData['pantry']
-    , collection = mongo.pantry()
+    , collection = mongo.available()
     , query = {
         "_id": pantryId,
         "foodstuff.foodId": mongodb.ObjectId(updId)
@@ -97,7 +86,6 @@ async function update(userId, updId, field, val) {
 }
 
 exports.get = get;
-exports.create = create;
 exports.insert = insert;
 exports.update = update;
 exports.remove = remove;
