@@ -1,4 +1,23 @@
-GET http://localhost:3001/api/ration?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
+GET http://localhost:3001/api/ration?count=10&email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
+
+### get available
+GET http://localhost:3001/api/available?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
+
+### add available
+POST http://localhost:3001/api/available/add
+Content-Type: application/json
+
+{
+    "email": "ios@xr.test",
+    "token": "SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1",
+    "info": {
+        "id": "5d480201604483ca13a9ceb0",
+        "available": 100,
+        "min": 10,
+        "max": 0,
+        "preferred": 0
+    }
+}
 
 ####
 GET http://localhost:3001/foods?1
@@ -24,9 +43,6 @@ Content-Type: application/json
     "field": "delta",
     "value": 10
 }
-
-###
-GET http://localhost:3001/api/available?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
 
 ####
 POST http://localhost:3001/removeFromPantry

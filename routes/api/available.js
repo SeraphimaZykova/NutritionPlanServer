@@ -1,6 +1,7 @@
 module.exports = function (router) {
   const userCollection = require('../../database/user');
-  const availableCollection = require('../../database/available')
+  const availableCollection = require('../../database/available');
+  const mongodb = require('mongodb')
 
   router.get('/', validateAvailable, async (req, res) => {
     try {
@@ -10,7 +11,6 @@ module.exports = function (router) {
       let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
       if (userDoc) {
         let result = await availableCollection.get(userDoc._id)
-        console.log(result)
         res.status(200).send(result);
       } else {
         res.status(401).send({
@@ -31,21 +31,30 @@ module.exports = function (router) {
   router.post('/add', validateAvailableAdd, async (req, res) => {
     try {
       let token = req.body.token
-        , userEmail = req.body.email
-        , obj = {
-          foodId: req.body.info.id,
-          available: req.body.info.available,
-          portion: {
-            min: req.body.info.min,
-            max: req.body.info.max,
-            preferred: req.body.info.preferred
+        , userEmail = req.body.email;
+      let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
+      
+      if (userDoc) {
+        let obj = {
+          "userId": userDoc._id,
+          "foodId": mongodb.ObjectId(req.body.info.id),
+          "available": req.body.info.available,
+          "delta": req.body.info.delta,
+          "dailyPortion": {
+            "min": req.body.info.min,
+            "max": req.body.info.max,
+            "preferred": req.body.info.preferred
           }
-        }
-        ;
+        };
 
-      console.log(obj)
-      let insertedObj = await availableCollection.insert(userEmail, token, obj);
-      res.status(200).send(insertedObj);
+        console.log(obj)
+        await availableCollection.insert(obj);
+        res.status(200).send({});
+      } else {
+        res.status(401).send({
+          error: "user not found"
+        })
+      }
     }
     catch(err) {
       console.log(`Error: ${err.message}`)

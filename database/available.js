@@ -24,32 +24,9 @@ async function get(userId) {
 }
 
 
-async function insert(userEmail, userToken, obj) {
-  obj.foodId = mongodb.ObjectId(obj.foodId);
-  if (!obj.foodId) throw new Error('Insert failed: invalid food id');
-
-  let userData = await user.get(userEmail, userToken, { pantry: 1 })
-    , pantryId = userData['pantry']
-    ;
-
-  if (!pantryId) throw new Error('Insert failed: no pantry');
-
-  let collection = mongo.available()
-    , query = {
-        '_id': pantryId,
-        'foodstuff.foodId': { $nin: [ obj.foodId ] }
-      }
-    , upd = { $push: { 'foodstuff': obj } }
-    ;
-
-  res = await collection.findOneAndUpdate(query, upd);
-  if (res.lastErrorObject.updatedExisting == false) {
-    throw new Error('Object not found');
-  }
-
-  obj['food'] = await food.get(obj.foodId);
-  obj['foodId'] = obj.foodId.toString();
-  return obj;
+async function insert(obj) {
+  res = await mongo.available().insertOne(obj);
+  console.log(res);
 }
 
 async function remove(userId, foodToRemoveId) {
