@@ -4,7 +4,7 @@ GET http://localhost:3001/api/ration?count=10&email=ios@xr.test&token=SqDFWJrUV5
 GET http://localhost:3001/api/available?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
 
 ### add available
-POST http://localhost:3001/api/available/add
+POST http://localhost:3001/api/available
 Content-Type: application/json
 
 {
@@ -20,7 +20,7 @@ Content-Type: application/json
 }
 
 ### remove available
-POST http://localhost:3001/api/available/remove
+DELETE http://localhost:3001/api/available/
 Content-Type: application/json
 
 {

@@ -27,7 +27,7 @@ module.exports = function (router) {
     }
   });
 
-  router.post('/add', validateAvailableAdd, async (req, res) => {
+  router.post('/', validateAvailableAdd, async (req, res) => {
     try {
       let token = req.body.token
         , userEmail = req.body.email;
@@ -64,7 +64,7 @@ module.exports = function (router) {
     }
   });
 
-  router.post('/remove', validateAvailableRemove, async (req, res) => {
+  router.delete('/', validateAvailableRemove, async (req, res) => {
     try {
       let token = req.body.token
         , userEmail = req.body.email
@@ -89,6 +89,10 @@ module.exports = function (router) {
       });
     }
   });
+
+  router.put('/', validateAvailableAdd, async (req, res) => {
+    
+  })
 
   function validateAvailable(req, res, next) {
     if (req.query.hasOwnProperty('token') && req.query.hasOwnProperty('email')) {
