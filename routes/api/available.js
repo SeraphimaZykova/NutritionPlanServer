@@ -27,7 +27,6 @@ module.exports = function (router) {
     }
   });
 
-
   router.post('/add', validateAvailableAdd, async (req, res) => {
     try {
       let token = req.body.token
@@ -65,6 +64,32 @@ module.exports = function (router) {
     }
   });
 
+  router.post('/remove', validateAvailableRemove, async (req, res) => {
+    try {
+      let token = req.body.token
+        , userEmail = req.body.email
+        , removableId = req.body.id;
+      let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
+      
+      if (userDoc) {
+        await availableCollection.remove(userDoc._id, removableId);
+        res.status(200).send({});
+      } else {
+        res.status(401).send({
+          status: false, 
+          error: "user not found"
+        })
+      }
+    }
+    catch(err) {
+      console.log(`Error: ${err.message}`)
+      res.status(406).send({
+        status: false, 
+        error: err.message
+      });
+    }
+  });
+
   function validateAvailable(req, res, next) {
     if (req.query.hasOwnProperty('token') && req.query.hasOwnProperty('email')) {
       next();
@@ -77,6 +102,16 @@ module.exports = function (router) {
 
   function validateAvailableAdd(req, res, next) {
     if (req.body.hasOwnProperty('token') && req.body.hasOwnProperty('email') && req.body.hasOwnProperty('info')) {
+      next();
+    } else {
+      res.status(400).send({
+        error: "invalid request"
+      });
+    }
+  }
+
+  function validateAvailableRemove(req, res, next) {
+    if (req.body.hasOwnProperty('token') && req.body.hasOwnProperty('email') && req.body.hasOwnProperty('id')) {
       next();
     } else {
       res.status(400).send({

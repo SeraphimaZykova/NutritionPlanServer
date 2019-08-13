@@ -27,17 +27,10 @@ async function insert(obj) {
 }
 
 async function remove(userId, foodToRemoveId) {
-  let userData = await user.get(userId, { pantry: 1 })
-    , pantryId = userData['pantry']
-    , collection = mongo.available()
-    , query = { '_id': pantryId }
-    , upd = { $pull: { 'foodstuff': { 'foodId': mongodb.ObjectId(foodToRemoveId) } } }
-    ;
-
-  res = await collection.findOneAndUpdate(query, upd);
-  if (res.lastErrorObject.updatedExisting == false) {
-    throw new Error('Object not found');
-  }
+  return await mongo.available().deleteOne({
+    userId: userId, 
+    foodId: mongodb.ObjectId(foodToRemoveId)
+  });
 }
 
 async function update(userId, updId, field, val) {

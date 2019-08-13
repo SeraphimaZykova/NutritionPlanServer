@@ -19,6 +19,16 @@ Content-Type: application/json
     }
 }
 
+### remove available
+POST http://localhost:3001/api/available/remove
+Content-Type: application/json
+
+{
+    "email": "ios@xr.test",
+    "token": "SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1",
+    "id": "5d480201604483ca13a9ceb0"
+}
+
 ####
 GET http://localhost:3001/foods?1
 
