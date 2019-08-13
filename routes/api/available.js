@@ -91,7 +91,38 @@ module.exports = function (router) {
   });
 
   router.put('/', validateAvailableAdd, async (req, res) => {
-    
+    try {
+      let token = req.body.token
+        , userEmail = req.body.email;
+      let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
+      
+      if (userDoc) {
+        let obj = {
+          "available": req.body.info.available,
+          "delta": req.body.info.delta,
+          "dailyPortion": {
+            "min": req.body.info.min,
+            "max": req.body.info.max,
+            "preferred": req.body.info.preferred
+          }
+        };
+
+        await availableCollection.update(userDoc._id, mongodb.ObjectId(req.body.info.id), obj);
+        res.status(200).send({});
+      } else {
+        res.status(401).send({
+          status: false, 
+          error: "user not found"
+        })
+      }
+    }
+    catch(err) {
+      console.log(`Error: ${err.message}`)
+      res.status(406).send({
+        status: false, 
+        error: err.message
+      });
+    }
   })
 
   function validateAvailable(req, res, next) {

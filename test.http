@@ -29,6 +29,22 @@ Content-Type: application/json
     "id": "5d480201604483ca13a9ceb0"
 }
 
+### update available
+PUT http://localhost:3001/api/available
+Content-Type: application/json
+
+{
+    "email": "ios@xr.test",
+    "token": "SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1",
+    "info": {
+        "id": "5d480201604483ca13a9ceb0",
+        "available": 150,
+        "min": 10,
+        "max": 150,
+        "preferred": 0
+    }
+}
+
 ####
 GET http://localhost:3001/foods?1
 

@@ -33,23 +33,13 @@ async function remove(userId, foodToRemoveId) {
   });
 }
 
-async function update(userId, updId, field, val) {
-  let userData = await user.get(userId, { 'pantry': 1 })
-    , pantryId = userData['pantry']
-    , collection = mongo.available()
-    , query = {
-        "_id": pantryId,
-        "foodstuff.foodId": mongodb.ObjectId(updId)
-      }
-    , updObj = {}
-    ;
-
-  updObj['foodstuff.$.' + field] = val;
-
-  res = await collection.findOneAndUpdate(query, { $set: updObj });
-  if (res.lastErrorObject.updatedExisting == false) {
-    throw new Error('Object not found');
-  }
+async function update(userId, foodId, obj) {
+  return await mongo.available().updateOne({
+    userId: userId,
+    foodId: foodId
+  }, {
+    $set: obj
+  })
 }
 
 exports.get = get;
