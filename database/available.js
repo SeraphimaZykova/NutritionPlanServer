@@ -2,7 +2,6 @@ const
     mongodb = require('mongodb')
   , mongo = require('./mongoManager')
   , user = require('./user')
-  , food = require('./food')
   ;
  
 async function get(userId) {
@@ -23,10 +22,8 @@ async function get(userId) {
   return doc;
 }
 
-
 async function insert(obj) {
-  res = await mongo.available().insertOne(obj);
-  console.log(res);
+  return await mongo.available().insertOne(obj);
 }
 
 async function remove(userId, foodToRemoveId) {

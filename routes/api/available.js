@@ -47,20 +47,20 @@ module.exports = function (router) {
           }
         };
 
-        console.log(obj)
         await availableCollection.insert(obj);
         res.status(200).send({});
       } else {
         res.status(401).send({
+          status: false, 
           error: "user not found"
         })
       }
     }
     catch(err) {
       console.log(`Error: ${err.message}`)
-      res.send({
-        status: false
-        , data: err.message
+      res.status(406).send({
+        status: false, 
+        error: err.message
       });
     }
   });
