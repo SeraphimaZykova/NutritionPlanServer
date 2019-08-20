@@ -1,8 +1,4 @@
-const 
-    mongodb = require('mongodb')
-  , mongo = require('./mongoManager')
-  , pantry = require('./pantry')
-  ;
+const mongo = require('./mongoManager');
  
 async function register(email, password) {
   let collection = mongo.user()
@@ -17,20 +13,12 @@ async function register(email, password) {
   }
 
   let token = generate_token(32);
-  let pantryId = await pantry.create();
   let userDoc = { 
     'credentials': {
       'email': email,
       'password': password,
       'token': token
-    },
-    'pantry': pantryId,
-    'nutrition': {
-      calories: 0,
-      proteins: 0,
-      carbs: 0,
-      fats: 0
-    } 
+    }
   };
 
   let insertRes = await collection.insertOne(userDoc);
@@ -93,6 +81,7 @@ async function get(id, projection) {
 }
 
 async function get(email, token, projection) {
+  console.log(email, token, projection)
   let collection = mongo.user()
     , query = { 'credentials.email' : email, 'credentials.token': token }
     , opts = { projection: projection }
