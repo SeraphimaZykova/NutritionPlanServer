@@ -45,8 +45,8 @@ Content-Type: application/json
     }
 }
 
-####
-GET http://localhost:3001/foods?1
+### search food
+GET http://localhost:3001/api/food/search?args=av
 
 ####
 POST http://localhost:3001/login

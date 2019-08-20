@@ -55,20 +55,15 @@ function update (id, field, val) {
   });
 }
 
-function search (query) {
+async function search (query) {
   return new Promise((rslv, rjct) => {
     try {
       let regexp = new RegExp(query);
-      let collection = mongo.food();
-      collection.find({ 'name.en': { $regex: regexp, $options: 'i' } }).toArray()
+      mongo.food().find({ 'name.en': { $regex: regexp, $options: 'i' } }
+      , { $project: { "_id": 0, "foodId": 0, "userId": 0 } }
+      ).toArray()
       .then(res => {
-        let fix = res.map(obj => {
-          let newObj = obj;
-          newObj['id'] = obj['_id'].toString();
-          return newObj;
-        });
-
-        rslv(fix);
+        rslv(res);
       })
       .catch(err => {
         rjct(err);
