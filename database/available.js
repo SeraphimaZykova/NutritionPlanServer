@@ -4,7 +4,7 @@ const
   , user = require('./user')
   ;
  
-async function get(userId) {
+async function getAvailable(userId) {
   let cursor = await mongo.available().aggregate([
       { $match: { userId: userId } },
       { $lookup: {
@@ -15,7 +15,25 @@ async function get(userId) {
           } 
       },
       { $addFields: { food: { $arrayElemAt: [ "$food", 0] } } },
-      { $project: { "_id": 0, "foodId": 0, "food._id": 0, "userId": 0 } }
+      { $project: { "_id": 0, "foodId": 0, "userId": 0 } }
+    ]);
+
+  let doc = await cursor.toArray();
+  return doc;
+}
+
+async function getFood(userId, foodId) {
+  let cursor = await mongo.available().aggregate([
+      { $match: { userId: userId, foodId: foodId } },
+      { $lookup: {
+          from: "Food",
+          localField: "foodId",
+          foreignField: "_id",
+          as: "food"
+          } 
+      },
+      { $addFields: { food: { $arrayElemAt: [ "$food", 0] } } },
+      { $project: { "_id": 0, "foodId": 0, "userId": 0 } }
     ]);
 
   let doc = await cursor.toArray();
@@ -33,16 +51,17 @@ async function remove(userId, foodToRemoveId) {
   });
 }
 
-async function update(userId, foodId, obj) {
+async function update(userId, food) {
   return await mongo.available().updateOne({
     userId: userId,
-    foodId: foodId
+    foodId: mongodb.ObjectId(food._id)
   }, {
-    $set: obj
+    $set: food
   })
 }
 
-exports.get = get;
+exports.getAvailable = getAvailable;
+exports.getFood = getFood;
 exports.insert = insert;
 exports.update = update;
 exports.remove = remove;

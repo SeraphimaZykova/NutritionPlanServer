@@ -10,7 +10,7 @@ module.exports = function (router) {
 
       let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
       if (userDoc) {
-        let result = await availableCollection.get(userDoc._id)
+        let result = await availableCollection.getAvailable(userDoc._id)
         res.status(200).send(result);
       } else {
         res.status(401).send({
@@ -47,7 +47,7 @@ module.exports = function (router) {
         };
 
         await availableCollection.insert(obj);
-        res.status(200).send({});
+        res.status(200).send(availableCollection.getFood(userDoc._id, mongodb.ObjectId(req.body.info.id)));
       } else {
         res.status(401).send({
           status: false, 
@@ -68,9 +68,10 @@ module.exports = function (router) {
     try {
       let token = req.body.token
         , userEmail = req.body.email
-        , removableId = req.body.id;
+        , removableId = req.body.foodId;
       let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
       
+      console.log(removableId)
       if (userDoc) {
         await availableCollection.remove(userDoc._id, removableId);
         res.status(200).send({});
@@ -90,24 +91,14 @@ module.exports = function (router) {
     }
   });
 
-  router.put('/', validateAvailableAdd, async (req, res) => {
+  router.put('/', validatePut, async (req, res) => {
     try {
       let token = req.body.token
         , userEmail = req.body.email;
       let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
       
       if (userDoc) {
-        let obj = {
-          "available": req.body.info.available,
-          "delta": req.body.info.delta,
-          "dailyPortion": {
-            "min": req.body.info.min,
-            "max": req.body.info.max,
-            "preferred": req.body.info.preferred
-          }
-        };
-
-        await availableCollection.update(userDoc._id, mongodb.ObjectId(req.body.info.id), obj);
+        await availableCollection.update(userDoc._id, req.body.food);
         res.status(200).send({});
       } else {
         res.status(401).send({
@@ -146,7 +137,17 @@ module.exports = function (router) {
   }
 
   function validateAvailableRemove(req, res, next) {
-    if (req.body.hasOwnProperty('token') && req.body.hasOwnProperty('email') && req.body.hasOwnProperty('id')) {
+    if (req.body.hasOwnProperty('token') && req.body.hasOwnProperty('email') && req.body.hasOwnProperty('foodId')) {
+      next();
+    } else {
+      res.status(400).send({
+        error: "invalid request"
+      });
+    }
+  }
+
+  function validatePut(req, res, next) {
+    if (req.body.hasOwnProperty('token') && req.body.hasOwnProperty('email') && req.body.hasOwnProperty('food')) {
       next();
     } else {
       res.status(400).send({
