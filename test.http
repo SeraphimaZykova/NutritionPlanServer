@@ -45,64 +45,30 @@ Content-Type: application/json
     }
 }
 
+### get ration (diary)
+GET http://localhost:3001/api/ration?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1&count=1
+
+### prep ration 
+POST http://localhost:3001/api/ration
+Content-Type: application/json
+
+{
+    "email": "ios@xr.test",
+    "token": "SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1",
+    "count": 1
+}
+
 ### search food
-GET http://localhost:3001/api/food/search?args=av
+GET http://localhost:3001/api/food/search?args=avoca
 
 ####
-POST http://localhost:3001/login
-Content-Type: application/json
-
-{
-    "clientId": 2
-}
-
-####
-GET http://localhost:3001/foodSearch?а
-
-####
-POST http://localhost:3001/updatePantryInfo
-Content-Type: application/json
-
-{
-    "userId": "5a4aafeae02a03d8ebf35361",
-    "updOid": "5a6e114c1940f73e6d61818f",
-    "field": "delta",
-    "value": 10
-}
-
-####
-POST http://localhost:3001/removeFromPantry
-Content-Type: application/json
-
-{
-    "userId": "5a4aafeae02a03d8ebf35361",
-    "foodId": "5a6ccab519b70038ec83b891"
-}
-
-####
-POST http://localhost:3001/addToPantry
-Content-Type: application/json
-
-{
-    "userId": "5a4aafeae02a03d8ebf35361",
-    "foodId": "5a6ccab519b70038ec83b891"
-}
-
-#####
-POST https://api.nutritionix.com/v1_1/search
-
-{
-    "appId": "1a00fe85",
-    "appKey": "41b4d94379febc9ba23d79820d03d4a7",
-    "query": "Apple"
-}
-
+GET http://localhost:3001/foodSearch?rice
 
 ###
-GET https://api.nal.usda.gov/ndb/search/?format=json&q=butter&ds=Standard%20Reference&sort=r&max=50&offset=0&api_key=wjeNXWx9E6vBFvFrBWfoWo9US3czZm0xLLiC84yh
+GET https://api.nal.usda.gov/ndb/search/?format=json&q=rice&ds=Standard%20Reference&sort=r&max=50&offset=0&api_key=wjeNXWx9E6vBFvFrBWfoWo9US3czZm0xLLiC84yh
 
 ###
-GET http://localhost:3001/usda_api/search?args=avocado
+GET http://localhost:3001/usda_api/search?args=rice
 ###
 GET http://localhost:3001/auth/login?email=email@mail.mai&password=12345
 Content-Type: application/json

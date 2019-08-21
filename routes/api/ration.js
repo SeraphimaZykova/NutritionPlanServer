@@ -1,36 +1,42 @@
 module.exports = function (router) {
   const ration = require('../../database/ration');
 
-  router.get('/', validateReqBody, async (req, res) => {
+  router.get('/', validateReqQuery, async (req, res) => {
     try {
       let email = req.query.email
-        , token = req.query.token;
+        , token = req.query.token
+        , count = req.query.count;
 
-      let result = await ration.get(email, token);
+      let result = await ration.get(email, token, count);
       res.status(200).send(result);
     } catch(err) {
       console.log(`Error: ${err.message}`)
-      res.send({
-        status: false
-        , data: err.message
+      res.status(406).send({
+        status: false, 
+        error: err.message
       });
     }
   });
 
-  router.post('/update', validateInsert, async (req, res) => {
+  router.post('/', validatePost, async (req, res) => {
     try {
-      
+      let email = req.body.email
+      , token = req.body.token
+      , count = req.body.count;
+
+      await ration.prep(email, token, count);
+      res.send(await ration.get(email, token, count))
     } catch(err) {
       console.log(`Error: ${err.message}`)
-      res.send({
-        status: false
-        , data: err.message
+      res.status(406).send({
+        status: false, 
+        error: err.message
       });
     }
   });
 
-  function validateReqBody(req, res, next) {
-    if (req.query.hasOwnProperty('email') && req.query.hasOwnProperty('token')) {
+  function validateReqQuery(req, res, next) {
+    if (req.query.hasOwnProperty('email') && req.query.hasOwnProperty('token') && req.query.hasOwnProperty('count')) {
       next();
     } else {
       res.status(400).send({
@@ -39,9 +45,8 @@ module.exports = function (router) {
     }
   }
 
-  function validateInsert(req, res, next) {
-    console.log(req.body)
-    if (req.body.hasOwnProperty('email') && req.body.hasOwnProperty('token') && req.body.hasOwnProperty('ration')) {
+  function validatePost(req, res, next) {
+    if (req.body.hasOwnProperty('email') && req.body.hasOwnProperty('token') && req.body.hasOwnProperty('count')) {
       next();
     } else {
       res.status(400).send({

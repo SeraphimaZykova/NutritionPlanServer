@@ -11,6 +11,7 @@ let
   , foodCollection
   , userDataCollection
   , availableCollection
+  , diaryCollection
   ;
 
 mongo.connect(process.env.DATABASE, { useNewUrlParser: true }, function(err, connectedClient) {
@@ -25,6 +26,7 @@ mongo.connect(process.env.DATABASE, { useNewUrlParser: true }, function(err, con
   foodCollection = db.collection('Food');
   userDataCollection = db.collection('UserData');
   availableCollection = db.collection('Available');
+  diaryCollection = db.collection('Diary');
 
   console.log('database connection success');
 });
@@ -45,4 +47,8 @@ exports.user = () => {
 
 exports.available = () => {
   return availableCollection;
+}
+
+exports.diary = () => {
+  return diaryCollection;
 }
