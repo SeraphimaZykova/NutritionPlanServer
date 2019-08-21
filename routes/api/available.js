@@ -46,8 +46,9 @@ module.exports = function (router) {
           }
         };
 
-        await availableCollection.insert(obj);
-        res.status(200).send(availableCollection.getFood(userDoc._id, mongodb.ObjectId(req.body.info.id)));
+        let insertRes = await availableCollection.insert(obj);
+        let food = await availableCollection.getFood(userDoc._id, mongodb.ObjectId(req.body.info.id));
+        res.status(200).send([{"food": food}]);
       } else {
         res.status(401).send({
           status: false, 
@@ -70,8 +71,7 @@ module.exports = function (router) {
         , userEmail = req.body.email
         , removableId = req.body.foodId;
       let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
-      
-      console.log(removableId)
+
       if (userDoc) {
         await availableCollection.remove(userDoc._id, removableId);
         res.status(200).send({});
