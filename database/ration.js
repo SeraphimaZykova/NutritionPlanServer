@@ -10,14 +10,15 @@ async function get(email, token) {
   let userData = await user.get(email, token, { userData: 1 })
     , diary = await getDiary(userData._id);
 
-  let today = new Date().toISOString();
-  
+  //check if there is today ration calculated
   let addToDatabase = (diary.length == 0);
+  let today = new Date();
   if (!addToDatabase) {
     addToDatabase = true;
-
     diary.forEach(day => {
-      if (day.date == today) {
+      if (day.date.year == today.year
+        && day.date.month == today.month
+        && day.date.day == today.day ) {
         addToDatabase = false;
       }
     });
@@ -29,6 +30,10 @@ async function get(email, token) {
     diary = getDiary(userData._id)
   }
 
+  //change dates to iOS decodable format
+  diary.forEach(day => {
+    day.date = iOSDateFormatString(day.date)
+  });
   return diary;
 }
 
@@ -64,10 +69,13 @@ async function prep(email, token, days) {
   let userData = await user.get(email, token, { userData: 1, nutrition: 1 });
   let availableArr = await available.getAvailable(userData._id);
   
-  let date = new Date().toISOString();
-  for (let i = 0; i < days; i++) {
-    await calculateAndSaveRation(userData._id, date, userData.userData.nutrition, availableArr);
-    //date += day
+  let date = new Date();
+  for (let i = 0; i <= days; i++) {
+    await calculateAndSaveRation(userData._id, date
+      , userData.userData.nutrition, availableArr);
+    
+    date.setTime(date.getTime() + 24 * 60 * 60 * 1000);
+    
     //reserve available
   }
 }
@@ -144,6 +152,14 @@ async function calculateAndSaveRation(userId, date, nutrition, available) {
   });
 }
 
+/**
+ * formats date to ISO string decodable on iOS
+ * @param {*} date 
+ */
+function iOSDateFormatString(date) {
+  let str = date.toISOString().substr(0, 10) + "T00:00:00Z";
+  return str;
+}
 
 exports.get = get;
 exports.add = add;
