@@ -46,7 +46,7 @@ Content-Type: application/json
 }
 
 ### get ration (diary)
-GET http://localhost:3001/api/ration?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1&count=1
+GET http://localhost:3001/api/ration?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1&count=2
 
 ### prep ration 
 POST http://localhost:3001/api/ration

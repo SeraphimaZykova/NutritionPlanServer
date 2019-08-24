@@ -6,9 +6,9 @@ const
   , rationCalculator = require('ration_calculator')
   ;
  
-async function get(email, token) {
+async function get(email, token, count) {
   let userData = await user.get(email, token, { userData: 1 })
-    , diary = await getDiary(userData._id);
+    , diary = await getDiary(userData._id, count);
 
   //check if there is today ration calculated
   let addToDatabase = (diary.length == 0);
@@ -27,7 +27,7 @@ async function get(email, token) {
   if (addToDatabase) {
     let availableArr = await available.getAvailable(userData._id);
     await calculateAndSaveRation(userData._id, today, userData.userData.nutrition, availableArr);
-    diary = getDiary(userData._id)
+    diary = getDiary(userData._id, count)
   }
 
   //change dates to iOS decodable format
@@ -104,18 +104,28 @@ function userToAddonNutrition(userNutrition) {
  * aggregates diary with appropriate data substitution
  * @param {*} userId ObjectId
  */
-async function getDiary(userId) {
+async function getDiary(userId, count) {
   return await mongo.diary().aggregate([
     { $match: { userId: userId } },
+    { $sort: { date: -1 } },
+    { $limit: parseInt(count) },
+    { $unwind: { path: '$ration.ration' } },
     { $lookup: {
         from: "Food",
         localField: "ration.ration.food",
         foreignField: "_id",
-        as: "ration.foods"
+        as: "ration.ration.foods"
       }
     },
-    { $addFields: { "ration.ration.food": { $arrayElemAt: ["$ration.foods", 0] } }}, 
-    { $project: { "_id": 0, "userId": 0, "ration.foods": 0 } }
+    { $addFields: { 'ration.ration.food': { $mergeObjects: { $arrayElemAt: [ '$ration.ration.foods', 0 ] } } }}, 
+    { $group: { _id: '$date', 
+          ration: { $push: '$ration.ration' },
+          error: { $mergeObjects: '$ration.error' },
+          nutrition: { $mergeObjects: '$ration.nutrition' }
+         } },
+    { $addFields: { 'date': '$_id' }}, 
+    { $sort: { date: -1 } },  
+    { $project: { "_id": 0, "userId": 0, 'ration.foods': 0 } } 
   ]).toArray();
 }
 
@@ -137,12 +147,12 @@ async function calculateAndSaveRation(userId, date, nutrition, available) {
       total: rationRes.nutrition.calories
     },
     carbs: {
-      total: rationRes.nutrition.carbs
+      total: rationRes.nutrition.carbs / 4.1
     },
     fats: {
-      total: rationRes.nutrition.fats
+      total: rationRes.nutrition.fats / 4.1
     },
-    proteins: rationRes.nutrition.proteins
+    proteins: rationRes.nutrition.proteins / 9.29
   }
 
   mongo.diary().insertOne({
