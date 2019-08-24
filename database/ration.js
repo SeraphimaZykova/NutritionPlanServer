@@ -8,7 +8,8 @@ const
  
 async function get(email, token, count) {
   let userData = await user.get(email, token, { userData: 1 })
-    , diary = await getDiary(userData._id, count);
+    , diary = await getDiary(userData._id, count)
+    , availableArr = await available.getAvailable(userData._id);
 
   //check if there is today ration calculated
   let addToDatabase = (diary.length == 0);
@@ -25,7 +26,6 @@ async function get(email, token, count) {
   }
 
   if (addToDatabase) {
-    let availableArr = await available.getAvailable(userData._id);
     await calculateAndSaveRation(userData._id, today, userData.userData.nutrition, availableArr);
     diary = getDiary(userData._id, count)
   }
@@ -33,6 +33,10 @@ async function get(email, token, count) {
   //change dates to iOS decodable format
   diary.forEach(day => {
     day.date = iOSDateFormatString(day.date)
+    day.ration.forEach(foodEl => {
+      let availFood = availableArr.filter(el => String(el.food._id) == String(foodEl.food._id))
+      foodEl.available = availFood[0].available
+    });
   });
   return diary;
 }
