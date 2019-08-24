@@ -154,9 +154,9 @@ async function calculateAndSaveRation(userId, date, nutrition, available) {
       total: rationRes.nutrition.carbs / 4.1
     },
     fats: {
-      total: rationRes.nutrition.fats / 4.1
+      total: rationRes.nutrition.fats / 9.29
     },
-    proteins: rationRes.nutrition.proteins / 9.29
+    proteins: rationRes.nutrition.proteins / 4.1
   }
 
   mongo.diary().insertOne({
