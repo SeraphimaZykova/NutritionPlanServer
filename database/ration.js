@@ -35,7 +35,9 @@ async function get(email, token, count) {
     day.date = iOSDateFormatString(day.date)
     day.ration.forEach(foodEl => {
       let availFood = availableArr.filter(el => String(el.food._id) == String(foodEl.food._id))
-      foodEl.available = availFood[0].available
+      if (availFood.length > 0) {
+        foodEl.available = availFood[0].available
+      }
     });
   });
   return diary;
