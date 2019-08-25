@@ -54,10 +54,14 @@ async function remove(userId, foodToRemoveId) {
 async function update(userId, food) {
   return await mongo.available().updateOne({
     userId: userId,
-    foodId: mongodb.ObjectId(food._id)
+    foodId: mongodb.ObjectId(food.food._id)
   }, {
-    $set: food
-  })
+    $set: {
+      available: food.available,
+      delta: food.delta,
+      dailyPortion: food.dailyPortion
+    }
+  });
 }
 
 exports.getAvailable = getAvailable;

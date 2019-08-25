@@ -81,7 +81,6 @@ async function get(id, projection) {
 }
 
 async function get(email, token, projection) {
-  console.log(email, token, projection)
   let collection = mongo.user()
     , query = { 'credentials.email' : email, 'credentials.token': token }
     , opts = { projection: projection }

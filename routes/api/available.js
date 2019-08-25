@@ -98,7 +98,7 @@ module.exports = function (router) {
       let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
       
       if (userDoc) {
-        await availableCollection.update(userDoc._id, req.body.food);
+        let result = await availableCollection.update(userDoc._id, req.body.food);
         res.status(200).send({});
       } else {
         res.status(401).send({

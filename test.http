@@ -34,15 +34,36 @@ PUT http://localhost:3001/api/available
 Content-Type: application/json
 
 {
-    "email": "ios@xr.test",
-    "token": "SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1",
-    "info": {
-        "id": "5d480201604483ca13a9ceb0",
-        "available": 150,
-        "min": 10,
-        "max": 150,
-        "preferred": 0
-    }
+  "token" : "SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1",
+  "email" : "ios@xr.test",
+  "food" : {
+    "delta" : 0,
+    "dailyPortion" : {
+      "min" : 0,
+      "preferred" : 0,
+      "max" : 0
+    },
+    "food" : {
+      "type" : "apple",
+      "nutrition" : {
+        "proteins" : 0.29999999999999999,
+        "carbs" : {
+          "total" : 13.800000000000001
+        },
+        "fats" : {
+          "total" : 0.20000000000000001
+        },
+        "gi" : 35,
+        "calories" : {
+          "fromFat" : 1.8,
+          "total" : 52
+        }
+      },
+      "_id" : "5d3f2a01ce5667505ff590ed",
+      "name" : "apple"
+    },
+    "available" : 1200
+  }
 }
 
 ### get ration (diary)
