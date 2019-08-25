@@ -47,8 +47,8 @@ module.exports = function (router) {
         };
 
         let insertRes = await availableCollection.insert(obj);
-        let food = await availableCollection.getFood(userDoc._id, mongodb.ObjectId(req.body.info.id));
-        res.status(200).send([{"food": food}]);
+        let food = await availableCollection.getFood(insertRes.insertedId);
+        res.status(200).send(food);
       } else {
         res.status(401).send({
           status: false, 

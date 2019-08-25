@@ -14,7 +14,7 @@ async function getAvailable(userId) {
           as: "food"
           } 
       },
-      { $addFields: { food: { $arrayElemAt: [ "$food", 0] } } },
+      { $addFields: { food: { $mergeObjects: { $arrayElemAt: [ "$food", 0] } } } },
       { $project: { "_id": 0, "foodId": 0, "userId": 0 } }
     ]);
 
@@ -22,9 +22,9 @@ async function getAvailable(userId) {
   return doc;
 }
 
-async function getFood(userId, foodId) {
+async function getFood(id) {
   let cursor = await mongo.available().aggregate([
-      { $match: { userId: userId, foodId: foodId } },
+      { $match: { _id: id } },
       { $lookup: {
           from: "Food",
           localField: "foodId",
@@ -32,7 +32,7 @@ async function getFood(userId, foodId) {
           as: "food"
           } 
       },
-      { $addFields: { food: { $arrayElemAt: [ "$food", 0] } } },
+      { $addFields: { food: { $mergeObjects: { $arrayElemAt: [ "$food", 0] } } } },
       { $project: { "_id": 0, "foodId": 0, "userId": 0 } }
     ]);
 
