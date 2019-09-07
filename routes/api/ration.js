@@ -35,6 +35,29 @@ module.exports = function (router) {
     }
   });
 
+  router.put('/', validatePut, async (req, res) => {
+    try {
+      let email = req.body.email
+      , token = req.body.token
+      , ration = req.body.ration;
+
+      if (await rationCollection.update(email, token, ration)) {
+        res.send({})
+      } else {
+        res.status(406).send({
+          error: "document was not updated"
+        })
+      }
+      
+    } catch(err) {
+      console.log(`Error: ${err.message}`)
+      res.status(406).send({
+        status: false, 
+        error: err.message
+      });
+    }
+  })
+
   function validateReqQuery(req, res, next) {
     if (req.query.hasOwnProperty('email') && req.query.hasOwnProperty('token') && req.query.hasOwnProperty('count')) {
       next();
@@ -47,6 +70,16 @@ module.exports = function (router) {
 
   function validatePost(req, res, next) {
     if (req.body.hasOwnProperty('email') && req.body.hasOwnProperty('token') && req.body.hasOwnProperty('count')) {
+      next();
+    } else {
+      res.status(400).send({
+        error: 'invalid request'
+      })
+    }
+  }
+
+  function validatePut(req, res, next) {
+    if (req.body.hasOwnProperty('email') && req.body.hasOwnProperty('token') && req.body.hasOwnProperty('ration')) {
       next();
     } else {
       res.status(400).send({

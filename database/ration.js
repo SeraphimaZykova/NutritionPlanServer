@@ -43,32 +43,29 @@ async function get(email, token, count) {
   return diary;
 }
 
-async function add(id, obj) {
-  let collection = mongo.user()
-    , query = { '_id': mongodb.ObjectId(id) }
-    , upd = { $push: { 'ration': obj } }
-    ;
+async function update(email, token, ration) {
+  ration.ration.forEach(el => {
+    el.food = mongodb.ObjectId(el.food_id)
+  });
 
-  res = await collection.findOneAndUpdate(query, upd);
-  if (res.lastErrorObject.updatedExisting == false) {
-    throw new Error('Object not found');
+  let userData = await user.get(email, token, { _id: 1 })
+  let date = new Date(ration.date)
+  
+  let res = await mongo.diary().updateOne({
+    userId: userData._id,
+    date: date
+  }, {
+    $set: {
+      'ration.ration': ration.ration,
+      'ration.nutrition': ration.nutrition,
+      'ration.error': ration.error
+    }
+  })
+  
+  if (res.result.nModified == 1) {
+    return true
   }
-}
-
-async function update(id, foodId, field, value) {
-  let collection = mongo.user()
-    , query = { 
-        '_id': mongodb.ObjectId(id),
-        'ration.food': foodId
-      }
-    , upd = {}
-    ;
-
-  upd['ration.$.' + field] = value;
-  res = await collection.findOneAndUpdate(query, { $set: upd });
-  if (res.lastErrorObject.updatedExisting == false) {
-    throw new Error('Object not found');
-  }
+  return false
 }
 
 async function prep(email, token, days) {
@@ -192,6 +189,5 @@ function iOSDateFormatString(date) {
 }
 
 exports.get = get;
-exports.add = add;
 exports.update = update;
 exports.prep = prep;

@@ -79,6 +79,64 @@ Content-Type: application/json
     "count": 2
 }
 
+### update ration
+PUT http://localhost:3001/api/ration
+Content-Type: application/json
+
+{
+    "email": "ios@xr.test",
+    "token": "SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1",
+    "ration": {
+      "date": "2019-09-08T00:00:00Z",
+      "nutrition": {
+        "calories": {
+          "total": 1000
+        },
+        "proteins": 50,
+        "carbs": {
+          "total": 40
+        },
+        "fats": {
+          "total": 40
+        }
+      },
+      "error" : {
+          "caloriesError" : 0.0,
+          "proteinsError" : 0.0,
+          "carbsError" : 0.0,
+          "fatsError" : 0.0
+      },
+      "ration" : [ 
+            {
+              "food" : {
+                "_id" : "5d6e6f0b3d75e523d33bf7c3",
+                "name" : {
+                    "en" : "Chick-pea omelet",
+                    "ru" : "Нута омлет"
+                },
+                "type" : "",
+                "nutrition" : {
+                    "calories" : {
+                        "total" : 56.5,
+                        "fromFat" : 45
+                    },
+                    "proteins" : 8,
+                    "carbs" : {
+                        "total" : 9
+                    },
+                    "fats" : {
+                        "total" : 5
+                    }
+                }
+              },
+              "portion" : 100,
+              "delta" : 70
+            }
+        ]
+    }
+}
+
+
 ### search food
 GET http://localhost:3001/api/food/search?args=avoca
 
