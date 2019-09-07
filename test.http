@@ -76,7 +76,7 @@ Content-Type: application/json
 {
     "email": "ios@xr.test",
     "token": "SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1",
-    "count": 5
+    "count": 2
 }
 
 ### search food

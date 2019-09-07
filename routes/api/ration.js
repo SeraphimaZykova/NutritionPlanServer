@@ -1,5 +1,5 @@
 module.exports = function (router) {
-  const ration = require('../../database/ration');
+  const rationCollection = require('../../database/ration');
 
   router.get('/', validateReqQuery, async (req, res) => {
     try {
@@ -7,7 +7,7 @@ module.exports = function (router) {
         , token = req.query.token
         , count = req.query.count;
 
-      let result = await ration.get(email, token, count);
+      let result = await rationCollection.get(email, token, count);
       res.status(200).send(result);
     } catch(err) {
       console.log(`Error: ${err.message}`)
@@ -24,8 +24,8 @@ module.exports = function (router) {
       , token = req.body.token
       , count = req.body.count;
 
-      await ration.prep(email, token, count);
-      res.send(await ration.get(email, token, count))
+      await rationCollection.prep(email, token, count);
+      res.send(await rationCollection.get(email, token, count))
     } catch(err) {
       console.log(`Error: ${err.message}`)
       res.status(406).send({

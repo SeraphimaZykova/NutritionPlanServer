@@ -75,12 +75,13 @@ async function prep(email, token, days) {
   let userData = await user.get(email, token, { userData: 1, nutrition: 1 });
   let availableArr = await available.getAvailable(userData._id);
   
-  let date = new Date();
-  for (let i = 0; i <= days; i++) {
+  let today = new Date();
+  
+  for (let i = 0; i < days; i++) {
+    let date = new Date(today.getYear() + 1900, today.getMonth(), today.getDay() + i + 1, 3);
+
     await calculateAndSaveRation(userData._id, date
       , userData.userData.nutrition, availableArr);
-    
-    date.setTime(date.getTime() + 24 * 60 * 60 * 1000);
     
     //reserve available
   }
@@ -161,11 +162,24 @@ async function calculateAndSaveRation(userId, date, nutrition, available) {
     proteins: rationRes.nutrition.proteins / 4.1
   }
 
-  mongo.diary().insertOne({
+  let res = await mongo.diary().updateOne({
     userId: userId,
     date: date,
-    ration: rationRes
+  }, {
+    $set: {
+      userId: userId,
+      date: date,
+      ration: rationRes
+    }
   });
+
+  if (res.result.n == 0) {
+    res = await mongo.diary().insertOne({
+      userId: userId,
+        date: date,
+        ration: rationRes
+    });
+  }
 }
 
 /**
