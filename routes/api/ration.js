@@ -25,7 +25,7 @@ module.exports = function (router) {
       , count = req.body.count;
 
       await rationCollection.prep(email, token, count);
-      res.send(await rationCollection.get(email, token, count))
+      res.send(await rationCollection.get(email, token, 10)) //todo: add count to request
     } catch(err) {
       console.log(`Error: ${err.message}`)
       res.status(406).send({
