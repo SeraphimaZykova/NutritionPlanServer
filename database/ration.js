@@ -76,9 +76,9 @@ async function prep(email, token, days) {
   
   let today = new Date();
   
-  for (let i = 0; i <= days; i++) {
-    let date = new Date(today.getYear() + 1900, today.getMonth(), today.getDay() + i + 1, 3);
-
+  for (let i = 0; i < days; i++) {
+    let date = new Date(today.getYear() + 1900, today.getMonth(), today.getDate() + i, 3);
+    
     await calculateAndSaveRation(userData._id, date
       , userData.userData.nutrition, availableArr);
     
