@@ -45,7 +45,9 @@ async function get(email, token, count) {
 
 async function update(email, token, ration) {
   ration.ration.forEach(el => {
-    el.food = mongodb.ObjectId(el.food_id)
+    el.food = mongodb.ObjectId(el.food._id);
+    delete el.dailyPortion;
+    delete el.available;
   });
 
   let userData = await user.get(email, token, { _id: 1 })
@@ -74,7 +76,7 @@ async function prep(email, token, days) {
   
   let today = new Date();
   
-  for (let i = 0; i < days; i++) {
+  for (let i = 0; i <= days; i++) {
     let date = new Date(today.getYear() + 1900, today.getMonth(), today.getDay() + i + 1, 3);
 
     await calculateAndSaveRation(userData._id, date
