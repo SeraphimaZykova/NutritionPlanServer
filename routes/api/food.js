@@ -22,27 +22,7 @@ module.exports = function (router) {
   router.post('/add', validateInsert, async (req, res) => {
     try {
       //todo check credentials to prevent unauthorised access
-      let foodIncome = req.body.food;
-      let food = {
-        name: {
-          en: foodIncome.name,
-          ru: await translate(foodIncome.name, 'ru')
-        },
-        type: foodIncome.type,
-        nutrition: {
-          calories: {
-            total: foodIncome.calories,
-            fromFat: foodIncome.fats * 9
-          },
-          proteins: foodIncome.proteins,
-          carbs: {
-            total: foodIncome.carbs
-          },
-          fats: {
-            total: foodIncome.fats
-          }
-        }
-      }
+      let food = req.body.food.food;
 
       console.log('insert', food)
       let insertedId = await foodCollection.insert(food);
