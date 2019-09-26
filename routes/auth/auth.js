@@ -25,6 +25,28 @@ module.exports = function (router) {
     }
   });
 
+  router.get('/emailCheck', validateCheckBody('query'), async (req, res) => {
+    try {
+      let email = req.query.email;
+      let result = await usersCollection.checkEmailToRegistration(email);
+      
+      console.log(result)
+      if (result.error) {
+        res.status(400).send(result);
+      }
+      else {
+        res.status(200).send(result);
+      }
+    }
+    catch(err) {
+      console.log(`Error: ${err.message}`)
+      res.send({
+        status: false, 
+        error: err.message
+      });
+    }
+  });
+
   router.get('/login', validateReqBody('query'), async (req, res) => {
     console.log('LOGIN');
     try {
@@ -35,7 +57,7 @@ module.exports = function (router) {
       console.log(result);
 
       if (result.error) {
-        res.status(400).send(result);
+        res.status(401).send(result);
       }
       else {
         res.status(200).send(result);
@@ -59,9 +81,17 @@ module.exports = function (router) {
         res.status(400).send('Error: 400 -> no credentials');
       }
     }
-    
   }
 
+  function validateCheckBody(target) {
+    return (req, res, next) => {
+      if (req[target].hasOwnProperty('email')) {
+        next();
+      } else {
+        res.status(400).send('Error: 400 -> no credentials');
+      }
+    }
+  }
 
   return router;
 }

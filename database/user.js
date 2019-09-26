@@ -1,5 +1,19 @@
 const mongo = require('./mongoManager');
  
+async function checkEmailToRegistration(email) {
+  let collection = mongo.user()
+    , query = { 'credentials.email': email }
+    ;
+
+  let result = await collection.findOne(query);
+  if (result) {
+    return {
+      error: "email already registered"
+    };
+  } else {
+    return { };
+  }
+}
 async function register(email, password) {
   let collection = mongo.user()
     , query = { 'credentials.email': email }
@@ -43,12 +57,14 @@ async function login(email, password) {
   let result = await collection.findOne(query);
   if (!result) {
     return {
+      code: 1,
       error: "user not found"
     }
   }
     
   if (result['credentials']['password'] != password) {
     return {
+      code: 2,
       error: "incorrect password"
     };
   }
@@ -157,3 +173,4 @@ exports.insertIfNotExist = insertIfNotExist;
 exports.update = update;
 exports.register = register;
 exports.login = login;
+exports.checkEmailToRegistration = checkEmailToRegistration
