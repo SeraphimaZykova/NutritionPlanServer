@@ -3,6 +3,10 @@ module.exports = function (router) {
   const availableCollection = require('../../database/available');
   const mongodb = require('mongodb')
 
+  /*
+  errors: 
+  - 401 Unauthorized
+  */
   router.get('/', validateAvailable, async (req, res) => {
     try {
       let token = req.query.token
@@ -14,7 +18,8 @@ module.exports = function (router) {
         res.status(200).send(result);
       } else {
         res.status(401).send({
-          error: "user not found"
+          code: 401,
+          error: "Unauthorized"
         })
       }
     }
