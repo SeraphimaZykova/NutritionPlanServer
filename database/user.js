@@ -86,6 +86,40 @@ async function login(email, password) {
   }
 }
 
+async function invalidateToken(email, password) {
+  let collection = mongo.user()
+  , query = { 'credentials.email': email }
+  , upd = {}
+  ;
+
+  let result = await collection.findOne(query);
+  if (!result) {
+    return {
+      code: 1,
+      error: "user not found"
+    }
+  }
+    
+  if (result['credentials']['password'] != password) {
+    return {
+      code: 2,
+      error: "incorrect password"
+    };
+  }
+    
+  upd = result;
+  upd.credentials.token = null;
+  let updRes = await collection.updateOne(query, { $set: upd });
+  console.log(updRes)
+  if (updRes.result.ok != 1) {
+    return {
+      error: "failed to invalidate token"
+    };
+  }
+
+  return {}
+}
+
 async function get(id, projection) {
   let collection = mongo.user()
     , query = { 'clientId' : id }
@@ -168,9 +202,11 @@ function generate_token(length){
   return b.join("");
 }
 
+
 exports.get = get;
 exports.insertIfNotExist = insertIfNotExist;
 exports.update = update;
 exports.register = register;
 exports.login = login;
-exports.checkEmailToRegistration = checkEmailToRegistration
+exports.checkEmailToRegistration = checkEmailToRegistration;
+exports.invalidateToken = invalidateToken;

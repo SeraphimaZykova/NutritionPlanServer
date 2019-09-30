@@ -48,14 +48,11 @@ module.exports = function (router) {
   });
 
   router.get('/login', validateReqBody('query'), async (req, res) => {
-    console.log('LOGIN');
     try {
       let email = req.query.email;
       let password = req.query.password;
       
       let result = await usersCollection.login(email, password);
-      console.log(result);
-
       if (result.error) {
         res.status(401).send(result);
       }
@@ -70,6 +67,18 @@ module.exports = function (router) {
         status: false
         , data: err.message
       });
+    }
+  });
+
+  router.delete('/token', validateReqBody('query'), async(req, res) => {
+    let email = req.query.email, password = req.query.password;
+    let result = await usersCollection.invalidateToken(email, password);
+
+    if (result.error) {
+      res.status(401).send(result);
+    }
+    else {
+      res.status(200).send(result);
     }
   });
 
