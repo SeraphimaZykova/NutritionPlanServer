@@ -6,29 +6,13 @@ const
   , rationCalculator = require('ration_calculator')
   ;
  
-async function get(email, token, count) {
-  let userData = await user.get(email, token, { userData: 1 })
-    , diary = await getDiary(userData._id, count)
-    , availableArr = await available.getAvailable(userData._id);
-
-  //check if there is today ration calculated
-  let addToDatabase = (diary.length == 0);
-  let today = new Date();
-  if (!addToDatabase) {
-    addToDatabase = true;
-    diary.forEach(day => {
-      if (day.date.year == today.year
-        && day.date.month == today.month
-        && day.date.day == today.day ) {
-        addToDatabase = false;
-      }
-    });
-  }
-
-  if (addToDatabase) {
-    await calculateAndSaveRation(userData._id, today, userData.userData.nutrition, availableArr);
-    diary = getDiary(userData._id, count)
-  }
+  /*
+  errors: 
+  - 401 Unauthorized
+  */
+async function get(userId, count) {
+    let diary = await getDiary(userId, count)
+    , availableArr = await available.getAvailable(userId);
 
   //change dates to iOS decodable format
   diary.forEach(day => {
@@ -40,6 +24,7 @@ async function get(email, token, count) {
       }
     });
   });
+
   return diary;
 }
 

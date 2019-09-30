@@ -1,5 +1,6 @@
 module.exports = function (router) {
   const rationCollection = require('../../database/ration');
+  const userCollection = require('../../database/user');
 
   router.get('/', validateReqQuery, async (req, res) => {
     try {
@@ -7,7 +8,16 @@ module.exports = function (router) {
         , token = req.query.token
         , count = req.query.count;
 
-      let result = await rationCollection.get(email, token, count);
+        let userData = await userCollection.get(email, token, { userData: 1 });
+        if (!userData) {
+          res.status(401).send({
+            code: 401, 
+            error: "Unauthorized"
+          });
+          return;
+        }
+
+      let result = await rationCollection.get(userData._id, count);
       res.status(200).send(result);
     } catch(err) {
       console.log(`Error: ${err.message}`)
@@ -22,14 +32,24 @@ module.exports = function (router) {
     try {
       let email = req.body.email
       , token = req.body.token
-      , count = req.body.count;
+      , prepCount = req.body.prepCount
+      , diaryCount = req.body.diaryCount;
 
-      await rationCollection.prep(email, token, count);
-      res.send(await rationCollection.get(email, token, 10)) //todo: add count to request
+      let userData = await userCollection.get(email, token, { userData: 1 });
+      if (!userData) {
+        res.status(401).send({
+          code: 401, 
+          error: "Unauthorized"
+        });
+        return;
+      }
+
+      await rationCollection.prep(email, token, prepCount);
+      res.send(await rationCollection.get(userData._id, diaryCount)) 
     } catch(err) {
       console.log(`Error: ${err.message}`)
       res.status(406).send({
-        status: false, 
+        code: 406, 
         error: err.message
       });
     }
@@ -69,7 +89,10 @@ module.exports = function (router) {
   }
 
   function validatePost(req, res, next) {
-    if (req.body.hasOwnProperty('email') && req.body.hasOwnProperty('token') && req.body.hasOwnProperty('count')) {
+    if (req.body.hasOwnProperty('email') 
+    && req.body.hasOwnProperty('token') 
+    && req.body.hasOwnProperty('prepCount')
+    && req.body.hasOwnProperty('diaryCount')) {
       next();
     } else {
       res.status(400).send({
