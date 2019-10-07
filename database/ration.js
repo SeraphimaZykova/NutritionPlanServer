@@ -10,19 +10,12 @@ const
   errors: 
   - 401 Unauthorized
   */
-async function get(userId, count) {
-    let diary = await getDiary(userId, count)
-    , availableArr = await available.getAvailable(userId);
-
+async function get(userId, localeLanguage, count) {
+  let diary = await getDiary(userId, localeLanguage, count);
+    
   //change dates to iOS decodable format
   diary.forEach(day => {
     day.date = iOSDateFormatString(day.date)
-    day.ration.forEach(foodEl => {
-      let availFood = availableArr.filter(el => String(el.food._id) == String(foodEl.food._id))
-      if (availFood.length > 0) {
-        foodEl.available = availFood[0].available
-      }
-    });
   });
 
   return diary;
@@ -95,7 +88,7 @@ function userToAddonNutrition(userNutrition) {
  * aggregates diary with appropriate data substitution
  * @param {*} userId ObjectId
  */
-async function getDiary(userId, count) {
+async function getDiary(userId, localeLanguage, count) {
   return await mongo.diary().aggregate([
     { $match: { userId: userId } },
     { $sort: { date: -1 } },
@@ -109,6 +102,15 @@ async function getDiary(userId, count) {
       }
     },
     { $addFields: { 'ration.ration.food': { $mergeObjects: { $arrayElemAt: [ '$ration.ration.foods', 0 ] } } }}, 
+    { $addFields: { 'ration.ration.food.name': {
+          $cond: { 
+            if: '$ration.ration.food.name.' + localeLanguage, 
+            then: '$ration.ration.food.name.' + localeLanguage , 
+            else: '$ration.ration.food.name.en' 
+          } 
+        }
+      }
+    },
     { $group: { _id: '$date', 
           ration: { $push: '$ration.ration' },
           error: { $mergeObjects: '$ration.error' },

@@ -17,7 +17,7 @@ module.exports = function (router) {
           return;
         }
 
-      let result = await rationCollection.get(userData._id, count);
+      let result = await rationCollection.get(userData._id, userData.userData.localeLanguage, count);
       res.status(200).send(result);
     } catch(err) {
       console.log(`Error: ${err.message}`)
