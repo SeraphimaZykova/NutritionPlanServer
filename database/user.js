@@ -73,7 +73,6 @@ async function login(email, password) {
   upd = result;
   upd.credentials.token = token;
   let updRes = await collection.updateOne(query, { $set: upd });
-  console.log(updRes)
   if (updRes.result.ok != 1) {
     return {
       error: "failed to refresh token"

@@ -4,7 +4,7 @@ const
   , user = require('./user')
   ;
  
-async function getAvailable(userId) {
+async function getAvailable(userId, localeLanguage) {
   let cursor = await mongo.available().aggregate([
       { $match: { userId: userId } },
       { $lookup: {
@@ -14,7 +14,16 @@ async function getAvailable(userId) {
           as: "food"
           } 
       },
-      { $addFields: { food: { $mergeObjects: { $arrayElemAt: [ "$food", 0] } } } },
+      { $addFields: { food: { $mergeObjects: { $arrayElemAt: [ "$food", 0 ] } } } },
+      { $addFields: { 'food.name': {
+            $cond: { 
+              if: '$food.name.' + localeLanguage, 
+              then: '$food.name.' + localeLanguage , 
+              else: '$food.name.en' 
+            } 
+          }
+        }
+      },
       { $project: { "_id": 0, "foodId": 0, "userId": 0 } }
     ]);
 

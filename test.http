@@ -1,7 +1,7 @@
 GET http://localhost:3001/api/ration?count=10&email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
 
 ### get available
-GET http://localhost:3001/api/available?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
+GET http://localhost:3001/api/available?email=ios@xr.test&token=YEzq50ZmvoCVziMDXc5nmH7EkJk16Dbf
 
 ### add available
 POST http://localhost:3001/api/available

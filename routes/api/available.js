@@ -12,9 +12,9 @@ module.exports = function (router) {
       let token = req.query.token
         , userEmail = req.query.email;
 
-      let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
+      let userDoc = await userCollection.get(userEmail, token, {'_id': 1, 'userData.localeLanguage': 1 });
       if (userDoc) {
-        let result = await availableCollection.getAvailable(userDoc._id)
+        let result = await availableCollection.getAvailable(userDoc._id, userDoc.userData.localeLanguage);
         res.status(200).send(result);
       } else {
         res.status(401).send({
