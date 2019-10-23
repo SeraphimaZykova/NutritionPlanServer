@@ -1,7 +1,7 @@
-GET http://localhost:3001/api/ration?count=10&email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1
+GET http://localhost:3001/api/ration?count=10&email=ios@xr.test&token=MEZvnANf1phkQ6s3lCDOb9pDh3T8Ro6Z
 
 ### get available
-GET http://localhost:3001/api/available?email=ios@xr.test&token=YEzq50ZmvoCVziMDXc5nmH7EkJk16Dbf
+GET http://localhost:3001/api/available?email=ios@xr.test&token=MEZvnANf1phkQ6s3lCDOb9pDh3T8Ro6Z
 
 ### add available
 POST http://localhost:3001/api/available
@@ -138,7 +138,7 @@ Content-Type: application/json
 
 
 ### search food
-GET http://localhost:3001/api/food/search?args=avoca
+GET http://localhost:3001/api/food/search?args=аво&lang=ru
 
 ####
 GET http://localhost:3001/foodSearch?rice

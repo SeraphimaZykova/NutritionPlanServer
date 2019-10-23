@@ -111,6 +111,27 @@ async function getDiary(userId, localeLanguage, count) {
         }
       }
     },
+    { $lookup: {
+      from: "Available",
+      let: { foodId: "$ration.ration.food._id", userId: userId },
+      pipeline: [
+        { $match: 
+          { $expr:
+            { $and:
+               [
+                 { $eq: [ "$foodId",  "$$foodId" ] },
+                 { $eq: [ "$userId", "$$userId" ] }
+               ]
+            }
+          }
+        },
+        { $project: { 'available': 1, '_id': 0 } }
+      ],
+      as: "ration.ration.available"
+    }
+  },
+  { $addFields: { 'ration.ration.available': { $arrayElemAt: ['$ration.ration.available.available', 0] } }
+},
     { $group: { _id: '$date', 
           ration: { $push: '$ration.ration' },
           error: { $mergeObjects: '$ration.error' },
