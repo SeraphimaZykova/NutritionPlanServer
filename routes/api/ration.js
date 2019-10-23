@@ -45,7 +45,7 @@ module.exports = function (router) {
       }
 
       await rationCollection.prep(email, token, prepCount);
-      res.send(await rationCollection.get(userData._id, diaryCount)) 
+      res.send(await rationCollection.get(userData._id, userData.userData.localeLanguage, diaryCount)) 
     } catch(err) {
       console.log(`Error: ${err.message}`)
       res.status(406).send({
