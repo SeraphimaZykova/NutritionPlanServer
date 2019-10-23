@@ -7,8 +7,10 @@ module.exports = function (router) {
 
   router.get('/search', validateReqBody, async (req, res) => {
     try {
-      let args = req.query['args'];
-      let result = await foodCollection.search(args);
+      let args = req.query.args;
+      let lang = req.query.lang;
+      
+      let result = await foodCollection.search(args, lang);
       res.status(200).send(result);
     } catch(err) {
       console.log(`Error: ${err.message}`)

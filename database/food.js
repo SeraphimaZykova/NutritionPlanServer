@@ -55,13 +55,28 @@ function update (id, field, val) {
   });
 }
 
-async function search (query) {
+async function search (query, lang) {
   return new Promise((rslv, rjct) => {
     try {
       let regexp = new RegExp(query);
-      mongo.food().find({ 'name.en': { $regex: regexp, $options: 'i' } }
-      , { $project: { "_id": 0, "foodId": 0, "userId": 0 } }
-      ).toArray()
+
+      const localLang = `name.${lang}`;
+      const queryObj = {}
+      queryObj[localLang] = { $regex: regexp, $options: 'i' };
+      const allQueries = [queryObj, { 'name.en': { $regex: regexp, $options: 'i' }}]
+      mongo.food().aggregate([
+        { $match: { $or: allQueries } }, 
+        { $addFields: { 'name': {
+              $cond: { 
+                if: '$name.' + lang, 
+                then: '$name.' + lang, 
+                else: '$name.en' 
+              } 
+            }
+          }
+        },
+        { $project: { "name": 1, "type": 1, 'nutrition': 1 } },
+      ]).toArray()
       .then(res => {
         rslv(res);
       })
