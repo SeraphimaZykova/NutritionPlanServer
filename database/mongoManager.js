@@ -14,7 +14,7 @@ let
   , diaryCollection
   ;
 
-mongo.connect(process.env.DATABASE, { useNewUrlParser: true }, function(err, connectedClient) {
+mongo.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, connectedClient) {
   if (err) {
     console.error(err);
     process.exit(0);
