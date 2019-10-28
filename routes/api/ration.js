@@ -28,12 +28,18 @@ module.exports = function (router) {
     }
   });
 
+  /**
+   * @param {[ISODate]} dates of rations to replace with new calculated (updates database)
+   * @param {int} count how many rations shold be created (inserts new)
+   * 
+   * @returns array of cretated rations
+   */
   router.post('/', validatePost, async (req, res) => {
     try {
       let email = req.body.email
       , token = req.body.token
-      , prepCount = req.body.prepCount
-      , diaryCount = req.body.diaryCount;
+      , count = req.body.count
+      , dates = req.body.dates;
 
       let userData = await userCollection.get(email, token, { userData: 1 });
       if (!userData) {
@@ -44,8 +50,21 @@ module.exports = function (router) {
         return;
       }
 
-      await rationCollection.prep(email, token, prepCount);
-      res.send(await rationCollection.get(userData._id, userData.userData.localeLanguage, diaryCount)) 
+      let generatedRations = []
+      if (count) {
+        generatedRations = await rationCollection.calculateRations(email, token, count);
+      } else if (dates) {
+        generatedRations = await rationCollection.recalculateRations(email, token, dates);
+      }
+
+      if (generatedRations && generatedRations.length > 0) {
+        // generated ration doesn't contain all info needed for client
+        let aggregatedRations = await rationCollection.get(userData._id, userData.userData.localeLanguage, generatedRations.length)
+        res.send(aggregatedRations) 
+      } else {
+        res.send([])
+      }
+      
     } catch(err) {
       console.log(`Error: ${err.message}`)
       res.status(406).send({
@@ -59,7 +78,8 @@ module.exports = function (router) {
     try {
       let email = req.body.email
       , token = req.body.token
-      , ration = req.body.ration;
+      , ration = req.body.ration
+      , replaceFollowingRations = req.body.replaceFollowingRations;
 
       if (await rationCollection.update(email, token, ration)) {
         res.send({})
@@ -90,9 +110,7 @@ module.exports = function (router) {
 
   function validatePost(req, res, next) {
     if (req.body.hasOwnProperty('email') 
-    && req.body.hasOwnProperty('token') 
-    && req.body.hasOwnProperty('prepCount')
-    && req.body.hasOwnProperty('diaryCount')) {
+    && req.body.hasOwnProperty('token')) {
       next();
     } else {
       res.status(400).send({
@@ -102,7 +120,10 @@ module.exports = function (router) {
   }
 
   function validatePut(req, res, next) {
-    if (req.body.hasOwnProperty('email') && req.body.hasOwnProperty('token') && req.body.hasOwnProperty('ration')) {
+    if (req.body.hasOwnProperty('email') 
+    && req.body.hasOwnProperty('token') 
+    && req.body.hasOwnProperty('ration')
+    && req.body.hasOwnProperty('replaceFollowingRations')) {
       next();
     } else {
       res.status(400).send({

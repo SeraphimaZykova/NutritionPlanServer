@@ -67,16 +67,26 @@ Content-Type: application/json
 }
 
 ### get ration (diary)
-GET http://localhost:3001/api/ration?email=ios@xr.test&token=SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1&count=2
+GET http://localhost:3001/api/ration?email=ios@xr.test&token=MEZvnANf1phkQ6s3lCDOb9pDh3T8Ro6Z&count=2
 
-### prep ration 
+### prep ration (insert)
 POST http://localhost:3001/api/ration
 Content-Type: application/json
 
 {
     "email": "ios@xr.test",
-    "token": "SqDFWJrUV5yGeiqJuGvckaoJYF5BUqG1",
-    "count": 2
+    "token": "MEZvnANf1phkQ6s3lCDOb9pDh3T8Ro6Z",
+    "count": 1
+}
+
+### prep ration (update)
+POST http://localhost:3001/api/ration
+Content-Type: application/json
+
+{
+    "email": "ios@xr.test",
+    "token": "MEZvnANf1phkQ6s3lCDOb9pDh3T8Ro6Z",
+    "dates": ["2019-10-30T00:00:00Z", "2019-10-29T00:00:00Z", "2019-10-28T00:00:00Z"]
 }
 
 ### update ration

@@ -48,20 +48,91 @@ async function update(email, token, ration) {
   return false
 }
 
-async function prep(email, token, days) {
+/**
+ * prepare rations for user in advance for a several days
+ * 
+ * @param {string} email 
+ * @param {string} token 
+ * @param {int} days how many rations are needed
+ * 
+ * @returns array of created rations
+ */
+async function calculateRations(email, token, days) {
   let userData = await user.get(email, token, { userData: 1, nutrition: 1 });
-  let availableArr = await available.getAvailable(userData._id);
+
+  let startDate = await getNextRationDate(userData._id)
+  let availableArr = await getNotReservedAvailable(userData._id, startDate);
   
-  let today = new Date();
-  
+  let rations = []
+  let docs = []
+
   for (let i = 0; i < days; i++) {
-    let date = new Date(today.getYear() + 1900, today.getMonth(), today.getDate() + i, 3);
+    let date = new Date(startDate.getYear() + 1900, startDate.getMonth(), startDate.getDate() + i, 3);
     
-    await calculateAndSaveRation(userData._id, date
-      , userData.userData.nutrition, availableArr);
-    
-    //reserve available
+    let ration = await calculateRation(userData.userData.nutrition, availableArr);
+
+    if (ration.ration.length > 0) {
+      rations.push(ration)
+      availableArr = reserveAvailable(availableArr, ration.ration)
+  
+      docs.push({ 
+        userId: userData._id,
+        date: date,
+        ration: ration
+      })
+    }
   }
+
+  if (docs.length > 0) {
+    await mongo.diary().insertMany(docs);
+  }
+  
+  return rations
+}
+
+/**
+ * prepare and replace rations for user in advance for a several days. all other rations will be removed
+ * 
+ * @param {string} email 
+ * @param {string} token 
+ * @param {[String]} dates, ISODate strings
+ * 
+ * @returns array of created rations
+ */
+async function recalculateRations(email, token, dates) {
+  if (dates.length == 0) {
+    return []
+  }
+
+  dates = dates.sort();
+
+  let userData = await user.get(email, token, { userData: 1, nutrition: 1 });
+  let firstRequestedDate = new Date(dates.sort()[0]);
+  let availableArr = await getNotReservedAvailable(userData._id, firstRequestedDate);
+  
+  let rations = []
+  
+  //TODO: if dates doesn't follow each other, reserve correctly
+  for (let i = 0; i < dates.length; i++) {
+    let date = new Date(dates[i])
+
+    let ration = await calculateRation(userData.userData.nutrition, availableArr);
+    rations.push(ration)
+    availableArr = reserveAvailable(availableArr, ration.ration)
+
+    let res = await mongo.diary().updateOne({
+      userId: userData._id,
+      date: date,
+    }, {
+      $set: {
+        userId: userData._id,
+        date: date,
+        ration: ration
+      }
+    });
+  }
+
+  return rations
 }
 
 /** 
@@ -86,7 +157,9 @@ function userToAddonNutrition(userNutrition) {
 
 /**
  * aggregates diary with appropriate data substitution
- * @param {*} userId ObjectId
+ * @param {ObjectId} userId ObjectId
+ * @param {string} localeLanguage determines which translation will be set as name
+ * @param {int} count
  */
 async function getDiary(userId, localeLanguage, count) {
   return await mongo.diary().aggregate([
@@ -145,59 +218,167 @@ async function getDiary(userId, localeLanguage, count) {
 
 /**
  * calculates ration and saves in database
- * @param {*} userId 
- * @param {*} date
  * @param {*} nutrition 
  * @param {*} available 
+ * 
+ * @returns ration obj
  */
-async function calculateAndSaveRation(userId, date, nutrition, available) {
-  let rationRes = await rationCalculator.calculateRation(userToAddonNutrition(nutrition), available);
+async function calculateRation(nutrition, available) {
+  try {
+    let rationRes = await rationCalculator.calculateRation(userToAddonNutrition(nutrition), available);
     
-  rationRes.ration.forEach((el) => {
-    el.food = mongodb.ObjectId(el.food)
-  })
-  rationRes.nutrition = {
-    calories: {
-      total: rationRes.nutrition.calories
-    },
-    carbs: {
-      total: rationRes.nutrition.carbs / 4.1
-    },
-    fats: {
-      total: rationRes.nutrition.fats / 9.29
-    },
-    proteins: rationRes.nutrition.proteins / 4.1
-  }
-
-  let res = await mongo.diary().updateOne({
-    userId: userId,
-    date: date,
-  }, {
-    $set: {
-      userId: userId,
-      date: date,
-      ration: rationRes
+    rationRes.ration.forEach((el) => {
+      el.food = mongodb.ObjectId(el.food)
+    })
+    rationRes.nutrition = {
+      calories: {
+        total: rationRes.nutrition.calories
+      },
+      carbs: {
+        total: rationRes.nutrition.carbs / 4.1
+      },
+      fats: {
+        total: rationRes.nutrition.fats / 9.29
+      },
+      proteins: rationRes.nutrition.proteins / 4.1
     }
-  });
+    return rationRes
 
-  if (res.result.n == 0) {
-    res = await mongo.diary().insertOne({
-      userId: userId,
-        date: date,
-        ration: rationRes
-    });
+  } catch (err) {
+    let rationRes = {
+      ration: [],
+      error: {
+        "caloriesError": 1,
+        "proteinsError": 1,
+        "carbsError": 1,
+        "fatsError": 1
+      },
+      nutrition: {
+        calories: {
+          total: 0
+        },
+        carbs: {
+          total: 0
+        },
+        fats: {
+          total: 0
+        },
+        proteins: 0
+      }
+    }
+
+    return rationRes
   }
 }
 
 /**
+ * request array of available foods, 
+ * request array of rations between 'today' and 'firstRequestedDate',
+ * reduces available by reserved values
+ * 
+ * @param {'ObjectId'} userId
+ * @param {Date} firstRequestedDate
+ * @returns {['Available']} available array
+ */
+async function getNotReservedAvailable(userId, firstRequestedDate) {
+  let availableArr = await available.getAvailable(userId); 
+  let today = formatDate(new Date());
+
+  let rations = await mongo.diary().aggregate([
+    { $match: { 
+        $and: [
+        { userId: userId },
+        { date: { $gte: today } },
+        { date: { $lt: firstRequestedDate } }
+        ]}
+    },
+  ]).toArray()
+
+  rations.forEach(rationEl => {
+    let rationFoodsArr = rationEl.ration.ration;
+    availableArr = reserveAvailable(availableArr, rationFoodsArr);
+  });
+
+  return availableArr
+}
+
+/**
+ * reduces available by reserved values
+ * 
+ * @param {['Available']} available
+ * @param {'[Food]'} rationFoodsArr
+ * @returns {['Available']} modified available array
+ */
+function reserveAvailable(available, rationFoodsArr) {
+  rationFoodsArr.forEach(food => {
+    let availableIndex = available.findIndex((el, index, array) => {
+      return el.food._id.toString() == food.food.toString()
+    });
+
+    if (availableIndex != -1) {
+      available[availableIndex].available -= food.portion;
+      if (available[availableIndex].available < 0) {
+        available[availableIndex].available = 0;
+      }
+    }
+  });
+
+  return available
+}
+
+/**
  * formats date to ISO string decodable on iOS
- * @param {*} date 
+ * @param {Date} date 
  */
 function iOSDateFormatString(date) {
   let str = date.toISOString().substr(0, 10) + "T00:00:00Z";
   return str;
 }
 
+/**
+ * returns date from last ration entry + 1 day.
+ * if there is no records or last created ration were earlier than current date, returns current date
+ */
+async function getNextRationDate(userId) {
+  let now = new Date();
+  let today = formatDate(now);
+  let date = today;
+
+  console.log('now: ', now);
+  console.log('today: ', today); 
+
+  let lastRationEntry = await mongo.diary().aggregate([
+    { $match: { userId: userId } },
+    { $sort: { date: -1 } },
+    { $limit: 1 }
+  ]).toArray();
+  lastRationEntry = lastRationEntry[0];
+
+  console.log('lastRationEntry.date: ', lastRationEntry.date);
+
+  if (lastRationEntry && lastRationEntry.date >= today) {
+    let lastDate = lastRationEntry.date;
+    let nextDate = formatDate(lastDate, 1);
+    date = nextDate;
+  } 
+
+  console.log('date: ', date);
+  return date;
+}
+
+/**
+ * Removes time values from date, it keeps only day, month and year.
+ * Also can increase days with daysInc value
+ * 
+ * @param {Date} date
+ * @param {int} daysInc 
+ * @returns Date
+ */
+function formatDate(date, daysInc = 0) {
+  return new Date(date.getYear() + 1900, date.getMonth(), date.getDate() + daysInc, 3);
+}
+
 exports.get = get;
 exports.update = update;
-exports.prep = prep;
+exports.calculateRations = calculateRations;
+exports.recalculateRations = recalculateRations;
