@@ -19,6 +19,16 @@ Content-Type: application/json
     }
 }
 
+### reduce available by selected ration 
+POST http://localhost:3001/api/available
+Content-Type: application/json
+
+{
+    "email": "ios@xr.test",
+    "token": "BxyIX3CpjlFUIAsTVqc262CMF2sOHw25",
+    "lastRationDate": "2019-11-01T00:00:00Z"
+}
+
 ### remove available
 DELETE http://localhost:3001/api/available/
 Content-Type: application/json

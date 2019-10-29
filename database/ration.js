@@ -21,6 +21,19 @@ async function get(userId, localeLanguage, count) {
   return diary;
 }
 
+/**
+ * returns ration for selected date without any modifications
+ * 
+ * @param {'ObjectId'} userId 
+ * @param {Date} date 
+ */
+async function getRation(userId, date) {
+  return await mongo.diary().findOne({
+    userId: userId,
+    date: date
+  });
+}
+
 async function update(email, token, ration) {
   ration.ration.forEach(el => {
     el.food = mongodb.ObjectId(el.food._id);
@@ -379,6 +392,7 @@ function formatDate(date, daysInc = 0) {
 }
 
 exports.get = get;
+exports.getRation = getRation;
 exports.update = update;
 exports.calculateRations = calculateRations;
 exports.recalculateRations = recalculateRations;

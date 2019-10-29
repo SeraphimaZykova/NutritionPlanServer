@@ -73,8 +73,36 @@ async function update(userId, food) {
   });
 }
 
+/**
+ * reduce values for all ration foods
+ * 
+ * @param {ObjectId} userId 
+ * @param {[Food]} rationFoodsArray 
+ */
+async function reduce(userId, foods) {
+  let ops = []
+  for (let i = 0; i < foods.length; i++) {
+    console.log(foods[i].food, foods[i].portion)
+    ops.push({
+      updateOne: {
+        filter: {
+          userId: userId,
+          foodId: foods[i].food
+        },
+        update: {
+          $inc: {
+            available: -foods[i].portion 
+          }
+        }
+      }
+    })
+  }
+  return await mongo.available().bulkWrite(ops);
+}
+
 exports.getAvailable = getAvailable;
 exports.getFood = getFood;
 exports.insert = insert;
 exports.update = update;
 exports.remove = remove;
+exports.reduce = reduce;

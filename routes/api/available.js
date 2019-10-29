@@ -1,6 +1,7 @@
 module.exports = function (router) {
   const userCollection = require('../../database/user');
   const availableCollection = require('../../database/available');
+  const rationCollection = require('../../database/ration');
   const mongodb = require('mongodb')
 
   /*
@@ -35,30 +36,40 @@ module.exports = function (router) {
   router.post('/', validateAvailableAdd, async (req, res) => {
     try {
       let token = req.body.token
-        , userEmail = req.body.email;
-      let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
-      
-      if (userDoc) {
+        , userEmail = req.body.email
+        , info = req.body.info
+        , lastRationDate = req.body.lastRationDate;
+      let userDoc = await userCollection.get(userEmail, token, {'_id': 1, 'userData': 1 });
+      if (!userDoc) {
+        res.status(401).send({
+          status: false, 
+          error: "user not found"
+        })
+      }
+
+      if (info) {
         let obj = {
           "userId": userDoc._id,
-          "foodId": mongodb.ObjectId(req.body.info.id),
-          "available": req.body.info.available,
-          "delta": req.body.info.delta,
+          "foodId": mongodb.ObjectId(info.id),
+          "available": info.available,
+          "delta": info.delta,
           "dailyPortion": {
-            "min": req.body.info.min,
-            "max": req.body.info.max,
-            "preferred": req.body.info.preferred
+            "min": info.min,
+            "max": info.max,
+            "preferred": info.preferred
           }
         };
 
         let insertRes = await availableCollection.insert(obj);
         let food = await availableCollection.getFood(insertRes.insertedId);
         res.status(200).send(food);
-      } else {
-        res.status(401).send({
-          status: false, 
-          error: "user not found"
-        })
+
+      } else if (lastRationDate) {
+        let ration = await rationCollection.getRation(userDoc._id, new Date(lastRationDate));
+        await availableCollection.reduce(userDoc._id, ration.ration.ration);
+        
+        let available = await availableCollection.getAvailable(userDoc._id, userDoc.userData.localeLanguage);
+        res.status(200).send(available);
       }
     }
     catch(err) {
@@ -132,7 +143,7 @@ module.exports = function (router) {
   }
 
   function validateAvailableAdd(req, res, next) {
-    if (req.body.hasOwnProperty('token') && req.body.hasOwnProperty('email') && req.body.hasOwnProperty('info')) {
+    if (req.body.hasOwnProperty('token') && req.body.hasOwnProperty('email')) {
       next();
     } else {
       res.status(400).send({
