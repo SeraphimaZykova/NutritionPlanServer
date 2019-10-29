@@ -67,7 +67,7 @@ async function calculateRations(email, token, days) {
   let docs = []
 
   for (let i = 0; i < days; i++) {
-    let date = new Date(startDate.getYear() + 1900, startDate.getMonth(), startDate.getDate() + i, 3);
+    let date = formatDate(startDate, i);
     
     let ration = await calculateRation(userData.userData.nutrition, availableArr);
 

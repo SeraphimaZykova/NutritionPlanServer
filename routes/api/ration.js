@@ -62,7 +62,10 @@ module.exports = function (router) {
         let aggregatedRations = await rationCollection.get(userData._id, userData.userData.localeLanguage, generatedRations.length)
         res.send(aggregatedRations) 
       } else {
-        res.send([])
+        res.status(406).send({
+          code: 406, 
+          error: "Ration creation error: no variants"
+        });
       }
       
     } catch(err) {
@@ -81,6 +84,7 @@ module.exports = function (router) {
       , ration = req.body.ration
       , replaceFollowingRations = req.body.replaceFollowingRations;
 
+      //TODO: use replaceFollowingRations
       if (await rationCollection.update(email, token, ration)) {
         res.send({})
       } else {
