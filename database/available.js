@@ -76,10 +76,10 @@ async function update(userId, food) {
 /**
  * reduce values for all ration foods
  * 
- * @param {ObjectId} userId 
- * @param {[Food]} rationFoodsArray 
+ * @param {'ObjectId'} userId 
+ * @param {['Food']} rationFoodsArray 
  */
-async function reduce(userId, foods) {
+async function reduceAvailableFoodsAmount(userId, foods) {
   let ops = []
   for (let i = 0; i < foods.length; i++) {
     console.log(foods[i].food, foods[i].portion)
@@ -105,4 +105,4 @@ exports.getFood = getFood;
 exports.insert = insert;
 exports.update = update;
 exports.remove = remove;
-exports.reduce = reduce;
+exports.reduceAvailableFoodsAmount = reduceAvailableFoodsAmount;
