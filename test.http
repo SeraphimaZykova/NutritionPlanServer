@@ -172,7 +172,7 @@ GET http://localhost:3001/usda_api/search?args=rice
 GET http://localhost:3001/auth/login?email=email@mail.mai&password=12345
 Content-Type: application/json
 ###
-GET http://localhost:3001/auth/login
+GET http://localhost:3001/auth/login?email=ios@xr.test&password=12345
 
 ###
 POST http://localhost:3001/auth/register

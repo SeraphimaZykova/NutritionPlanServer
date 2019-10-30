@@ -1,14 +1,17 @@
 module.exports = function (router) {
-  const usersCollection = require('../../database/user');
+  const usersCollection = require('../../database/user')
+  , availableCollection = require('../../database/available')
+  , rationCollection = require('../../database/ration')
+  ;
 
   router.post('/register', validateReqBody('body'), async (req, res) => {
     try {
       let email = req.body.email;
       let password = req.body.password;
-      console.log(email, password)
+      console.log('register', email, password)
 
       let result = await usersCollection.register(email, password);
-      console.log(result)
+
       if (result.error) {
         res.status(400).send(result);
       }
@@ -57,7 +60,29 @@ module.exports = function (router) {
         res.status(401).send(result);
       }
       else {
-        res.status(200).send(result);
+        let localeGMTms = result.localeGMTSeconds * 1000;
+        let now = new Date(Date.now() + localeGMTms);
+        let loginTime = result.loginTime;
+        let localLoginTime = new Date(loginTime.getTime() + localeGMTms);
+      
+        console.log(now)
+        console.log(loginTime)
+        console.log(localLoginTime)
+      
+        if (now.getUTCFullYear() != localLoginTime.getUTCFullYear() || 
+            now.getUTCMonth() != localLoginTime.getUTCMonth() ||
+            now.getUTCDate() != localLoginTime.getUTCDate()) {
+              
+          let lastUsedRation = rationCollection.getRation(result.userId, loginTime);
+          availableCollection.reduceAvailableFoodsAmount(result.userId, lastUsedRation.ration.ration);
+
+          rationCollection.insertRationForDate(result.email, result.token, loginTime);
+        }
+
+        res.status(200).send({
+          token: result.token,
+          email: result.email
+        });
       }
     }
     catch(err) {

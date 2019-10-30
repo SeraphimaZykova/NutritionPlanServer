@@ -14,6 +14,7 @@ async function checkEmailToRegistration(email) {
     return { };
   }
 }
+
 async function register(email, password) {
   let collection = mongo.user()
     , query = { 'credentials.email': email }
@@ -68,10 +69,14 @@ async function login(email, password) {
       error: "incorrect password"
     };
   }
-    
+
+  let loginTime = new Date();
+
   let token = generate_token(32);
   upd = result;
   upd.credentials.token = token;
+  upd.credentials.loginTime = loginTime;
+
   let updRes = await collection.updateOne(query, { $set: upd });
   if (updRes.result.ok != 1) {
     return {
@@ -81,7 +86,10 @@ async function login(email, password) {
 
   return {
     token: token,
-    email: email
+    email: email,
+    loginTime: loginTime,
+    prevLoginTime: result.credentials.loginTime,
+    localeGMTSeconds: result.userData.localeGMTSeconds
   }
 }
 
