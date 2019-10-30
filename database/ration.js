@@ -74,6 +74,7 @@ async function calculateRations(email, token, days) {
   let userData = await user.get(email, token, { userData: 1, nutrition: 1 });
 
   let startDate = await getNextRationDate(userData._id)
+  console.log("create ", days, " rations since ", startDate)
   let availableArr = await getNotReservedAvailable(userData._id, startDate);
   
   let rations = []
@@ -81,7 +82,9 @@ async function calculateRations(email, token, days) {
 
   for (let i = 0; i < days; i++) {
     let date = formatDate(startDate, i);
-    
+
+    console.log('available for ', date, ':\n', availableArr)
+
     let ration = await calculateRation(userData.userData.nutrition, availableArr);
 
     if (ration.ration.length > 0) {
@@ -101,6 +104,40 @@ async function calculateRations(email, token, days) {
   }
   
   return rations
+}
+
+/**
+ * prepare rations for user in advance for a several days
+ * 
+ * @param {string} email 
+ * @param {string} token 
+ * @param {Date} date 
+ * 
+ * @returns created ration or null if ration already exists
+ */
+async function insertRationForDate(email, token, date) {
+  let userData = await user.get(email, token, { userData: 1, nutrition: 1 });
+  date = formatDate(date);
+
+  let previoslyCreatedRation = await mongo.diary().findOne({
+    userId: userData._id,
+    date: date
+  });
+  
+  if (previoslyCreatedRation)
+    return null;
+
+  console.log("create ration for ", date)
+  let availableArr = await available.getAvailable(userData._id); 
+  
+  let ration = await calculateRation(userData.userData.nutrition, availableArr);
+  await mongo.diary().insertOne({ 
+    userId: userData._id,
+    date: date,
+    ration: ration
+  });
+  
+  return ration
 }
 
 /**
@@ -394,5 +431,6 @@ function formatDate(date, daysInc = 0) {
 exports.get = get;
 exports.getRation = getRation;
 exports.update = update;
+exports.insertRationForDate = insertRationForDate;
 exports.calculateRations = calculateRations;
 exports.recalculateRations = recalculateRations;
