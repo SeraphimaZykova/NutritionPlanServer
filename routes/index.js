@@ -50,24 +50,24 @@ async function apiToLocalFormat(obj) {
   local['group'] = obj.group;
   local['nutrition'] = {
     calories: {
-      total: obj.nutrition['Energy'],
-      fromFat: obj.nutrition['Total lipid (fat)'] * 9
+      total: obj.nutrition['Energie'],
+      fromFat: obj.nutrition['Total de lipides (fat)'] * 9
     },
     proteins: obj.nutrition.Protein,
     carbs: {
-      total: obj.nutrition['Carbohydrate, by difference'],
-      dietaryFiber: obj.nutrition['Fiber, total dietary'],
-      sugars: obj.nutrition['Sugars, total']
+      total: obj.nutrition['Carbohydrate, par différence'],
+      dietaryFiber: obj.nutrition['Fibre, total alimentaire'],
+      sugars: obj.nutrition['Sucre, total']
     },
     fats: {
-      total: obj.nutrition['Total lipid (fat)'],
-      saturated: obj.nutrition['Fatty acids, total saturated'],
-      trans: obj.nutrition['Fatty acids, total trans'],
-      polyunsanurated: obj.nutrition['Fatty acids, total polyunsaturated'],
-      monounsaturated: obj.nutrition['Fatty acids, total monounsaturated']
+      total: obj.nutrition['Total de lipides (fat)'],
+      saturated: obj.nutrition['Acides gras, saturés'],
+      trans: obj.nutrition['Acides gras, non saturés'],
+      polyunsanurated: obj.nutrition['Acides gras, total polyinsaturés'],
+      monounsaturated: obj.nutrition['Fatty acids, total monoinsaturés']
     },
     calcium: obj.nutrition['Calcium, Ca'],
-    iron: obj.nutrition['Iron, Fe'],
+    iron: obj.nutrition['Fer, Fe'],
     magnesium: obj.nutrition['Magnesium, Mg'],
     phosphorous: obj.nutrition['Phosphorus, P'],
     potassium: obj.nutrition['Potassium, K'],
@@ -79,16 +79,16 @@ async function apiToLocalFormat(obj) {
     cholesterol: obj.nutrition['Cholesterol'],
     caffeinne: obj.nutrition['Caffeine'],
     vitamins: {
-      c: obj.nutrition['Vitamin C, total ascorbic acid'],
-      b6: obj.nutrition['Vitamin B-6'],
-      folate: obj.nutrition['Folate, DFE'],
-      b12: obj.nutrition['Vitamin B-12'],
-      arae: obj.nutrition['Vitamin A, RAE'],
-      aiu: obj.nutrition['Vitamin A, IU'],
-      e: obj.nutrition['Vitamin E (alpha-tocopherol)'],
-      d2d3: obj.nutrition['Vitamin D (D2 + D3)'],
-      d: obj.nutrition['Vitamin D'],
-      k: obj.nutrition['Vitamin K (phylloquinone)'],
+      c: obj.nutrition['Vitamine C, total acide ascorbic'],
+      b6: obj.nutrition['Vitamine B-6'],
+      folate: obj.nutrition['Folique, DFE'],
+      b12: obj.nutrition['Vitamine B-12'],
+      arae: obj.nutrition['Vitamine A, RAE'],
+      aiu: obj.nutrition['Vitamine A, IU'],
+      e: obj.nutrition['Vitamine E (alpha-tocopherol)'],
+      d2d3: obj.nutrition['Vitamine D (D2 + D3)'],
+      d: obj.nutrition['Vitamine D'],
+      k: obj.nutrition['Vitamine K (phylloquinone)'],
     }
   };
 
