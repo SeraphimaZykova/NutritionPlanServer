@@ -188,7 +188,7 @@ POST http://localhost:3001/auth/resetPassword/init
 Content-Type: application/json
 
 {
-    "email": "test1"
+    "email": "test"
 }
 
 ###

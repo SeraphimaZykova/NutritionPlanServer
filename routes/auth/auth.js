@@ -2,6 +2,7 @@ module.exports = function (router) {
   const usersCollection = require('../../database/user')
   , availableCollection = require('../../database/available')
   , rationCollection = require('../../database/ration')
+  , codeGenerator = require("../../helpers/confirmation_code_generator")
   ;
 
   router.post('/register', validateReqBody('body'), async (req, res) => {
@@ -35,9 +36,8 @@ module.exports = function (router) {
       console.log(result)
 
       if (result) { 
-        //todo: generate code
-        let code = 2222;
-        await usersCollection.updateById(result._id, { 'credentials.code': code }, [] );
+        let code = codeGenerator();
+        let updRes = await usersCollection.updateById(result._id, { 'credentials.code': code }, [] );
         if (updRes) {
           //todo: send email with code
           console.error('send email with code');
