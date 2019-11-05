@@ -184,6 +184,33 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:3001/auth/resetPassword/init
+Content-Type: application/json
+
+{
+    "email": "test1"
+}
+
+###
+POST http://localhost:3001/auth/resetPassword/code
+Content-Type: application/json
+
+{
+    "email": "test1",
+    "code": 2222
+}
+
+###
+POST http://localhost:3001/auth/resetPassword/
+Content-Type: application/json
+
+{
+    "email": "test",
+    "code": 2222,
+    "password": 123456
+}
+
+###
 GET http://localhost:3001/api/shoppingList?email=iphone@xs.test&token=e8wyIHnKHtAJnIQ0RjsSiSQ34Ts5qcm4
 
 ###

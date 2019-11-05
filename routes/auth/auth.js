@@ -28,6 +28,80 @@ module.exports = function (router) {
     }
   });
 
+  router.post('/resetPassword/init', validateCheckBody('body'), async (req, res) => {
+    try {
+      const email = req.body.email;
+      let result = await usersCollection.get( { 'credentials.email': email }, { '_id': 1 });
+      console.log(result)
+
+      if (result) { 
+        //todo: generate code
+        let code = 2222;
+        await usersCollection.updateById(result._id, { 'credentials.code': code }, [] );
+        if (updRes) {
+          //todo: send email with code
+          console.error('send email with code');
+        } else {
+          res.status(503).send({ error: "Unreachable database"})
+          return 
+        }
+      } else {
+        //todo: send mail "ignore me"
+        console.error('send email with ignore-me text')
+      }
+
+      res.status(200).send({})
+    } catch (err) {
+      res.status(401).send({
+        error: err.message
+      });
+    }
+  });
+
+  router.post('/resetPassword/code', validateCheckBody('body'), async (req, res) => {
+    try {
+      const email = req.body.email,
+        code = req.body.code;
+
+      let result = await usersCollection.get( { 'credentials.email': email, 'credentials.code': code }, { '_id': 1 });
+
+      if (result) {
+        res.status(200).send({})
+      } else {
+        res.status(500).send({})
+      }
+    } catch (err) {
+      res.status(401).send({
+        error: err.message
+      });
+    }
+  });
+
+  router.post('/resetPassword', validateCheckBody('body'), async (req, res) => {
+    try {
+      const email = req.body.email,
+        code = req.body.code,
+        password = req.body.password;
+
+      let result = await usersCollection.get( { 'credentials.email': email, 'credentials.code': code }, { '_id': 1 });
+
+      if (result) {
+        let updRes = await usersCollection.updateById(result._id, { 'credentials.password': password }, [ 'credentials.code', 'credentials.token' ]);
+        if (updRes) {
+          res.status(200).send({});
+          return;
+        }
+      } 
+      
+      res.status(500).send({})
+
+    } catch (err) {
+      res.status(401).send({
+        error: err.message
+      });
+    }
+  });
+
   router.get('/emailCheck', validateCheckBody('query'), async (req, res) => {
     try {
       let email = req.query.email;

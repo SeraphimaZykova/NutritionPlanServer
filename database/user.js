@@ -125,7 +125,7 @@ async function invalidateToken(email, password) {
   return {}
 }
 
-async function get(id, projection) {
+async function getById(id, projection) {
   let collection = mongo.user()
     , query = { 'clientId' : id }
     , opts = { projection: projection }
@@ -138,6 +138,15 @@ async function get(id, projection) {
 async function get(email, token, projection) {
   let collection = mongo.user()
     , query = { 'credentials.email' : email, 'credentials.token': token }
+    , opts = { projection: projection }
+    ;
+  
+  let res = await collection.findOne(query, opts);
+  return res;
+}
+
+async function get(query, projection) {
+  let collection = mongo.user()
     , opts = { projection: projection }
     ;
   
@@ -174,6 +183,13 @@ async function insertIfNotExist(clientId) {
   return insertRes;
 }
 
+/**
+ * 
+ * @param {String} email 
+ * @param {String} token 
+ * @param {String} field 
+ * @param {Any} value 
+ */
 function update(email, token, field, value) {
   let query = { 'credentials.email': email, 'credentials.token': token }
     , upd = {}
@@ -196,6 +212,30 @@ function update(email, token, field, value) {
   });
 }
 
+/**
+ * 
+ * @param {'ObjectId'} id 
+ * @param {[Object]} set key-value pairs for $set
+ * @param {[String]} unset keys for $unset
+ */
+async function updateById(id, set, unset) {
+  let query = { '_id': id };
+  let res;
+
+  if (unset.length == 0) {
+    res = await mongo.user().updateOne(query, { $set: set });
+  } else {
+    let unsetQuery = {};
+    unset.forEach(key => {
+      unsetQuery[key] = 1;
+    })
+  
+    res = await mongo.user().updateOne(query, { $set: set, $unset: unsetQuery });
+  }
+
+  return res.result.nModified == 1;
+}
+
 function generate_token(length){
   //edit the token allowed characters
   var a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split("");
@@ -209,8 +249,10 @@ function generate_token(length){
 
 
 exports.get = get;
+exports.getById = getById;
 exports.insertIfNotExist = insertIfNotExist;
 exports.update = update;
+exports.updateById = updateById;
 exports.register = register;
 exports.login = login;
 exports.isEmailSaved = isEmailSaved;
