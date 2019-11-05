@@ -31,14 +31,15 @@ module.exports = function (router) {
   router.get('/emailCheck', validateCheckBody('query'), async (req, res) => {
     try {
       let email = req.query.email;
-      let result = await usersCollection.checkEmailToRegistration(email);
+      let isSaved = await usersCollection.isEmailSaved(email);
       
-      console.log(result)
-      if (result.error) {
-        res.status(400).send(result);
+      if (isSaved) {
+        res.status(400).send({
+          error: "this email was already registered"
+        });
       }
       else {
-        res.status(200).send(result);
+        res.status(200).send({});
       }
     }
     catch(err) {

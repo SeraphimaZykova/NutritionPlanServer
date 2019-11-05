@@ -1,17 +1,15 @@
 const mongo = require('./mongoManager');
  
-async function checkEmailToRegistration(email) {
+async function isEmailSaved(email) {
   let collection = mongo.user()
     , query = { 'credentials.email': email }
     ;
 
   let result = await collection.findOne(query);
   if (result) {
-    return {
-      error: "email already registered"
-    };
+    return true;
   } else {
-    return { };
+    return false;
   }
 }
 
@@ -215,5 +213,5 @@ exports.insertIfNotExist = insertIfNotExist;
 exports.update = update;
 exports.register = register;
 exports.login = login;
-exports.checkEmailToRegistration = checkEmailToRegistration;
+exports.isEmailSaved = isEmailSaved;
 exports.invalidateToken = invalidateToken;
