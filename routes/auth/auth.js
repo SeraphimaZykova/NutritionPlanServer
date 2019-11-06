@@ -68,7 +68,7 @@ module.exports = function (router) {
       if (result) {
         res.status(200).send({})
       } else {
-        res.status(500).send({})
+        res.status(500).send({ error: "Wrong code" })
       }
     } catch (err) {
       res.status(401).send({
@@ -170,8 +170,8 @@ module.exports = function (router) {
     }
   });
 
-  router.delete('/token', validateReqBody('query'), async(req, res) => {
-    let email = req.query.email, password = req.query.password;
+  router.delete('/token', validateReqBody('body'), async(req, res) => {
+    let email = req.body.email, password = req.body.password;
     let result = await usersCollection.invalidateToken(email, password);
 
     if (result.error) {

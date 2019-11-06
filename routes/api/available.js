@@ -11,9 +11,9 @@ module.exports = function (router) {
   router.get('/', validateAvailable, async (req, res) => {
     try {
       let token = req.query.token
-        , userEmail = req.query.email;
+        , email = req.query.email;
 
-      let userDoc = await userCollection.get(userEmail, token, {'_id': 1, 'userData.localeLanguage': 1 });
+      let userDoc = await userCollection.getByEmail(email, token, {'_id': 1, 'userData.localeLanguage': 1 });
       if (userDoc) {
         let result = await availableCollection.getAvailable(userDoc._id, userDoc.userData.localeLanguage);
         res.status(200).send(result);
@@ -36,10 +36,10 @@ module.exports = function (router) {
   router.post('/', validateAvailableAdd, async (req, res) => {
     try {
       let token = req.body.token
-        , userEmail = req.body.email
+        , email = req.body.email
         , info = req.body.info
         , lastRationDate = req.body.lastRationDate;
-      let userDoc = await userCollection.get(userEmail, token, {'_id': 1, 'userData': 1 });
+      let userDoc = await userCollection.getByEmail(email, token, {'_id': 1, 'userData': 1 });
       if (!userDoc) {
         res.status(401).send({
           status: false, 
@@ -84,9 +84,9 @@ module.exports = function (router) {
   router.delete('/', validateAvailableRemove, async (req, res) => {
     try {
       let token = req.body.token
-        , userEmail = req.body.email
+        , email = req.body.email
         , removableId = req.body.foodId;
-      let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
+      let userDoc = await userCollection.getByEmail(email, token, {'_id': 1 });
 
       if (userDoc) {
         await availableCollection.remove(userDoc._id, removableId);
@@ -110,8 +110,8 @@ module.exports = function (router) {
   router.put('/', validatePut, async (req, res) => {
     try {
       let token = req.body.token
-        , userEmail = req.body.email;
-      let userDoc = await userCollection.get(userEmail, token, {'_id': 1 });
+        , email = req.body.email;
+      let userDoc = await userCollection.getByEmail(email, token, {'_id': 1 });
       
       if (userDoc) {
         let result = await availableCollection.update(userDoc._id, req.body.food);

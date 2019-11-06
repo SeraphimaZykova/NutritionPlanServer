@@ -7,7 +7,7 @@ module.exports = function (router) {
         , token = req.query.token;
 
       console.log(email, token)
-      let result = await user.get(email, token, {'shoppingList': 1, 'recentPurchases': 1, '_id': 0});
+      let result = await user.getByEmail(email, token, {'shoppingList': 1, 'recentPurchases': 1, '_id': 0});
       console.log('shopping list request: ', result)
       res.status(200).send(result);
     }

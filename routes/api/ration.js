@@ -8,7 +8,7 @@ module.exports = function (router) {
         , token = req.query.token
         , count = req.query.count;
 
-        let userData = await userCollection.get(email, token, { userData: 1 });
+        let userData = await userCollection.getByEmail(email, token, { userData: 1 });
         if (!userData) {
           res.status(401).send({
             code: 401, 
@@ -41,7 +41,7 @@ module.exports = function (router) {
       , count = req.body.count
       , dates = req.body.dates;
 
-      let userData = await userCollection.get(email, token, { userData: 1 });
+      let userData = await userCollection.getByEmail(email, token, { userData: 1 });
       if (!userData) {
         res.status(401).send({
           code: 401, 

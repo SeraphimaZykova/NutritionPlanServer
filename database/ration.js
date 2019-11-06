@@ -41,7 +41,7 @@ async function update(email, token, ration) {
     delete el.available;
   });
 
-  let userData = await user.get(email, token, { _id: 1 })
+  let userData = await user.getByEmail(email, token, { _id: 1 })
   let date = new Date(ration.date)
   
   let res = await mongo.diary().updateOne({
@@ -71,7 +71,7 @@ async function update(email, token, ration) {
  * @returns array of created rations
  */
 async function calculateRations(email, token, days) {
-  let userData = await user.get(email, token, { userData: 1, nutrition: 1 });
+  let userData = await user.getByEmail(email, token, { userData: 1, nutrition: 1 });
 
   let startDate = await getNextRationDate(userData._id)
   console.log("create ", days, " rations since ", startDate)
@@ -116,7 +116,7 @@ async function calculateRations(email, token, days) {
  * @returns created ration or null if ration already exists
  */
 async function insertRationForDate(email, token, date) {
-  let userData = await user.get(email, token, { userData: 1, nutrition: 1 });
+  let userData = await user.getByEmail(email, token, { userData: 1, nutrition: 1 });
   date = formatDate(date);
 
   let previoslyCreatedRation = await mongo.diary().findOne({
@@ -156,7 +156,7 @@ async function recalculateRations(email, token, dates) {
 
   dates = dates.sort();
 
-  let userData = await user.get(email, token, { userData: 1, nutrition: 1 });
+  let userData = await user.getByEmail(email, token, { userData: 1, nutrition: 1 });
   let firstRequestedDate = new Date(dates.sort()[0]);
   let availableArr = await getNotReservedAvailable(userData._id, firstRequestedDate);
   

@@ -6,7 +6,7 @@ module.exports = function (router) {
       let email = req.query.email
         , token = req.query.token;
 
-      let result = await user.get(email, token, {'userData': 1, '_id': 0});
+      let result = await user.getByEmail(email, token, {'userData': 1, '_id': 0});
       console.log('settings request: ', result)
       res.status(200).send(result.userData);
     }

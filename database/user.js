@@ -135,14 +135,8 @@ async function getById(id, projection) {
   return res;
 }
 
-async function get(email, token, projection) {
-  let collection = mongo.user()
-    , query = { 'credentials.email' : email, 'credentials.token': token }
-    , opts = { projection: projection }
-    ;
-  
-  let res = await collection.findOne(query, opts);
-  return res;
+async function getByEmail(email, token, projection) {
+  return await get({ 'credentials.email' : email, 'credentials.token': token }, projection);
 }
 
 async function get(query, projection) {
@@ -250,6 +244,7 @@ function generate_token(length){
 
 exports.get = get;
 exports.getById = getById;
+exports.getByEmail = getByEmail;
 exports.insertIfNotExist = insertIfNotExist;
 exports.update = update;
 exports.updateById = updateById;
