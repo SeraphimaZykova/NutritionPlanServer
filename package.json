@@ -9,15 +9,15 @@
   "dependencies": {
     "axios": "^0.18.1",
     "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.4",
+    "cookie-parser": "^1.4.5",
     "dotenv": "^5.0.1",
     "express": "^4.17.1",
-    "mongodb": "^3.3.3",
-    "morgan": "^1.9.1",
+    "mongodb": "^3.5.5",
+    "morgan": "^1.10.0",
     "pug": "^2.0.4"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
-    "translate": "^1.1.0"
+    "translate": "^1.1.2"
   }
 }
