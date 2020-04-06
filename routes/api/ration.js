@@ -20,8 +20,8 @@ module.exports = function (router) {
       let result = await rationCollection.get(userData._id, userData.userData.localeLanguage, count);
       res.status(200).send(result);
     } catch(err) {
-      console.log(`Error: ${err.message}`)
-      res.status(406).send({
+      console.log(`Error: ${err.message}`) //clear this
+      res.status(406).send({ //incorrect status - maybe use 500?
         status: false, 
         error: err.message
       });
@@ -62,7 +62,7 @@ module.exports = function (router) {
         let aggregatedRations = await rationCollection.get(userData._id, userData.userData.localeLanguage, generatedRations.length)
         res.send(aggregatedRations) 
       } else {
-        res.status(406).send({
+        res.status(406).send({//incorrect status
           code: 406, 
           error: "Ration creation error: no variants"
         });
@@ -70,7 +70,7 @@ module.exports = function (router) {
       
     } catch(err) {
       console.log(`Error: ${err.message}`)
-      res.status(406).send({
+      res.status(406).send({//incorrect status - maybe use 500?
         code: 406, 
         error: err.message
       });
@@ -95,7 +95,7 @@ module.exports = function (router) {
       
     } catch(err) {
       console.log(`Error: ${err.message}`)
-      res.status(406).send({
+      res.status(406).send({//incorrect status
         status: false, 
         error: err.message
       });
