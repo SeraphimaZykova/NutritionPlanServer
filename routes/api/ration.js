@@ -125,7 +125,7 @@ module.exports = function (router) {
 
   function validatePut(req, res, next) {
     if (req.body.hasOwnProperty('email') 
-    && req.body.hasOwnProperty('token') //use Object.hasOwnProperty.bind(req.body, 'token')
+    && req.body.hasOwnProperty('token') //use Object.hasOwnProperty.call(req.body, 'token')
     && req.body.hasOwnProperty('ration')
     && req.body.hasOwnProperty('replaceFollowingRations')) {
       next();
