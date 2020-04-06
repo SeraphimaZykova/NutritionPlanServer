@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); //use dotenv only in developing enviroment - add env check
 const 
     express = require('express')
   , path = require('path')
@@ -11,14 +11,14 @@ const
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.set('view engine', 'pug'); // rest server dont need view engine - maybe skip this?
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'))); //rest server work with static files? if no - skip this?
 
 app.use(router({
   express: express
